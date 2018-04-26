@@ -1,0 +1,631 @@
+<rdf:RDF
+    xmlns:vitro-public="http://vitro.mannlib.cornell.edu/ns/vitro/public#"
+    xmlns:c4o="http://purl.org/spar/c4o/"
+    xmlns:equip="https://experts.colorado.edu/ontology/equipment#"
+    xmlns:geo="http://aims.fao.org/aos/geopolitical.owl#"
+    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+    xmlns:event="http://purl.org/NET/c4dm/event.owl#"
+    xmlns:ocrer="http://purl.org/net/OCRe/research.owl#"
+    xmlns:obo="http://purl.obolibrary.org/obo/"
+    xmlns:j.0="https://experts.colorado.edu/individual/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:vivo="http://vivoweb.org/ontology/core#"
+    xmlns:vlocal="https://experts.colorado.edu/ontology/vivo-fis#"
+    xmlns:pubs="https://experts.colorado.edu/ontology/pubs#"
+    xmlns:cito="http://purl.org/spar/cito/"
+    xmlns:vitro="http://vitro.mannlib.cornell.edu/ns/vitro/0.7#"
+    xmlns:vcard="http://www.w3.org/2006/vcard/ns#"
+    xmlns:ocresd="http://purl.org/net/OCRe/study_design.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:bibo="http://purl.org/ontology/bibo/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:scires="http://vivoweb.org/ontology/scientific-research#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:fabio="http://purl.org/spar/fabio/"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_1010017">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Numerical Models</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_0404008">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Disasters</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550227697">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222908">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222875">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222885">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222900">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/fisid_159550">
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222882"/>
+    <vivo:geographicFocus rdf:resource="http://aims.fao.org/aos/geopolitical.owl#France"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222918"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222891"/>
+    <j.0:ws_fm2ro_RESEARCHOVERVIEW>My research focuses on developing cutting edge modeling and simulation technology and applying them for the design, operation and optimization of sustainable, smart, and resilient building, communities and cities.  Our current primary research focuses are:  - Model based optimization for sustainable buildings and communities  - Large scale modeling for the design of smart and resilient cities  - Fast indoor and outdoor airflow simulation  - Building to grid integration</j.0:ws_fm2ro_RESEARCHOVERVIEW>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_1255020"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222900"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222885"/>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_1004168"/>
+    <vivo:freetextKeyword>sustainable, smart and resilient city, net zero energy community, building energy efficiency, computational fluid dynamics, HVAC control, building system design optimization, equation based modeling, high performance computing, indoor environment modeling, data center</vivo:freetextKeyword>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_1010017"/>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_0606001"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550227699"/>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_1275045"/>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222878"/>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_1004078"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual//individual/nn1578151909"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual//individual/nn1114610426"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222896"/>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_1255040"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222917"/>
+    <j.0:ws_fm2ro_FISIDREAL>159550</j.0:ws_fm2ro_FISIDREAL>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222880"/>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Agent"/>
+    <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#FacultyMember"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550227702"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222899"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222871"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222897"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222920"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550227700"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222914"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222883"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222905"/>
+    <obo:ARG_2000028 rdf:resource="https://experts.colorado.edu/individual/vcard_159550"/>
+    <vitro-public:mainImage rdf:resource="https://experts.colorado.edu/individual/n176"/>
+    <vlocal:uuid>100814069</vlocal:uuid>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_1255010"/>
+    <j.0:ws_fm2ro_FIRSTNAME>WANGDA</j.0:ws_fm2ro_FIRSTNAME>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_0601013"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222874"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222892"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual//individual/nn916351374"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550227706"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222890"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222888"/>
+    <rdf:type rdf:resource="https://experts.colorado.edu/individual/RESEARCHOVERVIEW"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222901"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222879"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222886"/>
+    <j.0:ws_fm2ro_FISID>159550</j.0:ws_fm2ro_FISID>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_0606087"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222907"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222902"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550227710"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual//individual/nn2044369329"/>
+    <vlocal:vita>https://experts.colorado.edu//vitas/159550.pdf</vlocal:vita>
+    <rdfs:label>Zuo, Wangda</rdfs:label>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_1275000"/>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_0419004"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550227703"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222872"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222898"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual//individual/nn782387725"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550227701"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222915"/>
+    <vivo:geographicFocus rdf:resource="http://aims.fao.org/aos/geopolitical.owl#Germany"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550159766"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222875"/>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_1004043"/>
+    <obo:RO_0000056 rdf:resource="https://experts.colorado.edu/individual/_n227254331"/>
+    <obo:RO_0000056 rdf:resource="https://experts.colorado.edu/individual/_n969069610"/>
+    <j.0:ws_fm2ro_LABEL>Zuo, Wangda</j.0:ws_fm2ro_LABEL>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_0607007"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550227749"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222881"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222887"/>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_0404008"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222903"/>
+    <obo:RO_0000056 rdf:resource="https://experts.colorado.edu/individual/_n1100969861"/>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_0609014"/>
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#FacultyMember"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550159761"/>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_1255015"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222908"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550227698"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222911"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550227696"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222906"/>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_1255023"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550227707"/>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_1255005"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222877"/>
+    <vivo:researchOverview>My research focuses on developing cutting edge modeling and simulation technology and applying them for the design, operation and optimization of sustainable, smart, and resilient building, communities and cities.  Our current primary research focuses are:  - Model based optimization for sustainable buildings and communities  - Large scale modeling for the design of smart and resilient cities  - Fast indoor and outdoor airflow simulation  - Building to grid integration</vivo:researchOverview>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_1210030"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222895"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222893"/>
+    <vivo:orcidId rdf:resource="http://orcid.org/0000-0003-2102-5592"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222868"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222889"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222916"/>
+    <vlocal:fisId>159550</vlocal:fisId>
+    <obo:RO_0000056 rdf:resource="https://experts.colorado.edu/individual/_n2054563888"/>
+    <j.0:ws_fm2ro_LASTNAME>ZUO</j.0:ws_fm2ro_LASTNAME>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_1200000"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222904"/>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_1255000"/>
+    <vivo:hasResearchArea rdf:resource="https://experts.colorado.edu/individual/spinId_0607072"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222921"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222870"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222912"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550225665"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550227697"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222869"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222884"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual/authorship_159550222873"/>
+    <vivo:relatedBy rdf:resource="https://experts.colorado.edu/individual//individual/nn1068815021"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222895">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_1255020">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Buildings, Residential Energy Use</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/fisid_159550/fisid_159550.rdf">
+    <dc:rights rdf:resource="https://experts.colorado.edu/termsOfUse"/>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2018-04-26T15:52:10</dc:date>
+    <dc:publisher rdf:resource="https://experts.colorado.edu"/>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Document"/>
+    <rdfs:label>RDF description of Zuo, Wangda - https://experts.colorado.edu/individual/fisid_159550</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222915">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222921">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_1255000">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Energy Utilization</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550227700">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/_n969069610">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#EducationalProcess"/>
+    <obo:RO_0000057 rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/vcard_159550">
+    <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Kind"/>
+    <rdf:type rdf:resource="http://purl.obolibrary.org/obo/ARG_2000379"/>
+    <obo:ARG_2000029 rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual//individual/nn1114610426">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Position"/>
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#FacultyPosition"/>
+    <rdfs:label>Faculty Fellow</rdfs:label>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550227699">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550227698">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222886">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_1255040">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Municipal Energy Conservation</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_1004168">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Computer Modeling</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222901">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222896">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550159761">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual//individual/nn2044369329">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Relationship"/>
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AwardedDegree"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222920">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_0607007">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Electric Power Transmission</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222914">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550227701">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222873">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222906">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222893">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_0419004">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Transportation</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/n176">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://vitro.mannlib.cornell.edu/ns/vitro/public#File"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550225665">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222887">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_1200000">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Energy</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222868">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://xmlns.com/foaf/0.1/Person">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:label xml:lang="en-US">Person</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550227702">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222917">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550227749">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_1255015">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Buildings, Municipal Energy</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222907">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual//individual/nn1068815021">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Relationship"/>
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AwardedDegree"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222874">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_1275045">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Resources/Availability, Renewable Energy</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550227696">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_1275000">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Renewable Energy Sources</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222888">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_0609014">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Fluid Mechanics</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222880">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222916">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222869">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550227703">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual//individual/nn782387725">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Relationship"/>
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AwardedDegree"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual//individual/nn1578151909">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Relationship"/>
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AwardedDegree"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://orcid.org/0000-0003-2102-5592">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/_n227254331">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#EducationalProcess"/>
+    <obo:RO_0000057 rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_1255010">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Buildings, Industrial Energy Use</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222889">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_1210030">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Energy Conservation</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_0601013">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Computational Fluid Dynamics</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual//individual/nn916351374">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Position"/>
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#FacultyPosition"/>
+    <rdfs:label>Associate Professor</rdfs:label>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222891">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222904">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222879">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222899">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222871">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222911">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_1004078">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Parallel Programming</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_1255005">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Buildings, Commercial Energy Use</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550227710">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222881">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://vivoweb.org/ontology/core#FacultyMember">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:label xml:lang="en-US">Faculty Member</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_1255023">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Energy Storage Systems</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222892">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222905">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/_n1100969861">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#EducationalProcess"/>
+    <obo:RO_0000057 rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_0606087">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Built Environment</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222872">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://aims.fao.org/aos/geopolitical.owl#France">
+    <rdf:type rdf:resource="http://aims.fao.org/aos/geopolitical.owl#self_governing"/>
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#GeographicRegion"/>
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Country"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">France</rdfs:label>
+    <vivo:geographicFocusOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/_n2054563888">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#EducationalProcess"/>
+    <obo:RO_0000057 rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550159766">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222918">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222882">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://xmlns.com/foaf/0.1/Agent">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:label xml:lang="en-US">Agent</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550227707">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/deptid_10331">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AcademicDepartment"/>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
+    <rdf:type rdf:resource="https://experts.colorado.edu/ontology/vivo-fis#InternalAwardingOrganization"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="https://experts.colorado.edu/ontology/vivo-fis#AwardingOrganization"/>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Agent"/>
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Department"/>
+    <rdfs:label>Civil, Environmental and Architectural Engineering</rdfs:label>
+    <vlocal:has_honored_member rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_0606001">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Architectural Engineering</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/deptid_10298">
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
+    <rdf:type rdf:resource="https://experts.colorado.edu/ontology/vivo-fis#InternalAwardingOrganization"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#College"/>
+    <rdf:type rdf:resource="https://experts.colorado.edu/ontology/vivo-fis#AwardingOrganization"/>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Agent"/>
+    <rdfs:label>College of Engineering and Applied Science</rdfs:label>
+    <vlocal:has_honored_member rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222877">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_0607072">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Complex/Intelligent Systems</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/RESEARCHOVERVIEW">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222902">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222897">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222883">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/spinId_1004043">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:label>Computer Simulation/Modeling</rdfs:label>
+    <vivo:researchAreaOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550227706">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222890">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222903">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222878">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222898">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222870">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222884">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://experts.colorado.edu/individual/authorship_159550222912">
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+    <vivo:relates rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://aims.fao.org/aos/geopolitical.owl#Germany">
+    <rdf:type rdf:resource="http://aims.fao.org/aos/geopolitical.owl#self_governing"/>
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#GeographicRegion"/>
+    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Country"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Germany</rdfs:label>
+    <vivo:geographicFocusOf rdf:resource="https://experts.colorado.edu/individual/fisid_159550"/>
+  </rdf:Description>
+</rdf:RDF>
