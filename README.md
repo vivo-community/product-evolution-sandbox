@@ -1,10 +1,12 @@
-# Product-Evolution-Task-Force
+# Product Evolution Action Planning and this repository
 
 The VIVO Action Planning process grew out of the VIVO Strategy Meeting, March 1, 2018. Five areas of action planning were identified -- Resources, Vision, Community Engagement, Organization and Governance, and Product Evolution. The purpose of action planning is to create a plan and execute it over the the twelve month period March 1, 2018 to Feb 28, 2019.
 
-The idea for this repo emerged from Product Evolution brainstorming on how to share source files, sample/test data, and related artifacts in support of experiments and collaboration by this action planning group. Also see https://docs.google.com/document/d/1Ozg1n3J9JKPW7fdT2cGTowPLrAYhlfX_mkKPSTf9EnM
+The idea for this (yet to be officially name) repo emerged from Product Evolution brainstorming on how to share source files, sample/test data, and related artifacts in support of experiments and collaboration by this action planning group. Also see the References section below for related resources.
 
 ## Proposed repository structure
+
+This structure is a strawman. One idea being to create/hold space for sample data in a variety of formats, including existing formats output by VIVO 1.x. Also to capture ideas and experiments with new user interface technologies.
 
 ./data
 
@@ -18,11 +20,11 @@ The idea for this repo emerged from Product Evolution brainstorming on how to sh
     
 		./graphql
     
-    ./cuboulder
+		./cuboulder
     
-    ./duke-widgets
+		./duke-widgets
     
-    ./wcm-reciter
+		./wcm-reciter
 
 	./xml
   
@@ -58,3 +60,7 @@ The idea for this repo emerged from Product Evolution brainstorming on how to sh
 
 ./VIVO-MVP.github.io (public GitHub Pages-hosted web site for this MVP or the broader product evolution effort?)
 
+## References
+
+* Product Evolution Action Planning Group folder on Google Docs https://drive.google.com/drive/folders/1y0Rbgi1t3RpcGdpnkYKIABABprhfUQfl?usp=sharing
+* More thoughts on this repository https://docs.google.com/document/d/1Ozg1n3J9JKPW7fdT2cGTowPLrAYhlfX_mkKPSTf9EnM
