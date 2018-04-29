@@ -1,0 +1,1862 @@
+{
+  "uri": "https://scholars.duke.edu/individual/per9544252",
+  "active": true,
+  "updatedAt": "2018-04-17T05:27:22Z",
+  "vivoType": "http://vivoweb.org/ontology/core#FacultyMember",
+  "label": "Storer, Jeff M.",
+  "title": "Professor of the Practice of Theater Studies",
+  "publications": [
+    {
+      "uri": "https://scholars.duke.edu/individual/pub1017087",
+      "vivoType": "http://purl.org/ontology/bibo/Book",
+      "label": "UNLEASHED: Twenty Five Year of Manbites Dog",
+      "attributes": {
+        "icmjeCitation": "Storer AJ. <a href=\"https://scholars.duke.edu/individual/pub1017087\">UNLEASHED: Twenty Five Year of Manbites Dog.</a> 2013.</em>",
+        "mlaCitation": "Storer, AJ. <a href=\"https://scholars.duke.edu/individual/pub1017087\"><em>UNLEASHED: Twenty Five Year of Manbites Dog.</em></a> 2013.</em>",
+        "isFavorite": "false",
+        "authorList": "Storer, AJ",
+        "datetime": "https://scholars.duke.edu/individual/dateValue2013",
+        "apaCitation": "Storer, AJ. (2013). <a href=\"https://scholars.duke.edu/individual/pub1017087\"><em>UNLEASHED: Twenty Five Year of Manbites Dog.</em></a></em>",
+        "year": "2013-01-01T00:00:00",
+        "publicationSource": "manual",
+        "chicagoCitation": "Storer, AJ. <a href=\"https://scholars.duke.edu/individual/pub1017087\"><em>UNLEASHED: Twenty Five Year of Manbites Dog.</em></a> 2013.</em>",
+        "authorshipType": "http://vivoweb.org/ontology/core#Authorship",
+        "subtypes": ""
+      }
+    }
+  ],
+  "awards": [],
+  "artisticWorks": [
+    {
+      "uri": "https://scholars.duke.edu/individual/art11289",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Jeff Storer: Directing Credits, 2010 - 2013",
+      "attributes": {
+        "role": "Director",
+        "abstract": "2013: THE NEW ELECTRIC BALLROOM, THE HOMOSEXUALS, COCK, SAY (NYC) and UNCLE VANYA. \r\n2010: Directed Dying City, by Christopher Shinn for Manbites Dog Theater. Preparing to direct The Receptionist by Adama Bock for Manbites Dog Theater. Writing Original The",
+        "date": "2010-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11293",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Darker Face of the Earth",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "2000-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11290",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Jeff Storer: Directing Credits, 2000 - 2009",
+      "attributes": {
+        "role": "Director",
+        "abstract": "2009-2010: Neighborhood 3: Requisition of Doom, God's Ear, Breadcrumbs, (Reading at Portland Stage), Breadcrumbs (full production at Manbites Dog), Oh, the Humanity. \r\n2008-2009: Spring Awakening \r\n2007-08: Rabbit Hole, Dying City \r\n2006-07: an oak tree, At",
+        "date": "2000-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11309",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "802701",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1999-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11307",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "References to Salvador Dali Make Me Hot",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1999-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11306",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Stop Kiss",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1999-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11308",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Illusion",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1999-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11295",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Mystery of Irma Vep",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1999-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11296",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Cloud Tectonics",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1998-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11297",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "How I Learned to Drive",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1998-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11298",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Food Chain",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1998-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11310",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Journey of Glow",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1998-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11299",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Timbre and The Anniversary Story",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1997-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11300",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#MultipleTypes",
+      "label": "Walking Miracles",
+      "attributes": {
+        "role": "Director",
+        "abstract": "Co-Author, New Script.",
+        "date": "1997-01-01T00:00:00",
+        "type_description": "Theatrical Production, Video Recording",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11301",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Carousel",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1996-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11303",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Moonshot Tape",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1996-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11294",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Freshman Arts Focus in Performance",
+      "attributes": {
+        "role": "Director",
+        "abstract": "1995-2000. Exploring the theater techniques of Augusto Boal.",
+        "date": "1995-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11304",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Oscar Over Here",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1995-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11305",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Cryptogram",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1995-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11311",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Tone Clusters",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1995-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11315",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Always Sometimes Never",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1994-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11312",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Execution of Justice",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1994-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11316",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Lonely Planet",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1994-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11314",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The House of Blue Leaves",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1994-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11317",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Swan",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1994-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11321",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "7 Blowjobs",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1993-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11318",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Blue Window",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1993-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11319",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Dark Ride",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1993-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11313",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "New Works for the Stage",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1993-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11320",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Night Songs, Street Songs",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1993-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11322",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Baltimore Waltz",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1992-12-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearMonthDayPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11326",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "A Betrothal",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1992-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11327",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "A Poster of the Cosmos",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1992-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11323",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Amadeus",
+      "attributes": {
+        "role": "Consultant, Director",
+        "abstract": "",
+        "date": "1992-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11324",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Cold Journey Into Dark",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1992-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11325",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Wild Honey",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1992-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11328",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "King Lear",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1991-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11329",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Rec kless",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1991-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11330",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Red Address",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1991-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11331",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Working",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1991-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11333",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Christmas on Mars",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1990-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11334",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Indecent Materials",
+      "attributes": {
+        "role": "Director",
+        "abstract": "Joseph Papp, Producer",
+        "date": "1990-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11291",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Jeff Storer: Directing Credits, 1990 - 1999",
+      "attributes": {
+        "role": "Director",
+        "abstract": "1998-99: Cloud Tectonics \r\n1997-98: Walking Miracles (Video) Walking Miracles (world premiere); Walking Miracle (Duke Revival) (co-author, new script) ; The Food Chain ; How I Learned to Drive . \r\n1996-97: Cryptogram; A Poster of the Cosmos; The Moon Shot T",
+        "date": "1990-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11332",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Bells of Orleans",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1990-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11335",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Clouds",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1990-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11336",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Dead Monkey",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1990-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11337",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Illusion",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1990-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11338",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "All My Sons",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1989-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11339",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Indecent Materials/Report from the Holocaust",
+      "attributes": {
+        "role": "Director, Writer",
+        "abstract": "new script",
+        "date": "1989-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11340",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Some Things You Need to Know before the World Ends (A Final Evening with the Illuminati)",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1989-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11341",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Day Room",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1989-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11342",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Hunting Cockroaches",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1988-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11343",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Night Songs, Street Songs",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1988-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11344",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Strange Snow",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1988-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11345",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Suddenly Last Summer",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1988-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11346",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Normal Heart",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1988-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11347",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Seventy Scenes of Halloween",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1987-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11348",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Woolgatherer",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1987-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11292",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Jeff Storer: Directing Credits, 1980 - 1989",
+      "attributes": {
+        "role": "Director",
+        "abstract": "1988–89: Hunting Cockroaches; Suddenly Last Summer; Night Songs, Street Songs; Strange Snow. \r\n1987–88: The Normal Heart ; The Woolgatherer; Seventy Scenes of Halloween. The Public Theatre, New York Shakespeare Festival; Joseph Papp, Producer.",
+        "date": "1980-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11349",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Equus",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1979-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11350",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Look Homeward Angel",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1979-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11351",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "The Belle of Amherst",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1979-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11352",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Follies",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1978-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11353",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "One Flew Over the Cuckoo's Nest",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1978-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11354",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Shenandoah",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1978-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11355",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Ten Little Indians",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1976-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11356",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Celebration",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1975-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/art11357",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-art-extension#TheatricalProduction",
+      "label": "Romeo and Juliet",
+      "attributes": {
+        "role": "Director",
+        "abstract": "",
+        "date": "1974-01-01T00:00:00",
+        "type_description": "Theatrical Production",
+        "date_precision": "http://vivoweb.org/ontology/core#yearPrecision",
+        "collaborators": "Jeff M. Storer"
+      }
+    }
+  ],
+  "artisticEvents": [
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15854",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Blue Window | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1993-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15846",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Cryptogram | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1995-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15829",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Darker Face of the Earth | Darker Face of the Earth at Duke University",
+      "attributes": {
+        "startYear": "2000-01-01T00:00:00",
+        "venue": "Duke University"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15836",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "How I Learned to Drive | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1998-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15832",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Mystery of Irma Vep | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1999-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15860",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Cold Journey Into Dark | at Rollins College",
+      "attributes": {
+        "startYear": "1992-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15848",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Execution of Justice | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1994-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15840",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Carousel | at Duke University",
+      "attributes": {
+        "startYear": "1996-01-01T00:00:00",
+        "venue": "Duke University"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15868",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Christmas on Mars | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1990-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15842",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "A Poster of the Cosmos | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1996-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15867",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Bells of Orleans | at Rollins College",
+      "attributes": {
+        "startYear": "1990-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15888",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "One Flew Over the Cuckoo's Nest | at Rollins College",
+      "attributes": {
+        "startYear": "1978-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15856",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Night Songs, Street Songs | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1993-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15847",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Tone Clusters | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1995-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15889",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Shenandoah | at Rollins College",
+      "attributes": {
+        "startYear": "1978-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15875",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Some Things You Need to Know before the World Ends (A Final Evening with the Illuminati) | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1989-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15891",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Celebration | at Rollins College",
+      "attributes": {
+        "startYear": "1975-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15837",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Food Chain | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1998-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15882",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Seventy Scenes of Halloween | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1987-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15886",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Belle of Amherst | at Rollins College",
+      "attributes": {
+        "startYear": "1979-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15890",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Ten Little Indians | at Rollins College",
+      "attributes": {
+        "startYear": "1976-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15833",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Mystery of Irma Vep | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1993-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15884",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Equus | at Rollins College",
+      "attributes": {
+        "startYear": "1979-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15876",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Day Room | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1989-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15883",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Woolgatherer | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1987-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15859",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Amadeus | at Rollins College",
+      "attributes": {
+        "startYear": "1992-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15834",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Mystery of Irma Vep | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1992-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15865",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Red Address | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1991-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15864",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Rec kless | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1991-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15878",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Night Songs, Street Songs | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1988-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15835",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Cloud Tectonics | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1998-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15880",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Suddenly Last Summer | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1988-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15873",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "All My Sons | at Rollins College",
+      "attributes": {
+        "startYear": "1989-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15849",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "New Works for the Stage | at Duke University.",
+      "attributes": {
+        "startYear": "1993-01-01T00:00:00",
+        "endYear": "1994-01-01T00:00:00",
+        "venue": "Duke University."
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15844",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Moonshot Tape | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1996-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15885",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Look Homeward Angel | at Rollins College",
+      "attributes": {
+        "startYear": "1979-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15871",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Dead Monkey | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1990-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15870",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Clouds | at Rollins College",
+      "attributes": {
+        "startYear": "1990-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15830",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Darker Face of the Earth | Darker Face of the Earth",
+      "attributes": {
+        "startYear": "1999-01-01T00:00:00"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15857",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "7 Blowjobs | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1993-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15831",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Freshman Arts Focus in Performance | at Duke University",
+      "attributes": {
+        "startYear": "1995-01-01T00:00:00",
+        "endYear": "2000-01-01T00:00:00",
+        "venue": "Duke University"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15887",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Follies | at Rollins College",
+      "attributes": {
+        "startYear": "1978-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15862",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "A Betrothal | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1992-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15851",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Always Sometimes Never | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1994-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15838",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Timbre and The Anniversary Story | at Duke University",
+      "attributes": {
+        "startYear": "1997-01-01T00:00:00",
+        "venue": "Duke University"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15853",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Swan | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1994-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15839",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Walking Miracles | Duke Revival at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1997-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15841",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "A Poster of the Cosmos | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1992-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15850",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The House of Blue Leaves | at Duke University",
+      "attributes": {
+        "startYear": "1994-01-01T00:00:00",
+        "venue": "Duke University"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15877",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Hunting Cockroaches | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1988-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15863",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "King Lear | at Rollins College",
+      "attributes": {
+        "startYear": "1991-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15845",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Oscar Over Here | World Premiere by Romulus Linney at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1995-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15861",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Wild Honey | at Rollins College",
+      "attributes": {
+        "startYear": "1992-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15869",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Indecent Materials | at The Public Theater, New York Shakespeare Festival",
+      "attributes": {
+        "startYear": "1990-01-01T00:00:00",
+        "venue": "The Public Theater, New York Shakespeare Festival"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15879",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Strange Snow | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1988-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15858",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Baltimore Waltz | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1992-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15872",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Illusion | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1990-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15855",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Dark Ride | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1993-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15892",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Romeo and Juliet | at Rollins College",
+      "attributes": {
+        "startYear": "1974-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15852",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Lonely Planet | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1994-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15874",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Indecent Materials/Report from the Holocaust | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1989-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15881",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "The Normal Heart | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1988-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15843",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "A Poster of the Cosmos | at Manbites Dog Theater",
+      "attributes": {
+        "startYear": "1992-01-01T00:00:00",
+        "venue": "Manbites Dog Theater"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/artevent_15866",
+      "vivoType": "http://purl.org/NET/c4dm/event.owl#Event",
+      "label": "Working | at Rollins College",
+      "attributes": {
+        "startYear": "1991-01-01T00:00:00",
+        "venue": "Rollins College"
+      }
+    }
+  ],
+  "grants": [
+    {
+      "uri": "https://scholars.duke.edu/individual/gra228428",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-extension#InstitutionalSupportGrant",
+      "label": "Theater MD Biddle 2017 Proposal",
+      "attributes": {
+        "piUri": "https://scholars.duke.edu/individual/per9544252",
+        "endDate": "2017-12-31T00:00:00",
+        "roleName": "Principal Investigator",
+        "awardedBy": "Mary Duke Biddle Foundation",
+        "administeredBy": "Theater Studies",
+        "piName": "Storer, Jeff M.",
+        "awardedByUri": "https://scholars.duke.edu/individual/insmarydukebiddlefoundation",
+        "administeredByUri": "https://scholars.duke.edu/individual/org50000531",
+        "startDate": "2017-01-01T00:00:00"
+      }
+    }
+  ],
+  "courses": [
+    {
+      "uri": "https://scholars.duke.edu/individual/courseAMI380S",
+      "vivoType": "http://vivoweb.org/ontology/core#Course",
+      "label": "AMI  380S: Playmaking: Collaboration From Page To Stage",
+      "attributes": {
+        "role": "https://scholars.duke.edu/individual/teacherRoleAMI380S-9544252",
+        "roleName": "AMI  380S: Playmaking: Collaboration From Page To Stage"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/courseENGLISH312A",
+      "vivoType": "http://vivoweb.org/ontology/core#Course",
+      "label": "ENGLISH  312A: The Arts in New York: A Thematic Approach",
+      "attributes": {
+        "role": "https://scholars.duke.edu/individual/teacherRoleENGLISH312A-9544252",
+        "roleName": "ENGLISH  312A: The Arts in New York: A Thematic Approach"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/courseENGLISH316S",
+      "vivoType": "http://vivoweb.org/ontology/core#Course",
+      "label": "ENGLISH  316S: Playmaking: Collaboration From Page To Stage",
+      "attributes": {
+        "role": "https://scholars.duke.edu/individual/teacherRoleENGLISH316S-9544252",
+        "roleName": "ENGLISH  316S: Playmaking: Collaboration From Page To Stage"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/coursePUBPOL312A",
+      "vivoType": "http://vivoweb.org/ontology/core#Course",
+      "label": "PUBPOL  312A: The Arts in New York: A Thematic Approach",
+      "attributes": {
+        "role": "https://scholars.duke.edu/individual/teacherRolePUBPOL312A-9544252",
+        "roleName": "PUBPOL  312A: The Arts in New York: A Thematic Approach"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/courseTHEATRST213A",
+      "vivoType": "http://vivoweb.org/ontology/core#Course",
+      "label": "THEATRST  213A: The Arts in New York: A Thematic Approach",
+      "attributes": {
+        "role": "https://scholars.duke.edu/individual/teacherRoleTHEATRST213A-9544252",
+        "roleName": "THEATRST  213A: The Arts in New York: A Thematic Approach"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/courseTHEATRST255S",
+      "vivoType": "http://vivoweb.org/ontology/core#Course",
+      "label": "THEATRST  255S: Directing",
+      "attributes": {
+        "role": "https://scholars.duke.edu/individual/teacherRoleTHEATRST255S-9544252",
+        "roleName": "THEATRST  255S: Directing"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/courseTHEATRST290S-2",
+      "vivoType": "http://vivoweb.org/ontology/core#Course",
+      "label": "THEATRST  290S-2: Special Topics in Acting",
+      "attributes": {
+        "role": "https://scholars.duke.edu/individual/teacherRoleTHEATRST290S-2-9544252",
+        "roleName": "THEATRST  290S-2: Special Topics in Acting"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/courseTHEATRST345S",
+      "vivoType": "http://vivoweb.org/ontology/core#Course",
+      "label": "THEATRST  345S: Advanced Acting: Contemporary Texts",
+      "attributes": {
+        "role": "https://scholars.duke.edu/individual/teacherRoleTHEATRST345S-9544252",
+        "roleName": "THEATRST  345S: Advanced Acting: Contemporary Texts"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/courseTHEATRST380S",
+      "vivoType": "http://vivoweb.org/ontology/core#Course",
+      "label": "THEATRST  380S: Playmaking: Collaboration From Page To Stage",
+      "attributes": {
+        "role": "https://scholars.duke.edu/individual/teacherRoleTHEATRST380S-9544252",
+        "roleName": "THEATRST  380S: Playmaking: Collaboration From Page To Stage"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/courseVMS259A",
+      "vivoType": "http://vivoweb.org/ontology/core#Course",
+      "label": "VMS  259A: The Arts in New York: A Thematic Approach",
+      "attributes": {
+        "role": "https://scholars.duke.edu/individual/teacherRoleVMS259A-9544252",
+        "roleName": "VMS  259A: The Arts in New York: A Thematic Approach"
+      }
+    }
+  ],
+  "professionalActivities": [
+    {
+      "uri": "https://scholars.duke.edu/individual/presentation25940",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-activity-extension#Presentation",
+      "label": "Laramie Project Post Production Panel. December 8, 2011",
+      "attributes": {
+        "startDatePrecision": "http://vivoweb.org/ontology/core#yearMonthDayPrecision",
+        "serviceType": "Lecture",
+        "nameOfTalk": "Laramie Project Post Production Panel",
+        "startDate": "2011-12-08T00:00:00"
+      }
+    }
+  ],
+  "positions": [
+    {
+      "uri": "https://scholars.duke.edu/individual/apt3786027",
+      "vivoType": "http://vivoweb.org/ontology/core#PrimaryPosition",
+      "label": "Professor of the Practice of Theater Studies",
+      "attributes": {
+        "startDatetimeUri": "https://scholars.duke.edu/individual/dateValue20010901",
+        "schoolLabel": "Trinity College of Arts & Sciences",
+        "organizationLabel": "Theater Studies",
+        "organizationUri": "https://scholars.duke.edu/individual/org50000531",
+        "rank": "1",
+        "startYear": "2001-09-01T00:00:00",
+        "dateUri": "https://scholars.duke.edu/individual/dateInterval-s20010901",
+        "personUri": "https://scholars.duke.edu/individual/per9544252",
+        "schoolUri": "https://scholars.duke.edu/individual/org50000491"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/apt4034242",
+      "vivoType": "http://vivoweb.org/ontology/core#FacultyAdministrativePosition",
+      "label": "Chair of the Department of Theater Studies",
+      "attributes": {
+        "startDatetimeUri": "https://scholars.duke.edu/individual/dateValue20150701",
+        "schoolLabel": "Trinity College of Arts & Sciences",
+        "organizationLabel": "Theater Studies",
+        "organizationUri": "https://scholars.duke.edu/individual/org50000531",
+        "rank": "2",
+        "startYear": "2015-07-01T00:00:00",
+        "dateUri": "https://scholars.duke.edu/individual/dateInterval-s20150701",
+        "personUri": "https://scholars.duke.edu/individual/per9544252",
+        "schoolUri": "https://scholars.duke.edu/individual/org50000491"
+      }
+    }
+  ],
+  "addresses": [
+    {
+      "uri": "https://scholars.duke.edu/individual/per_addr9544252_work_location",
+      "vivoType": "http://www.w3.org/2006/vcard/ns#Location",
+      "label": "109 Page, Box 90680, Durham, NC 27708",
+      "attributes": {
+        "city": "Durham",
+        "state": "NC",
+        "postalCode": "27708",
+        "personUri": "https://scholars.duke.edu/individual/per9544252",
+        "address1": "109 Page, Box 90680"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/per_addr9544252_work_mailing",
+      "vivoType": "http://www.w3.org/2006/vcard/ns#Address",
+      "label": "Box 90680, Durham, NC 27708-0680",
+      "attributes": {
+        "city": "Durham",
+        "state": "NC",
+        "postalCode": "27708-0680",
+        "personUri": "https://scholars.duke.edu/individual/per9544252",
+        "address1": "Box 90680"
+      }
+    }
+  ],
+  "educations": [
+    {
+      "uri": "https://scholars.duke.edu/individual/edu9544252rollinscollegewinterpark1975academicDegree4",
+      "vivoType": "http://vivoweb.org/ontology/core#EducationalProcess",
+      "label": "B.A. 1975",
+      "attributes": {
+        "degreeUri": "http://vivoweb.org/ontology/degree/academicDegree4",
+        "endDate": "1975-01-01T00:00:00",
+        "degree": "B.A.",
+        "organizationUri": "https://scholars.duke.edu/individual/insrollinscollegewinterpark",
+        "institution": "Rollins College Winter Park",
+        "dateTimeUri": "https://scholars.duke.edu/individual/dateInterval-e1975",
+        "personUri": "https://scholars.duke.edu/individual/per9544252",
+        "endUri": "https://scholars.duke.edu/individual/dateValue1975"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/edu9544252illinoisstateuniversity1976academicDegree71",
+      "vivoType": "http://vivoweb.org/ontology/core#EducationalProcess",
+      "label": "M.A. 1976",
+      "attributes": {
+        "degreeUri": "http://vivoweb.org/ontology/degree/academicDegree71",
+        "endDate": "1976-01-01T00:00:00",
+        "degree": "M.A.",
+        "organizationUri": "https://scholars.duke.edu/individual/insillinoisstateuniversity",
+        "institution": "Illinois State University",
+        "dateTimeUri": "https://scholars.duke.edu/individual/dateInterval-e1976",
+        "personUri": "https://scholars.duke.edu/individual/per9544252",
+        "endUri": "https://scholars.duke.edu/individual/dateValue1976"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/edu9544252trinityuniversity1981academicDegree82",
+      "vivoType": "http://vivoweb.org/ontology/core#EducationalProcess",
+      "label": "M.F.A. 1981",
+      "attributes": {
+        "degreeUri": "http://vivoweb.org/ontology/degree/academicDegree82",
+        "endDate": "1981-01-01T00:00:00",
+        "degree": "M.F.A.",
+        "organizationUri": "https://scholars.duke.edu/individual/instrinityuniversity",
+        "institution": "Trinity University",
+        "dateTimeUri": "https://scholars.duke.edu/individual/dateInterval-e1981",
+        "personUri": "https://scholars.duke.edu/individual/per9544252",
+        "endUri": "https://scholars.duke.edu/individual/dateValue1981"
+      }
+    }
+  ],
+  "researchAreas": [],
+  "webpages": [],
+  "geographicalFocus": [
+    {
+      "uri": "http://aims.fao.org/aos/geopolitical.owl#United_States_of_America",
+      "vivoType": "GeographicRegion",
+      "label": "United States of America",
+      "attributes": {
+        "focusTypeLabel": "Teaching",
+        "focusType": "http://vivo.duke.edu/vivo/ontology/duke-geo-extension#GeographicTeaching",
+        "personUri": "https://scholars.duke.edu/individual/per9544252"
+      }
+    }
+  ],
+  "newsfeeds": [
+    {
+      "uri": "https://scholars.duke.edu/individual/news9544252_123130",
+      "vivoType": "http://vivoweb.org/ontology/core#NewsRelease",
+      "label": "A Moving Performance",
+      "attributes": {
+        "newsDatetimeObj": "https://scholars.duke.edu/individual/dateValue20130909",
+        "newsLink": "http://today.duke.edu/2013/09/physicaltheater",
+        "newsDatetime": "2013-09-09T00:00:00",
+        "newsMonth": "9",
+        "newsDay": "9",
+        "newsYear": "2013",
+        "newsSource": ""
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/news9544252_164229",
+      "vivoType": "http://vivoweb.org/ontology/core#NewsRelease",
+      "label": "Artist Residencies Bring Art to Life",
+      "attributes": {
+        "newsDatetimeObj": "https://scholars.duke.edu/individual/dateValue20140930",
+        "newsLink": "http://today.duke.edu/2014/09/residencies",
+        "newsDatetime": "2014-09-30T00:00:00",
+        "newsMonth": "9",
+        "newsDay": "30",
+        "newsYear": "2014",
+        "newsSource": ""
+      }
+    }
+  ],
+  "attributes": {
+    "imageThumbnail500Download": "https://scholars.duke.edu/individual/f9544252",
+    "officehours": "10:00-11:45 Tuesdays and Thursdays. Always helpful to call ahead.",
+    "preferredTitle": "Professor of the Practice of Theater Studies",
+    "phoneNumber": "(919) 660-3360",
+    "primaryEmail": "bear@duke.edu",
+    "middleName": "M.",
+    "profileURL": "https://scholars.duke.edu/person/bear",
+    "imageModTime": "2018-02-08T15:15:22",
+    "imageUri": "https://scholars.duke.edu/individual/file_i9544252",
+    "mentorshipAvailabilities": "",
+    "netid": "bear",
+    "alternateId": "0116288",
+    "prefixName": "Professor",
+    "imageDownload": "https://scholars.duke.edu/individual/i9544252",
+    "lastName": "Storer",
+    "firstName": "Jeff",
+    "imageThumbnailUri": "https://scholars.duke.edu/individual/file_t9544252",
+    "imageThumbnailDownload": "https://scholars.duke.edu/individual/t9544252",
+    "overview": "Jeff Storer (M.F.A., Dallas Theater Center) is co-founder and Artistic Director of Manbites Dog Theater, a professional company founded in 1986 dedicated to world and regional premieres of contemporary work. He is co-author of <em>Indecent Materials</em>, which opened the 1990 season at Joseph Papp&rsquo;s New York Shakespeare Festival, and has co-authored <em>Tune for Tommy</em>, Hotline, and an adaptation of Allan Gurganus&rsquo; <em>Plays Well With Others</em>. He has directed over 150 full length works since 1975 in New York City, Portland, Oregon, Boston, Winter Park, Florida and Dallas. His directing credits include: the world premiere of Romulus Linney's Silver River (at Manbites Dog, Profile Theater in Portland and as the keynote event at the Sewanee Writer's Conference,) Mr. Burns:a post electric play, Brownsville Song (b-side for Tray,) Uncle Vanya, The Laramie Project, God's Ear, Spring Awakening, The Receptionist, Sonnets for an Old Century, Neighborhod 3, <em>Reckless</em>, <em>Comedy of Errors</em>, <em>Romeo and Juliet</em>, <em>Bucknaked: A Love Story</em>, <em>The Normal Heart</em>, <em>The Day Room</em>, <em>Wild Honey</em>, <em>The Mystery of Irma Vep</em>, <em>This is our Youth</em>, <em>Tomorrowland</em>, <em>Dark Ride</em>, <em>7 Blowjobs</em>, <em>Cloud Tectonics</em>, <em>The Illusion</em>, <em>The Darker Face of the Earth</em>, <em>Carousel</em>, <em>Cloud 9</em>, and co-authored and co-directed the stage and video versions of the world premiere, <em>Walking Miracles</em>. As a part of Duke&rsquo;s Department of Theater Studies Jeff directed the workshop production of Jose Rivera&rsquo;s <em>References to Salvadore Dali Make Me Hot</em> and the world premiere of Romulus Linney&rsquo;s <em>Oscar Over Here</em>. In the spring of 2005 he directed Angels in America: Part One and Angels in America:Part Two (staged reading) He was Associate Director of Theater at Duke University from <a href=\"tel:1982-1987\">1982-1987</a> and Associate Professor of Theater at Rollins College from <a href=\"tel:1987-1992\">1987-1992</a>. He returned to Duke in 1993-present. He chaired the Department of Theater Studies in <a href=\"tel:2008-2009\">2008-2009</a>&nbsp;and currently is chair. He is a full professor of the practice in the Department of Theater Studies.",
+    "preferredCitationFormat": "http://vivo.duke.edu/vivo/ontology/duke-extension#chicagoCitation",
+    "imageThumbnail500Uri": "https://scholars.duke.edu/individual/file_f9544252",
+    "imageFileName": "image_9544252.jpg"
+  },
+  "gifts": [],
+  "academicPositions": [],
+  "licenses": [],
+  "pastAppointments": [
+    {
+      "uri": "https://scholars.duke.edu/individual/past_apt3785979",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-cv-extension#DukePastPosition",
+      "label": "Associate Professor of the Practice of Theater Studies",
+      "attributes": {
+        "startDatetimeUri": "https://scholars.duke.edu/individual/dateValue19960901",
+        "organizationLabel": "Theater Studies",
+        "startYear": "1996-09-01T00:00:00",
+        "endYear": "2001-08-31T00:00:00",
+        "dateUri": "https://scholars.duke.edu/individual/dateInterval-s19960901-e20010831",
+        "endDatetimeUri": "https://scholars.duke.edu/individual/dateValue20010831"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/past_apt3786159",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-cv-extension#DukePastPosition",
+      "label": "Artist in Residence",
+      "attributes": {
+        "startDatetimeUri": "https://scholars.duke.edu/individual/dateValue19820901",
+        "organizationLabel": "Theater Studies",
+        "startYear": "1982-09-01T00:00:00",
+        "endYear": "1987-08-31T00:00:00",
+        "dateUri": "https://scholars.duke.edu/individual/dateInterval-s19820901-e19870831",
+        "endDatetimeUri": "https://scholars.duke.edu/individual/dateValue19870831"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/past_apt4021016",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-cv-extension#DukePastPosition",
+      "label": "Director of Undergraduate Studies in the Department of Theater Studies",
+      "attributes": {
+        "startDatetimeUri": "https://scholars.duke.edu/individual/dateValue20140701",
+        "organizationLabel": "Theater Studies",
+        "startYear": "2014-07-01T00:00:00",
+        "endYear": "2014-12-31T00:00:00",
+        "dateUri": "https://scholars.duke.edu/individual/dateInterval-s20140701-e20141231",
+        "endDatetimeUri": "https://scholars.duke.edu/individual/dateValue20141231"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/past_apt3785711",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-cv-extension#DukePastPosition",
+      "label": "Instructor, Non Tenure Track",
+      "attributes": {
+        "startDatetimeUri": "https://scholars.duke.edu/individual/dateValue19930901",
+        "organizationLabel": "Theater Studies",
+        "startYear": "1993-09-01T00:00:00",
+        "endYear": "1996-08-31T00:00:00",
+        "dateUri": "https://scholars.duke.edu/individual/dateInterval-s19930901-e19960831",
+        "endDatetimeUri": "https://scholars.duke.edu/individual/dateValue19960831"
+      }
+    },
+    {
+      "uri": "https://scholars.duke.edu/individual/past_apt3786042",
+      "vivoType": "http://vivo.duke.edu/vivo/ontology/duke-cv-extension#DukePastPosition",
+      "label": "Acting Chair",
+      "attributes": {
+        "startDatetimeUri": "https://scholars.duke.edu/individual/dateValue20080601",
+        "organizationLabel": "Theater Studies",
+        "startYear": "2008-06-01T00:00:00",
+        "endYear": "2009-06-30T00:00:00",
+        "dateUri": "https://scholars.duke.edu/individual/dateInterval-s20080601-e20090630",
+        "endDatetimeUri": "https://scholars.duke.edu/individual/dateValue20090630"
+      }
+    }
+  ]
+}
