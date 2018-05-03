@@ -1,0 +1,78 @@
+{_index: "fispubs-staging-v1",
+_type: "publication",
+_id: "138118",
+_score: 1,
+_source: {
+publicationYear: "2010",
+doi: "10.1016/j.physd.2010.02.016",
+name: "Stability of bumps in piecewise smooth neural fields with nonlinear adaptation",
+amscore: null,
+authors: [
+{
+orcid: "0000-0002-2835-9416",
+organization: [
+{
+uri: "https://experts.colorado.edu/individual/deptid_10159",
+name: "Applied Mathematics"
+},
+{
+uri: "https://experts.colorado.edu/individual/deptid_10159",
+name: "Applied Mathematics"
+}
+],
+researchArea: [
+{
+uri: "https://experts.colorado.edu/individual/spinId_1015250",
+name: "Biodynamics"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_1013004",
+name: "Biophysics"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_1013057",
+name: "Nonlinear Dynamics"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_1010003",
+name: "Applied Mathematics"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_1002030",
+name: "Neuroscience"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_1002071",
+name: "Biological Modeling"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_1010013",
+name: "Statistics"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_1010033",
+name: "Stochastic Processes"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_1010055",
+name: "Wave Equations"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_1002179",
+name: "Neurobiology"
+}
+],
+uri: "https://experts.colorado.edu/individual/fisid_155782",
+name: "Kilpatrick, Zachary P"
+}
+],
+mostSpecificType: "Journal Article",
+pubId: "138118",
+publishedIn: {
+uri: "https://experts.colorado.edu/individual/journal_174632",
+name: "Physica D: Nonlinear Phenomena"
+},
+uri: "https://experts.colorado.edu/individual/pubid_138118",
+publicationDate: "2010-06-15"
+}
+}

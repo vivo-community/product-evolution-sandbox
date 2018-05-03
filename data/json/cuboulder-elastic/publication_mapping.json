@@ -1,0 +1,253 @@
+{
+  "publication":{
+    "properties":{
+      "subjectArea":{
+        "properties":{
+          "name":{
+            "type":"multi_field",
+            "fields":{
+              "name":{
+                "type":"string",
+                "index":"analyzed"
+              },
+              "exact":{
+                "type":"string",
+                "index":"not_analyzed"
+              }
+            }
+          },
+          "uri":{
+            "type":"string",
+            "index": "not_analyzed"
+          }
+        }
+      },
+      "authors":{
+        "properties":{
+          "name":{
+            "type":"multi_field",
+            "fields":{
+              "name":{
+                "type":"string",
+                "index":"analyzed"
+              },
+              "exact":{
+                "type":"string",
+                "index":"not_analyzed"
+              }
+            }
+          },
+          "uri":{
+            "type":"string",
+            "index": "not_analyzed"
+          },
+          "orcid": {
+            "type": "string",
+            "index": "not_analyzed"
+          },
+          "researchArea":{
+            "properties": {
+              "name": {
+                "type": "multi_field",
+                "fields": {
+                  "name": {
+                    "type": "string",
+                    "index": "analyzed"
+                  },
+                  "exact": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                  }
+                }
+              }
+            },
+            "uri":{
+              "type":"string",
+              "index": "not_analyzed"
+            }
+          },
+          "organization":{
+            "properties": {
+              "name": {
+                "type": "multi_field",
+                "fields": {
+                  "name": {
+                    "type": "string",
+                    "index": "analyzed"
+                  },
+                  "exact": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                  }
+                }
+              }
+            },
+            "uri":{
+              "type":"string",
+              "index": "not_analyzed"
+            }
+          }
+        }
+      },
+      "community":{
+        "properties":{
+          "name":{
+            "type":"multi_field",
+            "fields":{
+              "name":{
+                "type":"string",
+                "index":"analyzed"
+              },
+              "exact":{
+                "type":"string",
+                "index":"not_analyzed"
+              }
+            }
+          },
+          "uri":{
+            "type":"string",
+            "index": "not_analyzed"
+          }
+        }
+      },
+      "team":{
+        "properties":{
+          "name":{
+            "type":"multi_field",
+            "fields":{
+              "name":{
+                "type":"string",
+                "index":"analyzed"
+              },
+              "exact":{
+                "type":"string",
+                "index":"not_analyzed"
+              }
+            }
+          },
+          "uri":{
+            "type":"string",
+            "index": "not_analyzed"
+          }
+        }
+      },
+      "dcoId":{
+        "type":"string",
+        "index": "not_analyzed"
+      },
+      "isDcoPublication":{
+        "type":"boolean"
+      },
+     "amscore":{
+        "type":"float",
+        "index": "not_analyzed",
+        "null_value" : 0
+      },
+      "keywords":{
+        "type":"multi_field",
+        "fields":{
+          "keywords":{
+            "type":"string",
+            "index":"analyzed"
+          },
+          "exact":{
+            "type":"string",
+            "index":"not_analyzed"
+          }
+        }
+      },
+      "publishedIn":{
+        "properties":{
+          "name":{
+            "type":"multi_field",
+            "fields":{
+              "name":{
+                "type":"string",
+                "index":"analyzed"
+              },
+              "exact":{
+                "type":"string",
+                "index":"not_analyzed"
+              }
+            }
+          },
+          "type":{
+            "type":"string"
+          },
+          "uri":{
+            "type":"string",
+            "index": "not_analyzed"
+          }
+        }
+      },
+      "presentedAt":{
+        "properties":{
+          "name":{
+            "type":"multi_field",
+            "fields":{
+              "name":{
+                "type":"string",
+                "index":"analyzed"
+              },
+              "exact":{
+                "type":"string",
+                "index":"not_analyzed"
+              }
+            }
+          },
+          "type":{
+            "type":"string"
+          },
+          "uri":{
+            "type":"string",
+            "index": "not_analyzed"
+          }
+        }
+      },
+      "publicationYear":{
+        "type":"string"
+      },
+      "mostSpecificType": {
+        "type":"string",
+        "index": "not_analyzed"
+      },
+      "title":{
+        "type":"multi_field",
+        "fields":{
+          "title":{
+            "type":"string",
+            "index":"analyzed"
+          },
+          "exact":{
+            "type":"string",
+            "index":"not_analyzed"
+          }
+        }
+      },
+      "type":{
+        "type":"multi_field",
+        "fields":{
+          "type":{
+            "type":"string",
+            "index":"analyzed"
+          },
+          "exact":{
+            "type":"string",
+            "index":"not_analyzed"
+          }
+        }
+      },
+      "uri":{
+        "type":"string",
+        "index": "not_analyzed"
+      },
+      "abstract":{
+        "type":"string"
+      },
+      "doi": {
+        "type":"string",
+        "index":"not_analyzed"
+      }
+    }
+  }
+}

@@ -1,0 +1,193 @@
+{
+"_index": "fispeople-staging-v1",
+"_type": "person",
+"_id": "115914",
+"_score": 1,
+_source: {
+researchArea: [
+{
+uri: "https://experts.colorado.edu/individual/spinId_0319002",
+name: "Manuscripts/Books/Music Scores"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_0309048",
+name: "Intellectual History"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_0307022",
+name: "European Architecture"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_0317001",
+name: "Aesthetics"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_0309004",
+name: "History & Appreciation of Art"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_0309009",
+name: "Medieval History"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_0309057",
+name: "Religious History"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_0307021",
+name: "Architecture History"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_0309040",
+name: "Medieval Studies"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_0305001",
+name: "Art Criticism"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_0309045",
+name: "Cultural History"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_0312007",
+name: "Language and/or Literature, Medieval"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_0319001",
+name: "Art Works/Artifacts"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_0309056",
+name: "Western Civilization"
+},
+{
+uri: "https://experts.colorado.edu/individual/spinId_0305002",
+name: "Literary Criticism"
+}
+],
+name: "Ambrose, Kirk",
+familyName: [
+"AMBROSE"
+],
+fisId: "115914",
+uri: "https://experts.colorado.edu/individual/fisid_115914",
+thumbnail: "https://experts.colorado.edu/individual/n28868",
+affiliations: [
+{
+position: "Professor",
+org: {
+uri: "https://experts.colorado.edu/individual/deptid_11052",
+name: "Critical Media Practices"
+}
+},
+{
+position: "Professor",
+org: {
+uri: "https://experts.colorado.edu/individual/deptid_10228",
+name: "Classics"
+}
+},
+{
+position: "Professor",
+org: {
+uri: "https://experts.colorado.edu/individual/deptid_10234",
+name: "Art and Art History"
+}
+},
+{
+position: "Chair",
+org: {
+uri: "https://experts.colorado.edu/individual/deptid_10234",
+name: "Art and Art History"
+}
+}
+],
+homeCountry: [
+{
+uri: "https://experts.colorado.edu/individual?uri=http%3A%2F%2Faims.fao.org%2Faos%2Fgeopolitical.owl%23Republic_of_Korea__the",
+name: "South Korea"
+},
+{
+uri: "https://experts.colorado.edu/individual?uri=http%3A%2F%2Faims.fao.org%2Faos%2Fgeopolitical.owl%23Switzerland",
+name: "Switzerland"
+},
+{
+uri: "https://experts.colorado.edu/individual?uri=http%3A%2F%2Faims.fao.org%2Faos%2Fgeopolitical.owl%23Turkey",
+name: "Turkey"
+},
+{
+uri: "https://experts.colorado.edu/individual?uri=http%3A%2F%2Faims.fao.org%2Faos%2Fgeopolitical.owl%23France",
+name: "France"
+},
+{
+uri: "https://experts.colorado.edu/individual?uri=http%3A%2F%2Faims.fao.org%2Faos%2Fgeopolitical.owl%23Brazil",
+name: "Brazil"
+},
+{
+uri: "https://experts.colorado.edu/individual?uri=http%3A%2F%2Faims.fao.org%2Faos%2Fgeopolitical.owl%23China",
+name: "China"
+},
+{
+uri: "https://experts.colorado.edu/individual?uri=http%3A%2F%2Faims.fao.org%2Faos%2Fgeopolitical.owl%23Philippines__the",
+name: "Philippines"
+},
+{
+uri: "https://experts.colorado.edu/individual?uri=http%3A%2F%2Faims.fao.org%2Faos%2Fgeopolitical.owl%23Canada",
+name: "Canada"
+},
+{
+uri: "https://experts.colorado.edu/individual?uri=http%3A%2F%2Faims.fao.org%2Faos%2Fgeopolitical.owl%23Hungary",
+name: "Hungary"
+},
+{
+uri: "https://experts.colorado.edu/individual?uri=http%3A%2F%2Faims.fao.org%2Faos%2Fgeopolitical.owl%23South_Africa",
+name: "South Africa"
+},
+{
+uri: "https://experts.colorado.edu/individual?uri=http%3A%2F%2Faims.fao.org%2Faos%2Fgeopolitical.owl%23western_Europe",
+name: "western Europe"
+},
+{
+uri: "https://experts.colorado.edu/individual?uri=http%3A%2F%2Faims.fao.org%2Faos%2Fgeopolitical.owl%23India",
+name: "India"
+},
+{
+uri: "https://experts.colorado.edu/individual?uri=http%3A%2F%2Faims.fao.org%2Faos%2Fgeopolitical.owl%23Germany",
+name: "Germany"
+},
+{
+uri: "https://experts.colorado.edu/individual?uri=http%3A%2F%2Faims.fao.org%2Faos%2Fgeopolitical.owl%23United_Kingdom_of_Great_Britain_and_Northern_Ireland__the",
+name: "United Kingdom"
+}
+],
+organization: [
+{
+uri: "https://experts.colorado.edu/individual/deptid_11052",
+name: "Critical Media Practices"
+},
+{
+uri: "https://experts.colorado.edu/individual/deptid_10228",
+name: "Classics"
+},
+{
+uri: "https://experts.colorado.edu/individual/deptid_10234",
+name: "Art and Art History"
+},
+{
+uri: "https://experts.colorado.edu/individual/deptid_10234",
+name: "Art and Art History"
+}
+],
+orcid: "0000-0002-0425-0221",
+mostSpecificType: [
+"Faculty Member"
+],
+givenName: [
+"KIRK"
+],
+email: [
+"Kirk.Ambrose@Colorado.EDU"
+]
+}
+}
