@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.edu/prodEvolCore.json",
+  "type": "object",
+  "title": "VIVO Product Evolution Data Specification",
+  "description": "This is a developer-focused data specification for reuse of VIVO ontology-sourced or -inspired data in performant front-end user interface. ",
+  "properties": {
+    "Person": {
+      "type": "object",
+      "title": "Person",
+      "description": "See FOAF:Person.",
+      "required": ["id", "label", "name", "profile"],
+      "properties": {
+        "label": { "$ref": "#/definitions/label" },
+        "profile": {"$ref": "#/definitions/profile"},
+        "id": {"$ref": "#/definitions/id"},
+        "name": {
+          "type": "object",
+          "title": "Name",
+          "description": "Name for the person represented by the document.",
+          "required": ["firstName", "lastName"],
+          "properties": {
+            "firstName": {
+              "type": "string",
+              "title": "First Name",
+              "description": "First name for the person represented by the document."
+            },
+            "lastName": {
+              "type": "string",
+              "title": "Last Name",
+              "description": "Last name for the person represented by the document."
+            },
+            "middleName": {
+              "type": "string",
+              "title": "Middle Name",
+              "description": "Middle name for the person represented by the document."
+            },
+            "suffix": {
+              "type": "string",
+              "title": "Suffix",
+              "description": "Suffix for the person represented by the document."
+            },
+            "prefix": {
+              "type": "string",
+              "title": "Prefix",
+              "description": "Prefix for the person represented by the document."
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "$id": "http://example.edu/prodEvolCore.json",
+    "definitions": {
+        "Person": { "$id": "#Person" },
+        "Organizational Unit": { "$id": "#OrgUnit" },
+        "Funding": { "$id": "#Funding" },
+        "Work": { "$id": "#Work" }
+    },
+    "label": {
+      "type": "string",
+      "title": "Label",
+      "description": "Some sort of basic label for the entity described by the JSON document.",
+      "examples": [
+        false
+      ]
+    },
+    "profile": {
+      "type": "string",
+      "title": "Profile",
+      "description": "Points to data profile (or schema) that defines keys in this document.",
+      "examples": [
+        false
+      ]
+    },
+    "id": {
+      "type": "string",
+      "title": "Id",
+      "description": "The internal identifier for the source data.",
+      "examples": [
+        false
+      ]
+    },
+  }
+}
