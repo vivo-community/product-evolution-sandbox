@@ -1,5 +1,6 @@
 Place for test files to create schema.org markup structured data.
 Use the google structured data testing tool to develop, like jsfiddle
+Google claims that enhanced structured data will add to the  Knowledge Graph cards from search results.
 
 https://search.google.com/structured-data/testing-tool/u/0/
 
