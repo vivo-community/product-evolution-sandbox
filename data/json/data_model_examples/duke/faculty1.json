@@ -50,6 +50,33 @@
       "organizationID": "https://scholars.duke.edu/individual/org50000531",
       "organizationLabel": "Theater Studies"
     }
+  ],
+  "fundingRoles": [
+    {
+      "id": "?",
+      "uri": "https://scholars.duke.edu/individual/gra228428",
+      "label": "Theater MD Biddle 2017 Proposal",
+      "startDate": {
+        "dateTime": "2017-01-01T00:00:00",
+        "resolution": "yearMonthDay"
+      },
+      "endDate": {
+        "dateTime": "2017-12-31T00:00:00",
+        "resolution": "yearMonthDay"
+      },
+      "externalId": "https://scholars.duke.edu/individual/insmarydukebiddlefoundation"
+    }
+  ],
+  "overviews": [
+    {
+      "id": "",
+      "uri": "",
+      "label": "Jeff Storer (M.F.A., Dallas Theater Center) is co-founder and Artistic Director of Manbites Dog Theater, a professional company founded in 1986 dedicated to world and regional premieres of contemporary work. He is co-author of <em>Indecent Materials</em>, which opened the 1990 season at Joseph Papp&rsquo;s New York Shakespeare Festival, and has co-authored <em>Tune for Tommy</em>, Hotline, and an adaptation of Allan Gurganus&rsquo; <em>Plays Well With Others</em>. He has directed over 150 full length works since 1975 in New York City, Portland, Oregon, Boston, Winter Park, Florida and Dallas. His directing credits include: the world premiere of Romulus Linney's Silver River (at Manbites Dog, Profile Theater in Portland and as the keynote event at the Sewanee Writer's Conference,) Mr. Burns:a post electric play, Brownsville Song (b-side for Tray,) Uncle Vanya, The Laramie Project, God's Ear, Spring Awakening, The Receptionist, Sonnets for an Old Century, Neighborhod 3, <em>Reckless</em>, <em>Comedy of Errors</em>, <em>Romeo and Juliet</em>, <em>Bucknaked: A Love Story</em>, <em>The Normal Heart</em>, <em>The Day Room</em>, <em>Wild Honey</em>, <em>The Mystery of Irma Vep</em>, <em>This is our Youth</em>, <em>Tomorrowland</em>, <em>Dark Ride</em>, <em>7 Blowjobs</em>, <em>Cloud Tectonics</em>, <em>The Illusion</em>, <em>The Darker Face of the Earth</em>, <em>Carousel</em>, <em>Cloud 9</em>, and co-authored and co-directed the stage and video versions of the world premiere, <em>Walking Miracles</em>. As a part of Duke&rsquo;s Department of Theater Studies Jeff directed the workshop production of Jose Rivera&rsquo;s <em>References to Salvadore Dali Make Me Hot</em> and the world premiere of Romulus Linney&rsquo;s <em>Oscar Over Here</em>. In the spring of 2005 he directed Angels in America: Part One and Angels in America:Part Two (staged reading) He was Associate Director of Theater at Duke University from <a href=\"tel:1982-1987\">1982-1987</a> and Associate Professor of Theater at Rollins College from <a href=\"tel:1987-1992\">1987-1992</a>. He returned to Duke in 1993-present. He chaired the Department of Theater Studies in <a href=\"tel:2008-2009\">2008-2009</a>&nbsp;and currently is chair. He is a full professor of the practice in the Department of Theater Studies.",
+      "type": {
+        "code": "",
+        "label": ""
+      }
+    }
   ]
 
 }
