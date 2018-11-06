@@ -1,0 +1,55 @@
+{
+  "person": {
+    "id": "0116288",
+    "uri": "https://scholars.duke.edu/individual/per9544252",
+    "name": {
+      "firstName": "Jeff",
+      "middleName": "M.",
+      "lastName": "Storer"
+    },
+    "type": {
+      "code": "FacultyMember",
+      "label": "Faculty Member"
+    },
+    "primaryTitle": "Professor of the Practice of Theater Studies",
+    "image": {
+      "thumbnail": "https://scholars.duke.edu/individual/t9544252",
+      "main": "https://scholars.duke.edu/individual/i9544252"
+    }
+  },
+  "affiliationRoles": [
+    {
+      "id": "",
+      "uri": "https://scholars.duke.edu/individual/apt3786027",
+      "label": "Professor of the Practice of Theater Studies",
+      "class": "faculty",
+      "type": {
+        "code": "",
+        "label": ""
+      },
+      "startDate": {
+        "dateTime": "2001-09-01T00:00:00",
+        "resolution": "year"
+      },
+      "organizationID": "https://scholars.duke.edu/individual/org50000531",
+      "organizationLabel": "Theater Studies"
+    },
+    {
+      "id": "",
+      "uri": "https://scholars.duke.edu/individual/apt4034242",
+      "label": "Chair of the Department of Theater Studies",
+      "class": "faculty",
+      "type": {
+        "code": "",
+        "label": ""
+      },
+      "startDate": {
+        "dateTime": "2015-07-01T00:00:00",
+        "resolution": "year"
+      },
+      "organizationID": "https://scholars.duke.edu/individual/org50000531",
+      "organizationLabel": "Theater Studies"
+    }
+  ]
+
+}
