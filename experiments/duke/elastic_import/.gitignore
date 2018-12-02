@@ -1,5 +1,5 @@
 .tool-versions
 .envrc
-.csv
+*.csv
 cmd/elastic_import/elastic_import
 cmd/widgets_import/widgets_import
