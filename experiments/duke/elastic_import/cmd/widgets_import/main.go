@@ -17,15 +17,20 @@ import (
 	"sync"
 	"time"
     "github.com/davecgh/go-spew/spew"
+    "github.com/BurntSushi/toml"
 )
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "vivo_data"
-	password = "experiment4"
-	dbname   = "vivo_data"
-)
+type Config struct {
+  Database database
+}
+
+type database struct {
+  Server string
+  Port int
+  Database string
+  User string
+  Password string
+}
 
 type Resource struct {
 	Uri   string         `db:"uri"`
@@ -46,9 +51,6 @@ var psqlInfo string
 
 func init() {
 	client = createHTTPClient()
-	psqlInfo = fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
 }
 
 // createHTTPClient for connection re-use
@@ -79,16 +81,6 @@ type WidgetsPerson struct {
 	} `json:"attributes"`
 	Positions []Position `json:"positions"`
 }
-
-/*
-func (person *WidgetsPerson) String() string {
-    return fmt.Sprintf("Person{a:%d, B:%v}",person.URI,aa.B)
-}
-
-func (bb *B) String() string {
-    return fmt.Sprintf("B{b:%d}",bb.b)
-}
-*/
 
 func widgetsParse(duid string) WidgetsPerson {
 	url := "https://scholars.duke.edu/widgets/api/v0.9/people/complete/all.json?uri=" + duid
@@ -133,6 +125,10 @@ func makeHash(text string) string {
 
 var db *sqlx.DB
 
+func GetConnection() (*sqlx.DB) {
+    return db
+}
+
 func examineParse(person WidgetsPerson) {
 	fmt.Printf("**********%v\n*************", person.Uri)
 	spew.Printf("%+v\n", person)
@@ -141,11 +137,13 @@ func examineParse(person WidgetsPerson) {
 
 func saveAsResource(person WidgetsPerson) {
 	fmt.Printf("saving %v\n", person.Uri)
-	db, err := sqlx.Connect("postgres", psqlInfo)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer db.Close()
+	db = GetConnection()
+	
+	//db, err := sqlx.Connect("postgres", psqlInfo)
+	//if err != nil {
+	//	log.Fatalln(err)
+	//}
+	//defer db.Close()
 
 	// NOTE: if person.Uri is null - should probably exit
 	obj := ResourcePerson{person.Uri,
@@ -251,11 +249,32 @@ func produceDuids(filename string) <-chan string {
 }
 
 var wg sync.WaitGroup
-
+var conf Config
+ 
 func main() {
 	start := time.Now()
+	var err error
+	var configFile string
+	flag.StringVar(&configFile, "c", "./config.toml", "a config filename")
+	
+    if _, err := toml.DecodeFile(configFile, &conf); err != nil {
+      fmt.Println("could not find config file, use -c option")
+	  os.Exit(1)
+    }
+    fmt.Printf("%#v\n", conf)
+   	
+	psqlInfo = fmt.Sprintf("host=%s port=%d user=%s "+
+			"password=%s dbname=%s sslmode=disable",
+		conf.Database.Server, conf.Database.Port, 
+		conf.Database.User, conf.Database.Password, 
+		conf.Database.Database)
+ 	
+	db, err = sqlx.Open("postgres", psqlInfo)
+	if err != nil{
+        log.Println("m=GetPool,msg=connection has failed", err)
+    }
 
-    var filename string
+	var filename string
 
 	flag.StringVar(&filename, "f", "", "a filename")
 	dryRun := flag.Bool("dry-run", false, "just examine widgets parsing")
@@ -272,6 +291,8 @@ func main() {
 	persistWidgets(widgets, *dryRun)
 
 	wg.Wait()
+	
+	defer db.Close()
 
 	elapsed := time.Since(start)
 	fmt.Printf("%s\n", elapsed)

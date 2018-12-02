@@ -1,5 +1,6 @@
 .tool-versions
 .envrc
 *.csv
+*.toml
 cmd/elastic_import/elastic_import
 cmd/widgets_import/widgets_import

@@ -1,0 +1,6 @@
+[database]
+server = "localhost"
+port = 5432
+database = "vivo_data"
+user = "vivo_data"
+password = "experiment4"

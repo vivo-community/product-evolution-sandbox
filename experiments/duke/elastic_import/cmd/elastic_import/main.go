@@ -11,9 +11,24 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/olivere/elastic"
 	"log"
+	"os"
 	"text/template"
 	"time"
+	"flag"
+    "github.com/BurntSushi/toml"
 )
+
+type Config struct {
+  Database database
+}
+
+type database struct {
+  Server string
+  Port int
+  Database string
+  User string
+  Password string
+}
 
 type PersonName struct {
 	FirstName  string  `json:"firstName"`
@@ -61,14 +76,6 @@ const personMapping = `
 	}
 }`
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "vivo_data"
-	password = "experiment4"
-	dbname   = "vivo_data"
-)
-
 type Resource struct {
 	Uri   string         `db:"uri"`
 	Type  string         `db:"type"`
@@ -80,17 +87,15 @@ type Resource struct {
 var psqlInfo string
 var db *sqlx.DB
 
-func init() {
-	psqlInfo = fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+func GetConnection() (*sqlx.DB) {
+    return db
 }
 
 func listPeople() {
-	db, err := sqlx.Connect("postgres", psqlInfo)
+	db = GetConnection()
 	resources := []Resource{}
 
-	err = db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Person")
+	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Person")
 	for _, element := range resources {
 		log.Println(element)
 		// element is the element from someSlice for where we are
@@ -98,24 +103,17 @@ func listPeople() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 }
 
 func makeIndex() {
 	ctx := context.Background()
 	t := template.Must(template.New("index").Parse(mappingTemplate))
-	//err := t.Execute(os.Stdout, r)
 	mapping := Mapping{personMapping}
 	var tpl bytes.Buffer
 	if err := t.Execute(&tpl, mapping); err != nil {
-		//return err
 		log.Fatalln(err)
 	}
-	//fmt.Println(tpl.String())
-
-	// Obtain a client and connect to the default Elasticsearch installation
-	// on 127.0.0.1:9200. Of course you can configure your client to connect
-	// to other hosts and configure it in various other ways.
+    // ??elastic.NewClient(elastic.SetURL("http://localhost:9200"))
 	client, err := elastic.NewClient()
 	if err != nil {
 		// Handle error
@@ -146,7 +144,7 @@ func makeIndex() {
 func tryToAdd() {
 	ctx := context.Background()
 
-	db, err := sqlx.Connect("postgres", psqlInfo)
+	db = GetConnection()
 	resources := []Resource{}
 
 	client, err := elastic.NewClient()
@@ -181,13 +179,36 @@ func tryToAdd() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer client.Stop()
 }
+
+var conf Config
 
 func main() {
 	start := time.Now()
+    var err error
+	var configFile string
+	flag.StringVar(&configFile, "c", "./config.toml", "a config filename")
+	
+    if _, err := toml.DecodeFile(configFile, &conf); err != nil {
+      fmt.Println("could not find config file, use -c option")
+	  os.Exit(1)
+    }
+   	
+	psqlInfo = fmt.Sprintf("host=%s port=%d user=%s "+
+			"password=%s dbname=%s sslmode=disable",
+		conf.Database.Server, conf.Database.Port, 
+		conf.Database.User, conf.Database.Password, 
+		conf.Database.Database)
+ 	
+	db, err = sqlx.Open("postgres", psqlInfo)
+	if err != nil{
+        log.Println("m=GetPool,msg=connection has failed", err)
+    }
+	
 	makeIndex()
 	tryToAdd()
+	
+	defer db.Close()
 
 	elapsed := time.Since(start)
 	fmt.Printf("%s\n", elapsed)
