@@ -32,3 +32,10 @@ Running instance of elasticsearch
 ## To delete elastic indedx
 > curl -XDELETE localhost:9200/people
 
+
+## People
+This person has keywords:
+
+http://localhost:9200/people/_search?pretty=true&q=uri:"https://scholars.duke.edu/individual/per8737242"
+
+

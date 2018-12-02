@@ -164,6 +164,12 @@ func widgetsParse(duid string) WidgetsPerson {
 	return person
 }
 
+// this is *not* an independent resource
+type Keyword struct {
+	Uri        string
+	Label      string
+}
+
 type ResourcePerson struct {
 	Uri               string
 	FirstName         string
@@ -172,6 +178,7 @@ type ResourcePerson struct {
 	PrimaryTitle      string
 	ImageUri          string
 	ImageThumbnailUri string
+	Keywords          []Keyword
 }
 
 type ResourcePosition struct {
@@ -258,13 +265,21 @@ func stashPerson(person WidgetsPerson) {
 	db = GetConnection()
 
 	// FIXME: if person.Uri is null - should probably exit
+	researchAreas := person.ResearchAreas
+	var keywords []Keyword
+    for _, area := range researchAreas {
+	    keyword := Keyword{area.Uri, area.Label}  
+		keywords = append(keywords, keyword)
+	}
+	
 	obj := ResourcePerson{person.Uri,
 		person.Attributes.FirstName,
 		person.Attributes.LastName,
 		person.Attributes.MiddleName,
 		person.Attributes.PreferredTitle,
 		person.Attributes.ImageUri,
-		person.Attributes.ImageThumbnailUri}
+		person.Attributes.ImageThumbnailUri,
+	    keywords}
 
 	saveResource(obj, person.Uri, "Person")
 }
@@ -319,8 +334,8 @@ func persistWidgets(cin <-chan WidgetsPerson, dryRun bool) {
 				examineParse(person)
 			} else {
 				stashPerson(person)
-				stashPositions(person)
-				stashEducations(person)
+				//stashPositions(person)
+				//stashEducations(person)
 				//stashPublications(person)
 			}
 		}

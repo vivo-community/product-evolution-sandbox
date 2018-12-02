@@ -32,7 +32,7 @@ type database struct {
 
 // elastic 'data model'
 type PersonKeyword struct {
-	Uri   string `json;"uri"`
+	Uri   string `json:"uri"`
 	Label string `json:"label"`
 }
 
@@ -48,11 +48,13 @@ type PersonName struct {
 }
 
 type Person struct {
-	Uri          string      `json:"uri"`
-	PrimaryTitle string      `json:"primaryTitle"`
-	Name         PersonName  `json:"name" elastic:"type:object"`
-	Image        PersonImage `json:"image" elastic:"type:object"`
+	Uri          string          `json:"uri"`
+	PrimaryTitle string          `json:"primaryTitle"`
+	Name         PersonName      `json:"name" elastic:"type:object"`
+	Image        PersonImage     `json:"image" elastic:"type:object"`
+	KeywordList  []PersonKeyword `json:"keywordList" elastic:"type:nested"`
 }
+// end elastic data model
 
 // for elastic mapping definitions template
 type Mapping struct {
@@ -60,7 +62,12 @@ type Mapping struct {
 }
 
 // FIXME: centralize - now it's duplicated
-// struct to read from resources table
+// structs to read from resources table
+type Keyword struct {
+	Uri        string
+	Label      string
+}
+
 type ResourcePerson struct {
 	Uri               string
 	FirstName         string
@@ -69,6 +76,7 @@ type ResourcePerson struct {
 	PrimaryTitle      string
 	ImageUri          string
 	ImageThumbnailUri string
+	Keywords          []Keyword
 }
 
 const mappingTemplate = `{
@@ -81,15 +89,6 @@ const mappingTemplate = `{
     }
 }`
 
-/* TODO: keywords?
-		"keyword": {
-			"type": "nested",
-			"properties": {
-				"uri":   { "type": "text" },
-				"label": { "type": "text" }
-			}
-		}
-*/
 const personMapping = `
 "person":{
 	"properties":{
@@ -108,8 +107,15 @@ const personMapping = `
 				"main":      { "type": "text" },
 				"thumbnail": { "type": "text" }
 			}
-		}
-	}
+		},
+	    "keywordList": {
+	      "type": "nested",
+	      "properties": {
+		      "uri":   { "type": "text" },
+		      "label": { "type": "text" }
+	      }
+	    }
+    }
 }`
 
 type Resource struct {
@@ -246,7 +252,13 @@ func tryToAdd() {
 		name := PersonName{resource.FirstName, resource.LastName,
 			resource.MiddleName}
 		image := PersonImage{resource.ImageUri, resource.ImageThumbnailUri}
-		person := Person{resource.Uri, resource.PrimaryTitle, name, image}
+		
+		var keywordList []PersonKeyword
+		for _, keyword := range resource.Keywords {
+			pk := PersonKeyword{keyword.Uri, keyword.Label}
+		    keywordList = append(keywordList, pk)
+		}
+		person := Person{resource.Uri, resource.PrimaryTitle, name, image, keywordList}
 		put1, err := client.Index().
 			Index("people").
 			Type("person").
