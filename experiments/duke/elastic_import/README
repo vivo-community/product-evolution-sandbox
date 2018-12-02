@@ -20,6 +20,8 @@ Running instance of postgresql with these credentials (hard coded for now)
 * password = "experiment4"
 * dbname   = "vivo_data"
 
+also need to run 'migration' file init.sql:
+
 ## elastic
 Running instance of elasticsearch
 * localhost:9200
