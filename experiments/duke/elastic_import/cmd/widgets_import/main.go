@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/BurntSushi/toml"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
 	_ "github.com/lib/pq"
@@ -16,20 +18,18 @@ import (
 	"os"
 	"sync"
 	"time"
-    "github.com/davecgh/go-spew/spew"
-    "github.com/BurntSushi/toml"
 )
 
 type Config struct {
-  Database database
+	Database database
 }
 
 type database struct {
-  Server string
-  Port int
-  Database string
-  User string
-  Password string
+	Server   string
+	Port     int
+	Database string
+	User     string
+	Password string
 }
 
 type Resource struct {
@@ -64,22 +64,78 @@ func createHTTPClient() *http.Client {
 	return client
 }
 
+type ResearchArea struct {
+	Uri        string `json:"uri"`
+	Label      string `json:"label"`
+	Attributes struct {
+		PersonUri string `json:"personUri"`
+	} `json:"attributes"`
+}
+
+type Publication struct {
+	Uri        string `json:"uri"`
+	Label      string `json:"label"`
+	Attributes struct {
+		AuthorList string `json:"authorList"`
+		Doi        string `json:"doi"`
+	} `json:"attributes"`
+}
+
+type Address struct {
+	Uri        string `json:"uri"`
+	Label      string `json:"label"`
+	Attributes struct {
+		City       string `json:"city"`
+		State      string `json:"state"`
+		PostalCode string `json:"postalCode"`
+		Address1   string `json:"address1"`
+		PersonUri  string `json:"personUri"`
+	} `json:"attributes"`
+}
+
+type Education struct {
+	Uri        string `json:"uri"`
+	Label      string `json:"label"`
+	Attributes struct {
+		PersonUri       string `json:"personUri"`
+		DegreeUri       string `json:"degreeUri"`
+		Degree          string `json:"degree"`
+		OrganizationUri string `json:"organizationUri"`
+		Insitution      string `json:"institution"`
+	} `json:"attributes"`
+}
+
 type Position struct {
 	Uri        string `json:"uri"`
 	Label      string `json:"label"`
 	Attributes struct {
+		OrganizationUri   string `json:"organizationUri"`
 		OrganizationLabel string `json:"organizationLabel"`
+		SchoolUri         string `json:"organizationUri"`
+		SchoolLabel       string `json:"organizationLabel"`
+		PersonUri         string `json:"personUri"`
 	} `json:"attributes"`
 }
 
 type WidgetsPerson struct {
 	Uri        string `json:"uri"`
 	Attributes struct {
-		FirstName  string  `json:"firstName"`
-		LastName   string  `json:"lastName"`
-		MiddleName *string `json:"middleName"`
+		FirstName         string  `json:"firstName"`
+		LastName          string  `json:"lastName"`
+		MiddleName        *string `json:"middleName"`
+		PreferredTitle    string  `json:"preferredTitle"`
+		PhoneNumber       string  `json:"phoneNumber"`
+		PrimaryEmail      string  `json:"primaryEmail"`
+		ProfileUrl        string  `json:"profileUrl"`
+		ImageUri          string  `json:"imageUri"`
+		PrefixName        string  `json:"prefixName"`
+		ImageThumbnailUri string  `json:"imageThumbnailUri"`
 	} `json:"attributes"`
-	Positions []Position `json:"positions"`
+	Positions     []Position     `json:"positions"`
+	Educations    []Education    `json:"educations"`
+	Publications  []Publication  `json:"publications"`
+	Addresses     []Address      `json:"addresses"`
+	ResearchAreas []ResearchArea `json:"researchAreas"`
 }
 
 func widgetsParse(duid string) WidgetsPerson {
@@ -125,8 +181,8 @@ func makeHash(text string) string {
 
 var db *sqlx.DB
 
-func GetConnection() (*sqlx.DB) {
-    return db
+func GetConnection() *sqlx.DB {
+	return db
 }
 
 func examineParse(person WidgetsPerson) {
@@ -138,7 +194,7 @@ func examineParse(person WidgetsPerson) {
 func saveAsResource(person WidgetsPerson) {
 	fmt.Printf("saving %v\n", person.Uri)
 	db = GetConnection()
-	
+
 	//db, err := sqlx.Connect("postgres", psqlInfo)
 	//if err != nil {
 	//	log.Fatalln(err)
@@ -250,39 +306,39 @@ func produceDuids(filename string) <-chan string {
 
 var wg sync.WaitGroup
 var conf Config
- 
+
 func main() {
 	start := time.Now()
 	var err error
 	var configFile string
 	flag.StringVar(&configFile, "c", "./config.toml", "a config filename")
-	
-    if _, err := toml.DecodeFile(configFile, &conf); err != nil {
-      fmt.Println("could not find config file, use -c option")
-	  os.Exit(1)
-    }
-    fmt.Printf("%#v\n", conf)
-   	
+
+	if _, err := toml.DecodeFile(configFile, &conf); err != nil {
+		fmt.Println("could not find config file, use -c option")
+		os.Exit(1)
+	}
+	fmt.Printf("%#v\n", conf)
+
 	psqlInfo = fmt.Sprintf("host=%s port=%d user=%s "+
-			"password=%s dbname=%s sslmode=disable",
-		conf.Database.Server, conf.Database.Port, 
-		conf.Database.User, conf.Database.Password, 
+		"password=%s dbname=%s sslmode=disable",
+		conf.Database.Server, conf.Database.Port,
+		conf.Database.User, conf.Database.Password,
 		conf.Database.Database)
- 	
+
 	db, err = sqlx.Open("postgres", psqlInfo)
-	if err != nil{
-        log.Println("m=GetPool,msg=connection has failed", err)
-    }
+	if err != nil {
+		log.Println("m=GetPool,msg=connection has failed", err)
+	}
 
 	var filename string
 
 	flag.StringVar(&filename, "f", "", "a filename")
 	dryRun := flag.Bool("dry-run", false, "just examine widgets parsing")
 	flag.Parse()
-	
-	if filename == ""  {
-	    fmt.Println("need -f filename arg")
-	    os.Exit(1)
+
+	if filename == "" {
+		fmt.Println("need -f filename arg")
+		os.Exit(1)
 	}
 
 	wg.Add(3)
@@ -291,7 +347,7 @@ func main() {
 	persistWidgets(widgets, *dryRun)
 
 	wg.Wait()
-	
+
 	defer db.Close()
 
 	elapsed := time.Since(start)
