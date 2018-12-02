@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
@@ -15,6 +16,7 @@ import (
 	"os"
 	"sync"
 	"time"
+    "github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -78,13 +80,22 @@ type WidgetsPerson struct {
 	Positions []Position `json:"positions"`
 }
 
+/*
+func (person *WidgetsPerson) String() string {
+    return fmt.Sprintf("Person{a:%d, B:%v}",person.URI,aa.B)
+}
+
+func (bb *B) String() string {
+    return fmt.Sprintf("B{b:%d}",bb.b)
+}
+*/
+
 func widgetsParse(duid string) WidgetsPerson {
 	url := "https://scholars.duke.edu/widgets/api/v0.9/people/complete/all.json?uri=" + duid
-	//fmt.Println(url)
 	req, err := http.NewRequest("GET", url, nil)
 
 	if err != nil {
-		// NOTE: returning a 'blank' person
+		// TODO: returning a 'blank' person, should return nil
 		fmt.Println("widgets", err)
 		return WidgetsPerson{}
 	}
@@ -93,7 +104,7 @@ func widgetsParse(duid string) WidgetsPerson {
 	body, err := ioutil.ReadAll(res.Body)
 
 	if err != nil {
-		// NOTE: returning 'blank' person
+		// TODO: returning 'blank' person, should return nil
 		fmt.Println("widgets", err)
 		return WidgetsPerson{}
 	}
@@ -122,6 +133,12 @@ func makeHash(text string) string {
 
 var db *sqlx.DB
 
+func examineParse(person WidgetsPerson) {
+	fmt.Printf("**********%v\n*************", person.Uri)
+	spew.Printf("%+v\n", person)
+	fmt.Println("****************")
+}
+
 func saveAsResource(person WidgetsPerson) {
 	fmt.Printf("saving %v\n", person.Uri)
 	db, err := sqlx.Connect("postgres", psqlInfo)
@@ -145,7 +162,7 @@ func saveAsResource(person WidgetsPerson) {
 	found := Resource{}
 	res := &Resource{person.Uri, "Person", hash, str, str}
 	fmt.Println(res)
-	
+
 	findSql := `SELECT uri, type, hash, data, data_b  FROM resources 
 	  WHERE (uri = $1 AND type = $2)`
 
@@ -192,16 +209,14 @@ func processDuids(cin <-chan string) <-chan WidgetsPerson {
 	return out
 }
 
-func persistWidgets(cin <-chan WidgetsPerson) {
+func persistWidgets(cin <-chan WidgetsPerson, dryRun bool) {
 	go func() {
 		for person := range cin {
-			//fmt.Printf("saving %v\n", person.Uri)
-			saveAsResource(person)
-			// TODO: need to save positions
-			//positions := person.Positions
-			//for _, pos := range positions {
-			//	fmt.Println(pos.Label)
-			//}
+			if dryRun {
+				examineParse(person)
+			} else {
+				saveAsResource(person)
+			}
 		}
 		// 'sink' so need to close waitgroup
 		wg.Done()
@@ -240,17 +255,21 @@ var wg sync.WaitGroup
 func main() {
 	start := time.Now()
 
-	if len(os.Args) == 1 {
-		fmt.Println("need filename arg")
-		os.Exit(1)
-	}
+    var filename string
 
-	filename := os.Args[1]
+	flag.StringVar(&filename, "f", "", "a filename")
+	dryRun := flag.Bool("dry-run", false, "just examine widgets parsing")
+	flag.Parse()
+	
+	if filename == ""  {
+	    fmt.Println("need -f filename arg")
+	    os.Exit(1)
+	}
 
 	wg.Add(3)
 	duids := produceDuids(filename)
 	widgets := processDuids(duids)
-	persistWidgets(widgets)
+	persistWidgets(widgets, *dryRun)
 
 	wg.Wait()
 
