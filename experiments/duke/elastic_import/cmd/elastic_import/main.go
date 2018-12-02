@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
-	// NOTE: empty import is needed
 	"context"
+	// NOTE: empty import is needed cause segfault
 	_ "github.com/lib/pq"
 	"github.com/olivere/elastic"
 	"log"
