@@ -171,6 +171,18 @@ type ResourcePerson struct {
 	MiddleName *string
 }
 
+type ResourcePosition struct {
+	Uri string
+}
+
+type ResourceEducation struct {
+	Uri string
+}
+
+type ResourcePublication struct {
+	Uri string
+}
+
 //https://stackoverflow.com/questions/2377881/how-to-get-a-md5-hash-from-a-string-in-golang
 //https://stackoverflow.com/questions/2377881/how-to-get-a-md5-hash-from-a-string-in-golang
 func makeHash(text string) string {
@@ -191,21 +203,8 @@ func examineParse(person WidgetsPerson) {
 	fmt.Println("****************")
 }
 
-func saveAsResource(person WidgetsPerson) {
-	fmt.Printf("saving %v\n", person.Uri)
+func saveResource(obj interface{}, uri string, typeName string) {
 	db = GetConnection()
-
-	//db, err := sqlx.Connect("postgres", psqlInfo)
-	//if err != nil {
-	//	log.Fatalln(err)
-	//}
-	//defer db.Close()
-
-	// NOTE: if person.Uri is null - should probably exit
-	obj := ResourcePerson{person.Uri,
-		person.Attributes.FirstName,
-		person.Attributes.LastName,
-		person.Attributes.MiddleName}
 
 	str, err := json.Marshal(obj)
 	if err != nil {
@@ -214,27 +213,27 @@ func saveAsResource(person WidgetsPerson) {
 	hash := makeHash(string(str))
 
 	found := Resource{}
-	res := &Resource{person.Uri, "Person", hash, str, str}
-	fmt.Println(res)
+	res := &Resource{uri, typeName, hash, str, str}
 
 	findSql := `SELECT uri, type, hash, data, data_b  FROM resources 
 	  WHERE (uri = $1 AND type = $2)`
 
-	err = db.Get(&found, findSql, person.Uri, "Person")
+	err = db.Get(&found, findSql, uri, typeName)
 
 	tx := db.MustBegin()
 	if err != nil {
+		fmt.Printf("ADD:%v\n", found.Uri)
 		// NOTE: assuming the error means it doesn't exist
-		log.Println("GET:%v", err)
+		//log.Printf("GET:%v\n", err)
 		// must be an add?
 		sql := `INSERT INTO resources (uri, type, hash, data, data_b) 
 	      VALUES (:uri, :type, :hash, :data, :data_b)`
 		_, err := tx.NamedExec(sql, res)
 		if err != nil {
-			log.Fatalln("INSERT:%v", err)
+			log.Fatalln("ERROR(INSERT):%v", err)
 		}
 	} else {
-		fmt.Println("found!!" + found.Uri)
+		fmt.Printf("UPDATE:%v\n", found.Uri)
 		sql := `UPDATE resources 
 	    set uri = :uri, 
 		type = :type, 
@@ -245,12 +244,56 @@ func saveAsResource(person WidgetsPerson) {
 		_, err := tx.NamedExec(sql, res)
 
 		if err != nil {
-			log.Fatalln("UPDATE:%v", err)
+			log.Fatalln("ERROR(UPDATE):%v", err)
 		}
 	}
 	tx.Commit()
 }
 
+func stashPerson(person WidgetsPerson) {
+	fmt.Printf("saving %v\n", person.Uri)
+	db = GetConnection()
+
+	// FIXME: if person.Uri is null - should probably exit
+	obj := ResourcePerson{person.Uri,
+		person.Attributes.FirstName,
+		person.Attributes.LastName,
+		person.Attributes.MiddleName}
+
+	saveResource(obj, person.Uri, "Person")
+}
+
+func stashPositions(person WidgetsPerson) {
+	fmt.Printf("saving positions:%v\n", person.Uri)
+	db = GetConnection()
+	positions := person.Positions
+	for _, position := range positions {
+		obj := ResourcePosition{position.Uri}
+		saveResource(obj, position.Uri, "Position")
+	}
+}
+
+func stashPublications(person WidgetsPerson) {
+	fmt.Printf("saving publications:%v\n", person.Uri)
+	db = GetConnection()
+	publications := person.Publications
+	for _, publication := range publications {
+		obj := ResourcePublication{publication.Uri}
+		saveResource(obj, publication.Uri, "Publication")
+	}
+}
+
+func stashEducations(person WidgetsPerson) {
+	fmt.Printf("saving educations:%v\n", person.Uri)
+	db = GetConnection()
+	educations := person.Educations
+	for _, education := range educations {
+		obj := ResourceEducation{education.Uri}
+		saveResource(obj, education.Uri, "Education")
+	}
+}
+
+/*** channels ***/
 func processDuids(cin <-chan string) <-chan WidgetsPerson {
 	out := make(chan WidgetsPerson)
 	defer wg.Done()
@@ -269,7 +312,10 @@ func persistWidgets(cin <-chan WidgetsPerson, dryRun bool) {
 			if dryRun {
 				examineParse(person)
 			} else {
-				saveAsResource(person)
+				stashPerson(person)
+				stashPositions(person)
+				stashEducations(person)
+				stashPublications(person)
 			}
 		}
 		// 'sink' so need to close waitgroup
@@ -303,7 +349,7 @@ func produceDuids(filename string) <-chan string {
 	}()
 	return c
 }
-
+/**** end channels ****/
 var wg sync.WaitGroup
 var conf Config
 
