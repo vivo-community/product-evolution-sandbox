@@ -165,10 +165,13 @@ func widgetsParse(duid string) WidgetsPerson {
 }
 
 type ResourcePerson struct {
-	Uri        string
-	FirstName  string
-	LastName   string
-	MiddleName *string
+	Uri               string
+	FirstName         string
+	LastName          string
+	MiddleName        *string
+	PrimaryTitle      string
+	ImageUri          string
+	ImageThumbnailUri string
 }
 
 type ResourcePosition struct {
@@ -258,7 +261,10 @@ func stashPerson(person WidgetsPerson) {
 	obj := ResourcePerson{person.Uri,
 		person.Attributes.FirstName,
 		person.Attributes.LastName,
-		person.Attributes.MiddleName}
+		person.Attributes.MiddleName,
+		person.Attributes.PreferredTitle,
+		person.Attributes.ImageUri,
+		person.Attributes.ImageThumbnailUri}
 
 	saveResource(obj, person.Uri, "Person")
 }
@@ -315,7 +321,7 @@ func persistWidgets(cin <-chan WidgetsPerson, dryRun bool) {
 				stashPerson(person)
 				stashPositions(person)
 				stashEducations(person)
-				stashPublications(person)
+				//stashPublications(person)
 			}
 		}
 		// 'sink' so need to close waitgroup
@@ -349,6 +355,7 @@ func produceDuids(filename string) <-chan string {
 	}()
 	return c
 }
+
 /**** end channels ****/
 var wg sync.WaitGroup
 var conf Config

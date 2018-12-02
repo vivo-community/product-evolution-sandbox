@@ -2,32 +2,43 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
-	"context"
 	// NOTE: empty import is needed cause segfault
+	"flag"
+	"github.com/BurntSushi/toml"
 	_ "github.com/lib/pq"
 	"github.com/olivere/elastic"
 	"log"
 	"os"
 	"text/template"
 	"time"
-	"flag"
-    "github.com/BurntSushi/toml"
 )
 
 type Config struct {
-  Database database
+	Database database
 }
 
 type database struct {
-  Server string
-  Port int
-  Database string
-  User string
-  Password string
+	Server   string
+	Port     int
+	Database string
+	User     string
+	Password string
+}
+
+// elastic 'data model'
+type PersonKeyword struct {
+	Uri   string `json;"uri"`
+	Label string `json:"label"`
+}
+
+type PersonImage struct {
+	Thumbnail string `json:"thumbnail"`
+	Main      string `json:"main"`
 }
 
 type PersonName struct {
@@ -37,19 +48,27 @@ type PersonName struct {
 }
 
 type Person struct {
-	Uri  string     `json:"uri"`
-	Name PersonName `json:"name" elastic:"type:object"`
+	Uri          string      `json:"uri"`
+	PrimaryTitle string      `json:"primaryTitle"`
+	Name         PersonName  `json:"name" elastic:"type:object"`
+	Image        PersonImage `json:"image" elastic:"type:object"`
 }
 
+// for elastic mapping definitions template
 type Mapping struct {
 	Definition string
 }
 
+// FIXME: centralize - now it's duplicated
+// struct to read from resources table
 type ResourcePerson struct {
-	Uri        string
-	FirstName  string
-	LastName   string
-	MiddleName *string
+	Uri               string
+	FirstName         string
+	LastName          string
+	MiddleName        *string
+	PrimaryTitle      string
+	ImageUri          string
+	ImageThumbnailUri string
 }
 
 const mappingTemplate = `{
@@ -62,9 +81,19 @@ const mappingTemplate = `{
     }
 }`
 
+/* TODO: keywords?
+		"keyword": {
+			"type": "nested",
+			"properties": {
+				"uri":   { "type": "text" },
+				"label": { "type": "text" }
+			}
+		}
+*/
 const personMapping = `
 "person":{
 	"properties":{
+		"primaryTitle": { "type": "text" },
 		"name":{
 			"type":"object",
 			"properties": {
@@ -72,6 +101,13 @@ const personMapping = `
 				"lastName":   { "type": "text" },
 				"middleName": { "type": "text" }
 		    }
+		},
+		"image": {
+			"type": "object",
+			"properties": {
+				"main":      { "type": "text" },
+				"thumbnail": { "type": "text" }
+			}
 		}
 	}
 }`
@@ -87,15 +123,16 @@ type Resource struct {
 var psqlInfo string
 var db *sqlx.DB
 
-func GetConnection() (*sqlx.DB) {
-    return db
+func GetConnection() *sqlx.DB {
+	return db
 }
 
 func listPeople() {
 	db = GetConnection()
 	resources := []Resource{}
 
-	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Person")
+	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1",
+		"Person")
 	for _, element := range resources {
 		log.Println(element)
 		// element is the element from someSlice for where we are
@@ -105,7 +142,52 @@ func listPeople() {
 	}
 }
 
-func makeIndex() {
+func listPositions() {
+	db = GetConnection()
+	resources := []Resource{}
+
+	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1",
+		"Position")
+	for _, element := range resources {
+		log.Println(element)
+		// element is the element from someSlice for where we are
+	}
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func listPublications() {
+	db = GetConnection()
+	resources := []Resource{}
+
+	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1",
+		"Publication")
+	for _, element := range resources {
+		log.Println(element)
+		// element is the element from someSlice for where we are
+	}
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func listEducations() {
+	db = GetConnection()
+	resources := []Resource{}
+
+	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1",
+		"Educations")
+	for _, element := range resources {
+		log.Println(element)
+		// element is the element from someSlice for where we are
+	}
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func makePeopleIndex() {
 	ctx := context.Background()
 	t := template.Must(template.New("index").Parse(mappingTemplate))
 	mapping := Mapping{personMapping}
@@ -113,7 +195,7 @@ func makeIndex() {
 	if err := t.Execute(&tpl, mapping); err != nil {
 		log.Fatalln(err)
 	}
-    // ??elastic.NewClient(elastic.SetURL("http://localhost:9200"))
+	// ??elastic.NewClient(elastic.SetURL("http://localhost:9200"))
 	client, err := elastic.NewClient()
 	if err != nil {
 		// Handle error
@@ -161,11 +243,14 @@ func tryToAdd() {
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		name := PersonName{resource.FirstName, resource.LastName, resource.MiddleName}
-		person := Person{resource.Uri, name}
+		name := PersonName{resource.FirstName, resource.LastName,
+			resource.MiddleName}
+		image := PersonImage{resource.ImageUri, resource.ImageThumbnailUri}
+		person := Person{resource.Uri, resource.PrimaryTitle, name, image}
 		put1, err := client.Index().
 			Index("people").
 			Type("person").
+			// TODO: to give ID or not?
 			//Id(resource.Uri).
 			BodyJson(person).
 			Do(ctx)
@@ -185,29 +270,29 @@ var conf Config
 
 func main() {
 	start := time.Now()
-    var err error
+	var err error
 	var configFile string
 	flag.StringVar(&configFile, "c", "./config.toml", "a config filename")
-	
-    if _, err := toml.DecodeFile(configFile, &conf); err != nil {
-      fmt.Println("could not find config file, use -c option")
-	  os.Exit(1)
-    }
-   	
+
+	if _, err := toml.DecodeFile(configFile, &conf); err != nil {
+		fmt.Println("could not find config file, use -c option")
+		os.Exit(1)
+	}
+
 	psqlInfo = fmt.Sprintf("host=%s port=%d user=%s "+
-			"password=%s dbname=%s sslmode=disable",
-		conf.Database.Server, conf.Database.Port, 
-		conf.Database.User, conf.Database.Password, 
+		"password=%s dbname=%s sslmode=disable",
+		conf.Database.Server, conf.Database.Port,
+		conf.Database.User, conf.Database.Password,
 		conf.Database.Database)
- 	
+
 	db, err = sqlx.Open("postgres", psqlInfo)
-	if err != nil{
-        log.Println("m=GetPool,msg=connection has failed", err)
-    }
-	
-	makeIndex()
+	if err != nil {
+		log.Println("m=GetPool,msg=connection has failed", err)
+	}
+
+	makePeopleIndex()
 	tryToAdd()
-	
+
 	defer db.Close()
 
 	elapsed := time.Since(start)
