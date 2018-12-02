@@ -27,18 +27,13 @@ Running instance of elasticsearch
 * localhost:9200
 
 ## Then `go` building ...
-
-* > cd cmd/widgets_importer
-* > go build
-* > cd ../../
-* > cd cmd/elastic_importer
-* > go build
+* > ./build.sh
 
 ## Then running ...
 
-> cmd/widgets_importer/widgets_importer file_of_duids.csv
-> cmd/elastic_import/elastic_importer
+> cmd/widgets_importer/widgets_importer <file_of_duids.csv>
+> cmd/elastic_import/elastic_importer [NOTE: only run once, unless ./clear-index.sh]
 
-## To delete elastic index
+## To delete elastic indedx
 > curl -XDELETE localhost:9200/people
 
