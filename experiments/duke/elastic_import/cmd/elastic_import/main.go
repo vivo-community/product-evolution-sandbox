@@ -168,7 +168,7 @@ func tryToAdd() {
 		put1, err := client.Index().
 			Index("people").
 			Type("person").
-			Id(resource.Uri).
+			//Id(resource.Uri).
 			BodyJson(person).
 			Do(ctx)
 		if err != nil {
