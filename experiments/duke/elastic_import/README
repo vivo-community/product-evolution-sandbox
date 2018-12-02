@@ -1,1 +1,42 @@
-will have code to import vivo_widgets data into elastic instance
+imports vivo_widgets data into an elastic instance
+
+# Go 
+
+This needs go 1.11.1 - because it uses the new 'mod' stuff
+
+I've installed that locally with asdf, then set local GOPATH with direnv
+but eventually this will be dockerized
+
+# Setup
+
+Requires a bit (now):
+
+## postgresql
+Running instance of postgresql with these credentials (hard coded for now)
+	
+* host     = "localhost"
+* port     = 5432
+* user     = "vivo_data"
+* password = "experiment4"
+* dbname   = "vivo_data"
+
+## elastic
+Running instance of elasticsearch
+* localhost:9200
+
+## Then `go` building ...
+
+* > cd cmd/widgets_importer
+* > go build
+* > cd ../../
+* > cd cmd/elastic_importer
+* > go build
+
+## Then running ...
+
+> cmd/widgets_importer/widgets_importer file_of_duids.csv
+> cmd/elastic_import/elastic_importer
+
+## To delete elastic index
+> curl -XDELETE localhost:9200/people
+
