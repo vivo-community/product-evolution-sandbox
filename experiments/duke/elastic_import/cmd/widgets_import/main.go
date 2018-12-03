@@ -166,8 +166,8 @@ func widgetsParse(duid string) WidgetsPerson {
 
 // this is *not* an independent resource
 type Keyword struct {
-	Uri        string
-	Label      string
+	Uri   string
+	Label string
 }
 
 type ResourcePerson struct {
@@ -267,11 +267,11 @@ func stashPerson(person WidgetsPerson) {
 	// FIXME: if person.Uri is null - should probably exit
 	researchAreas := person.ResearchAreas
 	var keywords []Keyword
-    for _, area := range researchAreas {
-	    keyword := Keyword{area.Uri, area.Label}  
+	for _, area := range researchAreas {
+		keyword := Keyword{area.Uri, area.Label}
 		keywords = append(keywords, keyword)
 	}
-	
+
 	obj := ResourcePerson{person.Uri,
 		person.Attributes.FirstName,
 		person.Attributes.LastName,
@@ -279,7 +279,7 @@ func stashPerson(person WidgetsPerson) {
 		person.Attributes.PreferredTitle,
 		person.Attributes.ImageUri,
 		person.Attributes.ImageThumbnailUri,
-	    keywords}
+		keywords}
 
 	saveResource(obj, person.Uri, "Person")
 }
@@ -327,16 +327,24 @@ func processDuids(cin <-chan string) <-chan WidgetsPerson {
 	return out
 }
 
-func persistWidgets(cin <-chan WidgetsPerson, dryRun bool) {
+func persistWidgets(cin <-chan WidgetsPerson, dryRun bool, typeName string) {
 	go func() {
 		for person := range cin {
 			if dryRun {
 				examineParse(person)
 			} else {
-				stashPerson(person)
-				//stashPositions(person)
-				//stashEducations(person)
-				//stashPublications(person)
+				switch typeName {
+				case "people":
+					stashPerson(person)
+				case "positions":
+					stashPositions(person)
+				case "educations":
+					stashEducations(person)
+				case "publications":
+					stashPublications(person)
+				default:
+					stashPerson(person)
+				}
 			}
 		}
 		// 'sink' so need to close waitgroup
@@ -402,6 +410,8 @@ func main() {
 
 	flag.StringVar(&filename, "f", "", "a filename")
 	dryRun := flag.Bool("dry-run", false, "just examine widgets parsing")
+	typeName := flag.String("t", "people", "type of thing to import")
+
 	flag.Parse()
 
 	if filename == "" {
@@ -412,7 +422,7 @@ func main() {
 	wg.Add(3)
 	duids := produceDuids(filename)
 	widgets := processDuids(duids)
-	persistWidgets(widgets, *dryRun)
+	persistWidgets(widgets, *dryRun, *typeName)
 
 	wg.Wait()
 

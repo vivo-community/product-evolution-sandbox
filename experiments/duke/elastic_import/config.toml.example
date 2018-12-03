@@ -4,3 +4,6 @@ port = 5432
 database = "vivo_data"
 user = "vivo_data"
 password = "experiment4"
+
+[elastic]
+url = "http://localhost:9200"

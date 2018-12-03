@@ -20,6 +20,11 @@ import (
 
 type Config struct {
 	Database database
+	Elastic  elasticSearch `toml:"elastic"`
+}
+
+type elasticSearch struct {
+    Url string
 }
 
 type database struct {
@@ -201,8 +206,7 @@ func makePeopleIndex() {
 	if err := t.Execute(&tpl, mapping); err != nil {
 		log.Fatalln(err)
 	}
-	// ??elastic.NewClient(elastic.SetURL("http://localhost:9200"))
-	client, err := elastic.NewClient()
+	client, err := elastic.NewClient(elastic.SetURL(conf.Elastic.Url))
 	if err != nil {
 		// Handle error
 		panic(err)
