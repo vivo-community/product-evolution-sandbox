@@ -373,6 +373,7 @@ func persistWidgets(cin <-chan WidgetsPerson, dryRun bool, typeName string) {
 func resourceTableExists() bool {
     var exists bool
 	db = GetConnection()
+	// FIXME: not sure this is right
 	sqlExists := `SELECT EXISTS (
         SELECT 1
         FROM   information_schema.tables 
@@ -387,6 +388,10 @@ func resourceTableExists() bool {
 }
 
 func makeResourceSchema() {
+	// NOTE: using data AND data_b columns since binary json
+	// does NOT keep ordering, it would mess up
+	// any hash based comparison, but it could be still be
+	// useful for querying 
 	sql := `create table resources (
         uri text NOT NULL,
         type text NOT NULL,
