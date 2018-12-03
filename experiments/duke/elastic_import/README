@@ -2,7 +2,7 @@ imports vivo_widgets data into an elastic instance
 
 # Go 
 
-This needs go 1.11.1 - because it uses the new 'mod' stuff
+This needs go >= 1.11.1 - because it uses the new 'mod' stuff
 
 I've installed that locally with asdf, then set local GOPATH with direnv
 but eventually this will be dockerized
@@ -19,25 +19,34 @@ read from a './config.toml' file (see config.toml.example):
 Running instance of elasticsearch
 * localhost:9200
 
-## Then `go` building ...
-* > ./build.sh
+NOTE: these can both be started via docker-compose
 
-## Then running ...
+> docker-compose up
+
+or if one or other is already install locally
+
+> docker-compose up <service_to_start>
+
+## Importers (e.g. Go Code)
+
+### Building
+
+> ./build.sh
+
+### Running
 
 > cmd/widgets_importer/widgets_importer -config <config_file> -dry-run=(true|false)
 > cmd/elastic_import/elastic_importer -config <config_file> 
+
 [NOTE: only run once, unless -remove=true]
 
 If you leave off the -config option it will default to ./config.toml
 
-## To delete elastic indedx
+To delete elastic indedx
 > curl -XDELETE localhost:9200/people
+
 or
+
 > cmd/elastic_import/elastic_import -remove=true
-
-## People
-This person has keywords:
-
-http://localhost:9200/people/_search?pretty=true&q=uri:"https://scholars.duke.edu/individual/per8737242"
 
 
