@@ -107,17 +107,22 @@ type Education struct {
 type Position struct {
 	Uri        string `json:"uri"`
 	Label      string `json:"label"`
+	VivoType   string `json:"vivoType"`
 	Attributes struct {
 		OrganizationUri   string `json:"organizationUri"`
 		OrganizationLabel string `json:"organizationLabel"`
 		SchoolUri         string `json:"organizationUri"`
 		SchoolLabel       string `json:"organizationLabel"`
 		PersonUri         string `json:"personUri"`
+        StartDatetimeUri  string `json:"startDatetimeUri"`
+		StartYear         string `json:"startYear"`
+		DateUri           string `json:"dateUri"`
 	} `json:"attributes"`
 }
 
 type WidgetsPerson struct {
 	Uri        string `json:"uri"`
+	VivoType   string `json:"vivoType"`
 	Attributes struct {
 		FirstName         string  `json:"firstName"`
 		LastName          string  `json:"lastName"`
@@ -138,8 +143,6 @@ type WidgetsPerson struct {
 }
 
 type SolrDoc struct {
-	//must remove text vitroIndividual:
-	//DocId string `json:"DocId"`
 	Uri string `json:"URI"`
 }
 
@@ -177,10 +180,21 @@ func widgetsParse(duid string) WidgetsPerson {
 	return person
 }
 
-// this is *not* an independent resource
+// this is *not* an independent resource ?
+// or is it?
 type Keyword struct {
 	Uri   string
 	Label string
+}
+
+// this too ?
+type DateResolver struct {
+	// URI ???
+    //"startDatetimeUri": "https://scholars.duke.edu/individual/dateValue20110902",
+    Uri        string
+	DateTime   time.Time
+	// interval ? start
+	Resolution string
 }
 
 type ResourcePerson struct {
@@ -195,7 +209,9 @@ type ResourcePerson struct {
 }
 
 type ResourcePosition struct {
-	Uri string
+	Uri       string
+	PersonUri string
+	//Start     DateResolver
 }
 
 type ResourceEducation struct {
@@ -302,7 +318,15 @@ func stashPositions(person WidgetsPerson) {
 	db = GetConnection()
 	positions := person.Positions
 	for _, position := range positions {
-		obj := ResourcePosition{position.Uri}
+	
+		// data = StartYear, DateUri ??
+		// startYear = 2002-07-01T00:00:00
+		//start := DateResolver{position.Attributes.StartYear, "year"}
+		// end doesn't have to exists
+		//end := DateResolver{position.Attributes.End, "year"}
+
+		obj := ResourcePosition{position.Uri,
+			position.Attributes.PersonUri}
 		saveResource(obj, position.Uri, "Position")
 	}
 }
@@ -371,7 +395,7 @@ func persistWidgets(cin <-chan WidgetsPerson, dryRun bool, typeName string) {
 }
 
 func resourceTableExists() bool {
-    var exists bool
+	var exists bool
 	db = GetConnection()
 	// FIXME: not sure this is right
 	sqlExists := `SELECT EXISTS (
@@ -380,18 +404,18 @@ func resourceTableExists() bool {
         WHERE  table_catalog = 'vivo_data'
         AND    table_name = 'resources'
     )`
-    err := db.QueryRow(sqlExists).Scan(&exists)
-    if err != nil {
-        log.Fatalln("error checking if row exists %v", err)
-    }
-    return exists
+	err := db.QueryRow(sqlExists).Scan(&exists)
+	if err != nil {
+		log.Fatalln("error checking if row exists %v", err)
+	}
+	return exists
 }
 
 func makeResourceSchema() {
 	// NOTE: using data AND data_b columns since binary json
 	// does NOT keep ordering, it would mess up
 	// any hash based comparison, but it could be still be
-	// useful for querying 
+	// useful for querying
 	sql := `create table resources (
         uri text NOT NULL,
         type text NOT NULL,
@@ -497,18 +521,18 @@ func main() {
 
 	dryRun := flag.Bool("dry-run", false, "just examine widgets parsing")
 	typeName := flag.String("type", "people", "type of thing to import")
-    remove := flag.Bool("remove", false, "should existing records by removed")
+	remove := flag.Bool("remove", false, "should existing records by removed")
 
 	flag.Parse()
 
 	if !resourceTableExists() {
-	    makeResourceSchema()
+		makeResourceSchema()
 	}
 	// NOTE: if we accept a 'type' - wouldn't want to delete all every time
 	if *remove {
 		clearResources()
 	}
-	
+
 	wg.Add(3)
 	uris := produceUris()
 	widgets := processDuids(uris)
