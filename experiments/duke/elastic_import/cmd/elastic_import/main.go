@@ -255,7 +255,7 @@ func makePeopleIndex() {
 	}
 }
 
-func tryToAdd() {
+func addPeople() {
 	ctx := context.Background()
 
 	db = GetConnection()
@@ -328,8 +328,9 @@ func main() {
 		log.Println("m=GetPool,msg=connection has failed", err)
 	}
 
+	// clearPeopleIndex() ??
 	makePeopleIndex()
-	tryToAdd()
+	addPeople()
 
 	defer db.Close()
 
