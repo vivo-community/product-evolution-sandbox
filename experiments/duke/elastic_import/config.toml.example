@@ -1,9 +1,10 @@
+# works with the docker-compose file
 [database]
 server = "localhost"
 port = 5432
 database = "vivo_data"
 user = "vivo_data"
-password = "experiment4"
+password = "vivo_data"
 
 [elastic]
 url = "http://localhost:9200"
