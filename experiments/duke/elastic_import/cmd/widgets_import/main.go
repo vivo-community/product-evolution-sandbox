@@ -471,7 +471,7 @@ func main() {
 	start := time.Now()
 	var err error
 	var configFile string
-	flag.StringVar(&configFile, "c", "./config.toml", "a config filename")
+	flag.StringVar(&configFile, "config", "./config.toml", "a config filename")
 
 	if _, err := toml.DecodeFile(configFile, &conf); err != nil {
 		fmt.Println("could not find config file, use -c option")
@@ -491,14 +491,19 @@ func main() {
 	}
 
 	dryRun := flag.Bool("dry-run", false, "just examine widgets parsing")
-	typeName := flag.String("t", "people", "type of thing to import")
+	typeName := flag.String("type", "people", "type of thing to import")
+    remove := flag.Bool("remove", false, "should existing records by removed")
 
 	flag.Parse()
 
 	if !resourceTableExists() {
 	    makeResourceSchema()
 	}
-	// clearResources() // always? or flag
+	// NOTE: if we accept a 'type' - wouldn't want to delete all every time
+	if *remove {
+		clearResources()
+	}
+	
 	wg.Add(3)
 	uris := produceUris()
 	widgets := processDuids(uris)

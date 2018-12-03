@@ -310,7 +310,7 @@ func main() {
 	start := time.Now()
 	var err error
 	var configFile string
-	flag.StringVar(&configFile, "c", "./config.toml", "a config filename")
+	flag.StringVar(&configFile, "config", "./config.toml", "a config filename")
 
 	if _, err := toml.DecodeFile(configFile, &conf); err != nil {
 		fmt.Println("could not find config file, use -c option")
@@ -327,8 +327,15 @@ func main() {
 	if err != nil {
 		log.Println("m=GetPool,msg=connection has failed", err)
 	}
+    
+	remove := flag.Bool("remove", false, "should existing records by removed")
+	flag.Parse()
 
-	// clearPeopleIndex() ??
+	// NOTE: might always want to do this ?
+    if *remove {
+		clearPeopleIndex()
+		makePeopleIndex()
+	}
 	makePeopleIndex()
 	addPeople()
 
