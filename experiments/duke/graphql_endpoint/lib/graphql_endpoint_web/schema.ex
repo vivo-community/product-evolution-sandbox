@@ -13,5 +13,4 @@ defmodule GraphqlEndpointWeb.Schema do
       arg(:uri, non_null(:string), description: "URI of the person")
     end
   end
-
 end

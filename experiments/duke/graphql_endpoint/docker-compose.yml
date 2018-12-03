@@ -1,0 +1,18 @@
+version: "3"
+services:
+  graphql:
+    build: .
+    working_dir: /app
+    ports:
+      - "4000:4000"
+    command: >
+        bash -c "mix do deps.get, phx.server"
+    volumes:
+      - .:/app
+      - appbuild:/app/_build
+      - appdeps:/app/deps
+
+
+volumes:
+  appbuild: {}
+  appdeps: {}
