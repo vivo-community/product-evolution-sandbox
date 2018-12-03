@@ -54,6 +54,7 @@ type PersonName struct {
 
 type Person struct {
 	Uri          string          `json:"uri"`
+	SourceId     string          `json:"sourceId"`
 	PrimaryTitle string          `json:"primaryTitle"`
 	Name         PersonName      `json:"name" elastic:"type:object"`
 	Image        PersonImage     `json:"image" elastic:"type:object"`
@@ -83,8 +84,10 @@ type Keyword struct {
 	Label string
 }
 
+// need to centralize
 type ResourcePerson struct {
 	Uri               string
+	AlternateId       string
 	FirstName         string
 	LastName          string
 	MiddleName        *string
@@ -389,7 +392,7 @@ func addPeople() {
 			pk := PersonKeyword{keyword.Uri, keyword.Label}
 			keywordList = append(keywordList, pk)
 		}
-		person := Person{resource.Uri, resource.PrimaryTitle, name, image, keywordList}
+		person := Person{resource.Uri, resource.AlternateId,resource.PrimaryTitle, name, image, keywordList}
 		put1, err := client.Index().
 			Index("people").
 			Type("person").
@@ -411,8 +414,14 @@ func addPeople() {
 
 func persistResources(dryRun bool, typeName string) {
 	if dryRun {
-		// list?
+		// what do do here? list?
 		//examineParse(person)
+		switch typeName {
+		case "people":
+			listPeople()
+		case "affiliations":
+			listPositions()
+		}
 	} else {
 		switch typeName {
 		case "people":

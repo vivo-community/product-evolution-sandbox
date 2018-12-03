@@ -134,6 +134,7 @@ type WidgetsPerson struct {
 		ImageUri          string  `json:"imageUri"`
 		PrefixName        string  `json:"prefixName"`
 		ImageThumbnailUri string  `json:"imageThumbnailUri"`
+		AlternateId       string  `json:"alternateId"`
 	} `json:"attributes"`
 	Positions     []Position     `json:"positions"`
 	Educations    []Education    `json:"educations"`
@@ -188,17 +189,18 @@ type Keyword struct {
 }
 
 // this too ?
-type DateResolver struct {
+type DatePrecision struct {
 	// URI ???
     //"startDatetimeUri": "https://scholars.duke.edu/individual/dateValue20110902",
     Uri        string
-	DateTime   time.Time
+	DateTime   time.Time // or just string ..
 	// interval ? start
 	Resolution string
 }
 
 type ResourcePerson struct {
 	Uri               string
+	AlternateId       string
 	FirstName         string
 	LastName          string
 	MiddleName        *string
@@ -211,7 +213,7 @@ type ResourcePerson struct {
 type ResourcePosition struct {
 	Uri       string
 	PersonUri string
-	//Start     DateResolver
+	//Start     DatePrecision
 }
 
 type ResourceEducation struct {
@@ -302,6 +304,7 @@ func stashPerson(person WidgetsPerson) {
 	}
 
 	obj := ResourcePerson{person.Uri,
+	    person.Attributes.AlternateId,
 		person.Attributes.FirstName,
 		person.Attributes.LastName,
 		person.Attributes.MiddleName,
@@ -321,9 +324,8 @@ func stashPositions(person WidgetsPerson) {
 	
 		// data = StartYear, DateUri ??
 		// startYear = 2002-07-01T00:00:00
-		//start := DateResolver{position.Attributes.StartYear, "year"}
-		// end doesn't have to exists
-		//end := DateResolver{position.Attributes.End, "year"}
+		// ???
+		//start := DatePrecision{position.Attributes.StartYear, "year"}
 
 		obj := ResourcePosition{position.Uri,
 			position.Attributes.PersonUri}
@@ -453,7 +455,7 @@ func parseSolr() SolrResults {
 	// FIXME: could allow different numbers (for rows) - and/or paging
 	// -- 100, 1000 -- NOTE: SolrResults has numFound and start
 	//could add-> &sort=timestamp%20asc ??
-	url := "https://scholars.duke.edu/vivosolr?q=type:(*FacultyMember)&fl=URI&rows=100&wt=json"
+	url := "https://scholars.duke.edu/vivosolr?q=type:(*FacultyMember)&fl=URI&rows=1000&wt=json"
 	req, err := http.NewRequest("GET", url, nil)
 
 	if err != nil {
