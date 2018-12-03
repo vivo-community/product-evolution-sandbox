@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
@@ -18,6 +17,7 @@ import (
 	"os"
 	"sync"
 	"time"
+    "strings"
 )
 
 type Config struct {
@@ -138,6 +138,17 @@ type WidgetsPerson struct {
 	ResearchAreas []ResearchArea `json:"researchAreas"`
 }
 
+type SolrDoc struct {
+  //must remove text vitroIndividual:
+  DocId    string `json:"DocId"`
+}
+
+type SolrResults struct {
+	Response struct {
+		Docs        []SolrDoc `json:"docs"`
+    } `json:"response"`
+}
+	
 func widgetsParse(duid string) WidgetsPerson {
 	url := "https://scholars.duke.edu/widgets/api/v0.9/people/complete/all.json?uri=" + duid
 	req, err := http.NewRequest("GET", url, nil)
@@ -352,28 +363,45 @@ func persistWidgets(cin <-chan WidgetsPerson, dryRun bool, typeName string) {
 	}()
 }
 
-func produceDuids(filename string) <-chan string {
+func parseSolr() SolrResults {
+	// FIXME: could allow different numbers (for rows) - and/or paging
+    url := "https://scholars.duke.edu/vivosolr?q=type:(*Person)&fl=DocId&rows=100&wt=json"
+	req, err := http.NewRequest("GET", url, nil)
+
+	if err != nil {
+		// TODO: returning a 'blank' person, should return nil
+		fmt.Println("widgets", err)
+		return SolrResults{}
+	}
+
+	res, err := client.Do(req)
+	body, err := ioutil.ReadAll(res.Body)
+
+	if err != nil {
+		// TODO: returning 'blank' person, should return nil
+		fmt.Println("widgets", err)
+		return SolrResults{}
+	}
+
+	defer res.Body.Close()
+
+	var results SolrResults
+	json.Unmarshal([]byte(body), &results)
+	return results
+
+}
+
+func produceUris() <-chan string {
 	c := make(chan string)
 	defer wg.Done()
 
 	go func() {
-		file, err := os.OpenFile(filename, os.O_RDONLY, os.ModePerm)
-		if err != nil {
-			fmt.Println("could not open file ", filename)
-			close(c)
-			return
-		}
-		defer file.Close()
-
-		sc := bufio.NewScanner(file)
-		for sc.Scan() {
-			c <- sc.Text()
-		}
-		if err := sc.Err(); err != nil {
-			close(c)
-			return
-		}
-		// close
+		solr := parseSolr()
+		spew.Printf("%v\n", solr)
+	    for _, doc := range solr.Response.Docs {
+		  uri := strings.Replace(doc.DocId, "vitroIndividual:", "", -1)
+		  c <- uri
+	    }
 		close(c)
 	}()
 	return c
@@ -406,22 +434,14 @@ func main() {
 		log.Println("m=GetPool,msg=connection has failed", err)
 	}
 
-	var filename string
-
-	flag.StringVar(&filename, "f", "", "a filename")
 	dryRun := flag.Bool("dry-run", false, "just examine widgets parsing")
 	typeName := flag.String("t", "people", "type of thing to import")
 
 	flag.Parse()
 
-	if filename == "" {
-		fmt.Println("need -f filename arg")
-		os.Exit(1)
-	}
-
 	wg.Add(3)
-	duids := produceDuids(filename)
-	widgets := processDuids(duids)
+	uris := produceUris()
+	widgets := processDuids(uris)
 	persistWidgets(widgets, *dryRun, *typeName)
 
 	wg.Wait()
