@@ -198,6 +198,28 @@ func listEducations() {
 	}
 }
 
+func clearPeopleIndex() {
+	// just this: curl -XDELETE localhost:9200/people 
+	ctx := context.Background()
+
+	client, err := elastic.NewClient(elastic.SetURL(conf.Elastic.Url))
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+
+	defer client.Stop()
+
+	deleteIndex, err := client.DeleteIndex("people").Do(ctx)
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+	if !deleteIndex.Acknowledged {
+		// Not acknowledged
+	}
+}
+
 func makePeopleIndex() {
 	ctx := context.Background()
 	t := template.Must(template.New("index").Parse(mappingTemplate))
@@ -239,7 +261,7 @@ func tryToAdd() {
 	db = GetConnection()
 	resources := []Resource{}
 
-	client, err := elastic.NewClient()
+	client, err := elastic.NewClient(elastic.SetURL(conf.Elastic.Url))
 	if err != nil {
 		// Handle error
 		panic(err)

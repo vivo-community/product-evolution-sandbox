@@ -15,7 +15,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	//"strings"
 	"sync"
 	"time"
 )
@@ -372,18 +371,22 @@ func persistWidgets(cin <-chan WidgetsPerson, dryRun bool, typeName string) {
 }
 
 func clearResources() {
-	// empty the table first (every time maybe)?
+	db = GetConnection()
+	sql := `DELETE from resources`
+	tx := db.MustBegin()
+	tx.MustExec(sql)
+
+	err := tx.Commit()
+	if err != nil {
+		log.Fatalln("ERROR(DELETE):%v", err)
+	}
 }
 
 func parseSolr() SolrResults {
 	// FIXME: could allow different numbers (for rows) - and/or paging
-	// -- 100, 1000 ?
-	// maybe just faculty?
-	//{"numFound":6668,"start":0,
-    //could add-> &sort=timestamp%20asc
-	// or just URI ?? 
+	// -- 100, 1000 -- NOTE: SolrResults has numFound and start
+    //could add-> &sort=timestamp%20asc ?? 
 	url := "https://scholars.duke.edu/vivosolr?q=type:(*FacultyMember)&fl=URI&rows=100&wt=json"
-	//url := "https://scholars.duke.edu/vivosolr?q=type:(*Person)&fl=DocId&rows=100&wt=json"
 	req, err := http.NewRequest("GET", url, nil)
 
 	if err != nil {
@@ -454,6 +457,7 @@ func main() {
 
 	flag.Parse()
 
+	// clearResources() // always? or flag
 	wg.Add(3)
 	uris := produceUris()
 	widgets := processDuids(uris)
