@@ -15,9 +15,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	//"strings"
 	"sync"
 	"time"
-    "strings"
 )
 
 type Config struct {
@@ -139,16 +139,19 @@ type WidgetsPerson struct {
 }
 
 type SolrDoc struct {
-  //must remove text vitroIndividual:
-  DocId    string `json:"DocId"`
+	//must remove text vitroIndividual:
+	//DocId string `json:"DocId"`
+	Uri   string `json:"URI"`
 }
 
 type SolrResults struct {
 	Response struct {
-		Docs        []SolrDoc `json:"docs"`
-    } `json:"response"`
+		NumFound int       `json:"numFound"`
+		Start    int       `json:"start"`
+		Docs     []SolrDoc `json:"docs"`
+	} `json:"response"`
 }
-	
+
 func widgetsParse(duid string) WidgetsPerson {
 	url := "https://scholars.duke.edu/widgets/api/v0.9/people/complete/all.json?uri=" + duid
 	req, err := http.NewRequest("GET", url, nil)
@@ -353,6 +356,11 @@ func persistWidgets(cin <-chan WidgetsPerson, dryRun bool, typeName string) {
 					stashEducations(person)
 				case "publications":
 					stashPublications(person)
+				case "all":
+					stashPerson(person)
+					stashPositions(person)
+					stashEducations(person)
+					stashPublications(person)
 				default:
 					stashPerson(person)
 				}
@@ -363,13 +371,22 @@ func persistWidgets(cin <-chan WidgetsPerson, dryRun bool, typeName string) {
 	}()
 }
 
+func clearResources() {
+	// empty the table first (every time maybe)?
+}
+
 func parseSolr() SolrResults {
 	// FIXME: could allow different numbers (for rows) - and/or paging
-    url := "https://scholars.duke.edu/vivosolr?q=type:(*Person)&fl=DocId&rows=100&wt=json"
+	// -- 100, 1000 ?
+	// maybe just faculty?
+	//{"numFound":6668,"start":0,
+    //could add-> &sort=timestamp%20asc
+	// or just URI ?? 
+	url := "https://scholars.duke.edu/vivosolr?q=type:(*FacultyMember)&fl=URI&rows=100&wt=json"
+	//url := "https://scholars.duke.edu/vivosolr?q=type:(*Person)&fl=DocId&rows=100&wt=json"
 	req, err := http.NewRequest("GET", url, nil)
 
 	if err != nil {
-		// TODO: returning a 'blank' person, should return nil
 		fmt.Println("widgets", err)
 		return SolrResults{}
 	}
@@ -378,7 +395,6 @@ func parseSolr() SolrResults {
 	body, err := ioutil.ReadAll(res.Body)
 
 	if err != nil {
-		// TODO: returning 'blank' person, should return nil
 		fmt.Println("widgets", err)
 		return SolrResults{}
 	}
@@ -397,11 +413,10 @@ func produceUris() <-chan string {
 
 	go func() {
 		solr := parseSolr()
-		spew.Printf("%v\n", solr)
-	    for _, doc := range solr.Response.Docs {
-		  uri := strings.Replace(doc.DocId, "vitroIndividual:", "", -1)
-		  c <- uri
-	    }
+		for _, doc := range solr.Response.Docs {
+			uri := doc.Uri
+			c <- uri
+		}
 		close(c)
 	}()
 	return c
