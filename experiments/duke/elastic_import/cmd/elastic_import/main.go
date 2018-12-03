@@ -24,7 +24,7 @@ type Config struct {
 }
 
 type elasticSearch struct {
-    Url string
+	Url string
 }
 
 type database struct {
@@ -54,11 +54,22 @@ type PersonName struct {
 
 type Person struct {
 	Uri          string          `json:"uri"`
+	SourceId     string          `json:"sourceId"`
 	PrimaryTitle string          `json:"primaryTitle"`
 	Name         PersonName      `json:"name" elastic:"type:object"`
 	Image        PersonImage     `json:"image" elastic:"type:object"`
 	KeywordList  []PersonKeyword `json:"keywordList" elastic:"type:nested"`
 }
+
+//type DateResolver struct {
+//	DateTime   string `json:"dateTime"`
+//	Resolution string `json:"resolution"`
+//}
+type Affiliation struct {
+	Uri       string `json:"uri"`
+	PersonUri string `json:"personUri"`
+}
+
 // end elastic data model
 
 // for elastic mapping definitions template
@@ -69,12 +80,14 @@ type Mapping struct {
 // FIXME: centralize - now it's duplicated
 // structs to read from resources table
 type Keyword struct {
-	Uri        string
-	Label      string
+	Uri   string
+	Label string
 }
 
+// need to centralize
 type ResourcePerson struct {
 	Uri               string
+	AlternateId       string
 	FirstName         string
 	LastName          string
 	MiddleName        *string
@@ -82,6 +95,18 @@ type ResourcePerson struct {
 	ImageUri          string
 	ImageThumbnailUri string
 	Keywords          []Keyword
+}
+
+type ResourcePosition struct {
+	Uri       string
+	PersonUri string
+	// needs
+	// 1. personUri
+	// 2. startDate
+	// 3. endDate
+	// 4. label
+	// 5. organizationId
+	// 6. organizationLabel
 }
 
 const mappingTemplate = `{
@@ -120,6 +145,31 @@ const personMapping = `
 		      "label": { "type": "text" }
 	      }
 	    }
+    }
+}`
+
+const affiliationMapping = `
+"affiliation":{
+	"properties":{
+		"personUri": { "type": "text"},
+		"uri":       { "type": "text" },
+		"label":     { "type": "text" },
+		"startDate": {
+			"type": "object",
+			"properties": {
+				"dateTime": "date",
+				"resolution": "text"
+			}
+		},
+		"endDate": {
+			"type": "object",
+			"properties": {
+				"dateTime": "date",
+				"resolution": "text"
+			}
+		},
+		"organizationId" : { "type": "text"},
+		"organizationLabel": { "type": "text"},
     }
 }`
 
@@ -198,8 +248,7 @@ func listEducations() {
 	}
 }
 
-func clearPeopleIndex() {
-	// just this: curl -XDELETE localhost:9200/people 
+func clearIndex(name string) {
 	ctx := context.Background()
 
 	client, err := elastic.NewClient(elastic.SetURL(conf.Elastic.Url))
@@ -210,7 +259,7 @@ func clearPeopleIndex() {
 
 	defer client.Stop()
 
-	deleteIndex, err := client.DeleteIndex("people").Do(ctx)
+	deleteIndex, err := client.DeleteIndex(name).Do(ctx)
 	if err != nil {
 		// Handle error
 		panic(err)
@@ -220,10 +269,19 @@ func clearPeopleIndex() {
 	}
 }
 
-func makePeopleIndex() {
+func clearPeopleIndex() {
+	clearIndex("people")
+}
+
+func clearAffiliationIndex() {
+	clearIndex("affiliations")
+}
+
+// NOTE: 'mappingJson' is just a json string plugged into template
+func makeIndex(name string, mappingJson string) {
 	ctx := context.Background()
 	t := template.Must(template.New("index").Parse(mappingTemplate))
-	mapping := Mapping{personMapping}
+	mapping := Mapping{mappingJson}
 	var tpl bytes.Buffer
 	if err := t.Execute(&tpl, mapping); err != nil {
 		log.Fatalln(err)
@@ -237,14 +295,14 @@ func makePeopleIndex() {
 	defer client.Stop()
 
 	// Use the IndexExists service to check if a specified index exists.
-	exists, err := client.IndexExists("people").Do(ctx)
+	exists, err := client.IndexExists(name).Do(ctx)
 	if err != nil {
 		// Handle error
 		panic(err)
 	}
 	if !exists {
 		// Create a new index.
-		createIndex, err := client.CreateIndex("people").BodyString(tpl.String()).Do(ctx)
+		createIndex, err := client.CreateIndex(name).BodyString(tpl.String()).Do(ctx)
 		if err != nil {
 			// Handle error
 			panic(err)
@@ -252,6 +310,55 @@ func makePeopleIndex() {
 		if !createIndex.Acknowledged {
 			// Not acknowledged
 		}
+	}
+}
+
+func makeAffiliationsIndex() {
+	makeIndex("affiliations", affiliationMapping)
+}
+
+func makePeopleIndex() {
+	makeIndex("people", personMapping)
+}
+
+func addAffiliations() {
+	ctx := context.Background()
+
+	db = GetConnection()
+	resources := []Resource{}
+
+	client, err := elastic.NewClient(elastic.SetURL(conf.Elastic.Url))
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+
+	defer client.Stop()
+
+	err = db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Position")
+	for _, element := range resources {
+		// NOTE: this is the main difference between types
+		resource := ResourcePosition{}
+		data := element.Data
+		json.Unmarshal(data, &resource)
+
+		affiliation := Affiliation{resource.Uri, resource.PersonUri}
+		put1, err := client.Index().
+			Index("affiliations").
+			Type("affiliation").
+			// TODO: to give ID or not?
+			//Id(resource.Uri).
+			BodyJson(affiliation).
+			Do(ctx)
+		if err != nil {
+			// Handle error
+			panic(err)
+		}
+		fmt.Printf("Indexed person %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
+		log.Println(element)
+	}
+	if err != nil {
+		log.Fatalln(err)
 	}
 }
 
@@ -271,6 +378,7 @@ func addPeople() {
 
 	err = db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Person")
 	for _, element := range resources {
+		// NOTE: this is the main difference between types
 		resource := ResourcePerson{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
@@ -278,13 +386,13 @@ func addPeople() {
 		name := PersonName{resource.FirstName, resource.LastName,
 			resource.MiddleName}
 		image := PersonImage{resource.ImageUri, resource.ImageThumbnailUri}
-		
+
 		var keywordList []PersonKeyword
 		for _, keyword := range resource.Keywords {
 			pk := PersonKeyword{keyword.Uri, keyword.Label}
-		    keywordList = append(keywordList, pk)
+			keywordList = append(keywordList, pk)
 		}
-		person := Person{resource.Uri, resource.PrimaryTitle, name, image, keywordList}
+		person := Person{resource.Uri, resource.AlternateId,resource.PrimaryTitle, name, image, keywordList}
 		put1, err := client.Index().
 			Index("people").
 			Type("person").
@@ -304,13 +412,35 @@ func addPeople() {
 	}
 }
 
+func persistResources(dryRun bool, typeName string) {
+	if dryRun {
+		// what do do here? list?
+		//examineParse(person)
+		switch typeName {
+		case "people":
+			listPeople()
+		case "affiliations":
+			listPositions()
+		}
+	} else {
+		switch typeName {
+		case "people":
+			makePeopleIndex() /* won't make if already exists */
+			addPeople()
+		case "affiliations":
+			makeAffiliationsIndex()
+			addAffiliations()
+		}
+	}
+}
+
 var conf Config
 
 func main() {
 	start := time.Now()
 	var err error
 	var configFile string
-	flag.StringVar(&configFile, "c", "./config.toml", "a config filename")
+	flag.StringVar(&configFile, "config", "./config.toml", "a config filename")
 
 	if _, err := toml.DecodeFile(configFile, &conf); err != nil {
 		fmt.Println("could not find config file, use -c option")
@@ -328,9 +458,24 @@ func main() {
 		log.Println("m=GetPool,msg=connection has failed", err)
 	}
 
-	// clearPeopleIndex() ??
-	makePeopleIndex()
-	addPeople()
+	dryRun := flag.Bool("dry-run", false, "just examine resources to be saved")
+	remove := flag.Bool("remove", false, "should existing records by removed")
+	typeName := flag.String("type", "people", "type of records to import")
+
+	flag.Parse()
+
+	// NOTE: might always want to do this ?
+	if *remove {
+		// based on typeName ???
+		// clear all indexes ???
+		clearPeopleIndex()
+		//makePeopleIndex()
+
+		//clearAffiliationsIndex()
+		// makeAffiliationsIndex()
+	}
+
+	persistResources(*dryRun, *typeName)
 
 	defer db.Close()
 

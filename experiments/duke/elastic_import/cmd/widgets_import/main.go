@@ -107,17 +107,22 @@ type Education struct {
 type Position struct {
 	Uri        string `json:"uri"`
 	Label      string `json:"label"`
+	VivoType   string `json:"vivoType"`
 	Attributes struct {
 		OrganizationUri   string `json:"organizationUri"`
 		OrganizationLabel string `json:"organizationLabel"`
 		SchoolUri         string `json:"organizationUri"`
 		SchoolLabel       string `json:"organizationLabel"`
 		PersonUri         string `json:"personUri"`
+        StartDatetimeUri  string `json:"startDatetimeUri"`
+		StartYear         string `json:"startYear"`
+		DateUri           string `json:"dateUri"`
 	} `json:"attributes"`
 }
 
 type WidgetsPerson struct {
 	Uri        string `json:"uri"`
+	VivoType   string `json:"vivoType"`
 	Attributes struct {
 		FirstName         string  `json:"firstName"`
 		LastName          string  `json:"lastName"`
@@ -129,6 +134,7 @@ type WidgetsPerson struct {
 		ImageUri          string  `json:"imageUri"`
 		PrefixName        string  `json:"prefixName"`
 		ImageThumbnailUri string  `json:"imageThumbnailUri"`
+		AlternateId       string  `json:"alternateId"`
 	} `json:"attributes"`
 	Positions     []Position     `json:"positions"`
 	Educations    []Education    `json:"educations"`
@@ -138,9 +144,7 @@ type WidgetsPerson struct {
 }
 
 type SolrDoc struct {
-	//must remove text vitroIndividual:
-	//DocId string `json:"DocId"`
-	Uri   string `json:"URI"`
+	Uri string `json:"URI"`
 }
 
 type SolrResults struct {
@@ -177,14 +181,26 @@ func widgetsParse(duid string) WidgetsPerson {
 	return person
 }
 
-// this is *not* an independent resource
+// this is *not* an independent resource ?
+// or is it?
 type Keyword struct {
 	Uri   string
 	Label string
 }
 
+// this too ?
+type DatePrecision struct {
+	// URI ???
+    //"startDatetimeUri": "https://scholars.duke.edu/individual/dateValue20110902",
+    Uri        string
+	DateTime   time.Time // or just string ..
+	// interval ? start
+	Resolution string
+}
+
 type ResourcePerson struct {
 	Uri               string
+	AlternateId       string
 	FirstName         string
 	LastName          string
 	MiddleName        *string
@@ -195,7 +211,9 @@ type ResourcePerson struct {
 }
 
 type ResourcePosition struct {
-	Uri string
+	Uri       string
+	PersonUri string
+	//Start     DatePrecision
 }
 
 type ResourceEducation struct {
@@ -286,6 +304,7 @@ func stashPerson(person WidgetsPerson) {
 	}
 
 	obj := ResourcePerson{person.Uri,
+	    person.Attributes.AlternateId,
 		person.Attributes.FirstName,
 		person.Attributes.LastName,
 		person.Attributes.MiddleName,
@@ -302,7 +321,14 @@ func stashPositions(person WidgetsPerson) {
 	db = GetConnection()
 	positions := person.Positions
 	for _, position := range positions {
-		obj := ResourcePosition{position.Uri}
+	
+		// data = StartYear, DateUri ??
+		// startYear = 2002-07-01T00:00:00
+		// ???
+		//start := DatePrecision{position.Attributes.StartYear, "year"}
+
+		obj := ResourcePosition{position.Uri,
+			position.Attributes.PersonUri}
 		saveResource(obj, position.Uri, "Position")
 	}
 }
@@ -370,6 +396,49 @@ func persistWidgets(cin <-chan WidgetsPerson, dryRun bool, typeName string) {
 	}()
 }
 
+func resourceTableExists() bool {
+	var exists bool
+	db = GetConnection()
+	// FIXME: not sure this is right
+	sqlExists := `SELECT EXISTS (
+        SELECT 1
+        FROM   information_schema.tables 
+        WHERE  table_catalog = 'vivo_data'
+        AND    table_name = 'resources'
+    )`
+	err := db.QueryRow(sqlExists).Scan(&exists)
+	if err != nil {
+		log.Fatalln("error checking if row exists %v", err)
+	}
+	return exists
+}
+
+func makeResourceSchema() {
+	// NOTE: using data AND data_b columns since binary json
+	// does NOT keep ordering, it would mess up
+	// any hash based comparison, but it could be still be
+	// useful for querying
+	sql := `create table resources (
+        uri text NOT NULL,
+        type text NOT NULL,
+        hash text NOT NULL,
+        data json NOT NULL,
+        data_b jsonb NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        PRIMARY KEY(uri, type)
+    )`
+
+	db = GetConnection()
+	tx := db.MustBegin()
+	tx.MustExec(sql)
+
+	err := tx.Commit()
+	if err != nil {
+		log.Fatalln("ERROR(CREATE):%v", err)
+	}
+}
+
 func clearResources() {
 	db = GetConnection()
 	sql := `DELETE from resources`
@@ -385,8 +454,8 @@ func clearResources() {
 func parseSolr() SolrResults {
 	// FIXME: could allow different numbers (for rows) - and/or paging
 	// -- 100, 1000 -- NOTE: SolrResults has numFound and start
-    //could add-> &sort=timestamp%20asc ?? 
-	url := "https://scholars.duke.edu/vivosolr?q=type:(*FacultyMember)&fl=URI&rows=100&wt=json"
+	//could add-> &sort=timestamp%20asc ??
+	url := "https://scholars.duke.edu/vivosolr?q=type:(*FacultyMember)&fl=URI&rows=1000&wt=json"
 	req, err := http.NewRequest("GET", url, nil)
 
 	if err != nil {
@@ -433,7 +502,7 @@ func main() {
 	start := time.Now()
 	var err error
 	var configFile string
-	flag.StringVar(&configFile, "c", "./config.toml", "a config filename")
+	flag.StringVar(&configFile, "config", "./config.toml", "a config filename")
 
 	if _, err := toml.DecodeFile(configFile, &conf); err != nil {
 		fmt.Println("could not find config file, use -c option")
@@ -453,11 +522,19 @@ func main() {
 	}
 
 	dryRun := flag.Bool("dry-run", false, "just examine widgets parsing")
-	typeName := flag.String("t", "people", "type of thing to import")
+	typeName := flag.String("type", "people", "type of thing to import")
+	remove := flag.Bool("remove", false, "should existing records by removed")
 
 	flag.Parse()
 
-	// clearResources() // always? or flag
+	if !resourceTableExists() {
+		makeResourceSchema()
+	}
+	// NOTE: if we accept a 'type' - wouldn't want to delete all every time
+	if *remove {
+		clearResources()
+	}
+
 	wg.Add(3)
 	uris := produceUris()
 	widgets := processDuids(uris)
