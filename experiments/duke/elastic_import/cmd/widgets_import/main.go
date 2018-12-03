@@ -140,7 +140,7 @@ type WidgetsPerson struct {
 type SolrDoc struct {
 	//must remove text vitroIndividual:
 	//DocId string `json:"DocId"`
-	Uri   string `json:"URI"`
+	Uri string `json:"URI"`
 }
 
 type SolrResults struct {
@@ -370,6 +370,44 @@ func persistWidgets(cin <-chan WidgetsPerson, dryRun bool, typeName string) {
 	}()
 }
 
+func resourceTableExists() bool {
+    var exists bool
+	db = GetConnection()
+	sqlExists := `SELECT EXISTS (
+        SELECT 1
+        FROM   information_schema.tables 
+        WHERE  table_catalog = 'vivo_data'
+        AND    table_name = 'resources'
+    )`
+    err := db.QueryRow(sqlExists).Scan(&exists)
+    if err != nil {
+        log.Fatalln("error checking if row exists %v", err)
+    }
+    return exists
+}
+
+func makeResourceSchema() {
+	sql := `create table resources (
+        uri text NOT NULL,
+        type text NOT NULL,
+        hash text NOT NULL,
+        data json NOT NULL,
+        data_b jsonb NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        PRIMARY KEY(uri, type)
+    )`
+
+	db = GetConnection()
+	tx := db.MustBegin()
+	tx.MustExec(sql)
+
+	err := tx.Commit()
+	if err != nil {
+		log.Fatalln("ERROR(CREATE):%v", err)
+	}
+}
+
 func clearResources() {
 	db = GetConnection()
 	sql := `DELETE from resources`
@@ -385,7 +423,7 @@ func clearResources() {
 func parseSolr() SolrResults {
 	// FIXME: could allow different numbers (for rows) - and/or paging
 	// -- 100, 1000 -- NOTE: SolrResults has numFound and start
-    //could add-> &sort=timestamp%20asc ?? 
+	//could add-> &sort=timestamp%20asc ??
 	url := "https://scholars.duke.edu/vivosolr?q=type:(*FacultyMember)&fl=URI&rows=100&wt=json"
 	req, err := http.NewRequest("GET", url, nil)
 
@@ -457,6 +495,9 @@ func main() {
 
 	flag.Parse()
 
+	if !resourceTableExists() {
+	    makeResourceSchema()
+	}
 	// clearResources() // always? or flag
 	wg.Add(3)
 	uris := produceUris()
