@@ -17,7 +17,55 @@ import (
 	"os"
 	"sync"
 	"time"
+    "github.com/OIT-ads-web/widgets_import"
 )
+
+/*
+// ********** database json column structs:
+// NOTE: this is *not* an independent resource, should it be?
+type Keyword struct {
+	Uri   string
+	Label string
+}
+
+// neither is this -in RDF it has to be, but seems like overkill
+type DateResolution struct {
+	//Uri        string
+	DateTime   string
+	Resolution string
+}
+
+type ResourcePerson struct {
+	Uri               string
+	AlternateId       string
+	FirstName         string
+	LastName          string
+	MiddleName        *string
+	PrimaryTitle      string
+	ImageUri          string
+	ImageThumbnailUri string
+	Type              string
+	Keywords          []Keyword
+}
+
+type ResourcePosition struct {
+	Uri               string
+	PersonUri         string
+	Label             string
+	Start             DateResolution
+	OrganizationUri   string
+	OrganizationLabel string
+}
+
+type ResourceEducation struct {
+	Uri string
+}
+
+type ResourcePublication struct {
+	Uri string
+}
+*/
+// ********** end database json structs
 
 type Config struct {
 	Database database
@@ -190,6 +238,7 @@ func widgetsParse(uri string) WidgetsPerson {
 
 // ********** database json column structs:
 // NOTE: this is *not* an independent resource, should it be?
+/*
 type Keyword struct {
 	Uri   string
 	Label string
@@ -232,6 +281,7 @@ type ResourcePublication struct {
 	Uri string
 }
 // ********** end database json structs
+*/
 
 //https://stackoverflow.com/questions/2377881/how-to-get-a-md5-hash-from-a-string-in-golang
 //https://stackoverflow.com/questions/2377881/how-to-get-a-md5-hash-from-a-string-in-golang
@@ -306,13 +356,13 @@ func stashPerson(person WidgetsPerson) {
 
 	// FIXME: if person.Uri is null - should probably exit
 	researchAreas := person.ResearchAreas
-	var keywords []Keyword
+	var keywords []widgets_import.Keyword
 	for _, area := range researchAreas {
-		keyword := Keyword{area.Uri, area.Label}
+		keyword := widgets_import.Keyword{area.Uri, area.Label}
 		keywords = append(keywords, keyword)
 	}
 
-	obj := ResourcePerson{person.Uri,
+	obj := widgets_import.ResourcePerson{person.Uri,
 		person.Attributes.AlternateId,
 		person.Attributes.FirstName,
 		person.Attributes.LastName,
@@ -326,13 +376,13 @@ func stashPerson(person WidgetsPerson) {
 	saveResource(obj, person.Uri, "Person")
 }
 
-func makePositionDate(position Position) DateResolution {
+func makePositionDate(position Position) widgets_import.DateResolution {
 	// NOTE: to make return nil return *DateResolution and ...
 	//if position.Attributes.StartYear == nil {
 	//	return nil
 	//}
 	//return &DateResolution{*position.Attributes.StartYear, "year"}
-	return DateResolution{position.Attributes.StartYear, "year"}
+	return widgets_import.DateResolution{position.Attributes.StartYear, "year"}
 }
 
 func stashPositions(person WidgetsPerson) {
@@ -342,7 +392,7 @@ func stashPositions(person WidgetsPerson) {
 	for _, position := range positions {
 
 		start := makePositionDate(position)
-		obj := ResourcePosition{position.Uri,
+		obj := widgets_import.ResourcePosition{position.Uri,
 			position.Attributes.PersonUri,
 			position.Label,
 			start,
@@ -358,7 +408,7 @@ func stashPublications(person WidgetsPerson) {
 	db = GetConnection()
 	publications := person.Publications
 	for _, publication := range publications {
-		obj := ResourcePublication{publication.Uri}
+		obj := widgets_import.ResourcePublication{publication.Uri}
 		saveResource(obj, publication.Uri, "Publication")
 	}
 }
@@ -368,7 +418,7 @@ func stashEducations(person WidgetsPerson) {
 	db = GetConnection()
 	educations := person.Educations
 	for _, education := range educations {
-		obj := ResourceEducation{education.Uri}
+		obj := widgets_import.ResourceEducation{education.Uri}
 		saveResource(obj, education.Uri, "Education")
 	}
 }

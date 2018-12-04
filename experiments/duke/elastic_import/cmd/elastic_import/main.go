@@ -13,9 +13,10 @@ import (
 	"github.com/olivere/elastic"
 	"log"
 	"os"
-	"text/template"
 	"time"
-)
+	"text/template"
+    "github.com/OIT-ads-web/widgets_import"
+) 
 
 type Config struct {
 	Database database
@@ -51,6 +52,12 @@ type PersonName struct {
 	MiddleName *string `json:"middleName"`
 }
 
+type PersonType struct {
+	Code  string `json:"code"`
+	Label string `json:"label"`
+}
+
+// does overview really need to be a list
 type Person struct {
 	Uri          string          `json:"uri"`
 	SourceId     string          `json:"sourceId"`
@@ -83,6 +90,7 @@ type Mapping struct {
 
 // FIXME: centralize - now it's duplicated
 // structs to read from resources table
+/*
 type DateResolution struct {
 	//Uri        string
 	DateTime   string
@@ -115,6 +123,7 @@ type ResourcePosition struct {
 	OrganizationUri   string
 	OrganizationLabel string
 }
+*/
 
 const mappingTemplate = `{
 	"settings":{
@@ -289,6 +298,7 @@ func clearResources(typeName string) {
 		clearAffiliationsIndex()
 	}
 }
+
 // NOTE: 'mappingJson' is just a json string plugged into template
 func makeIndex(name string, mappingJson string) {
 	ctx := context.Background()
@@ -333,7 +343,7 @@ func makePeopleIndex() {
 	makeIndex("people", personMapping)
 }
 
-func makeDate(position ResourcePosition) Date {
+func makeDate(position widgets_import.ResourcePosition) Date {
 	// NOTE: to make nullable, return *Date and ...
 	//if position.Start == nil {
 	//	  return nil
@@ -359,7 +369,7 @@ func addAffiliations() {
 	err = db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Position")
 	for _, element := range resources {
 		// NOTE: this is the main difference between types
-		resource := ResourcePosition{}
+		resource := widgets_import.ResourcePosition{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
@@ -408,7 +418,7 @@ func addPeople() {
 	err = db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Person")
 	for _, element := range resources {
 		// NOTE: this is the main difference between types
-		resource := ResourcePerson{}
+		resource := widgets_import.ResourcePerson{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
@@ -416,6 +426,7 @@ func addPeople() {
 			resource.MiddleName}
 		image := PersonImage{resource.ImageUri, resource.ImageThumbnailUri}
 
+		// type := PersonType{resource.?}
 		var keywordList []PersonKeyword
 		for _, keyword := range resource.Keywords {
 			pk := PersonKeyword{keyword.Uri, keyword.Label}
@@ -496,7 +507,7 @@ func main() {
 	// NOTE: either remove OR add?
 	if *remove {
 		clearResources(*typeName)
-	} else { 
+	} else {
 		persistResources(*dryRun, *typeName)
 	}
 
