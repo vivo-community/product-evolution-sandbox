@@ -7,16 +7,16 @@ import (
 	"flag"
 	"fmt"
 	"github.com/BurntSushi/toml"
+	"github.com/OIT-ads-web/widgets_import"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
 	_ "github.com/lib/pq"
 	"github.com/olivere/elastic"
 	"log"
 	"os"
-	"time"
 	"text/template"
-    "github.com/OIT-ads-web/widgets_import"
-) 
+	"time"
+)
 
 /*
 type Config struct {
@@ -59,14 +59,27 @@ type PersonType struct {
 	Label string `json:"label"`
 }
 
+type OverviewType struct {
+	Code  string `json:"code"`
+	Label string `json:"label"`
+}
+
+type PersonOverview struct {
+	// Uri ??
+	Label string       `json:"overview"`
+	Type  OverviewType `json:"type"`
+}
+
 // does overview really need to be a list
 type Person struct {
-	Uri          string          `json:"uri"`
-	SourceId     string          `json:"sourceId"`
-	PrimaryTitle string          `json:"primaryTitle"`
-	Name         PersonName      `json:"name" elastic:"type:object"`
-	Image        PersonImage     `json:"image" elastic:"type:object"`
-	KeywordList  []PersonKeyword `json:"keywordList" elastic:"type:nested"`
+	Uri          string           `json:"uri"`
+	SourceId     string           `json:"sourceId"`
+	PrimaryTitle string           `json:"primaryTitle"`
+	Name         PersonName       `json:"name" elastic:"type:object"`
+	Image        PersonImage      `json:"image" elastic:"type:object"`
+	Type         PersonType       `json:"type" elastic:"type:object"`
+	OverviewList []PersonOverview `json:"overviewList" elastic:"type:nested"`
+	KeywordList  []PersonKeyword  `json:"keywordList" elastic:"type:nested"`
 }
 
 type Date struct {
@@ -89,43 +102,6 @@ type Affiliation struct {
 type Mapping struct {
 	Definition string
 }
-
-// FIXME: centralize - now it's duplicated
-// structs to read from resources table
-/*
-type DateResolution struct {
-	//Uri        string
-	DateTime   string
-	Resolution string
-}
-
-type Keyword struct {
-	Uri   string
-	Label string
-}
-
-// need to centralize
-type ResourcePerson struct {
-	Uri               string
-	AlternateId       string
-	FirstName         string
-	LastName          string
-	MiddleName        *string
-	PrimaryTitle      string
-	ImageUri          string
-	ImageThumbnailUri string
-	Keywords          []Keyword
-}
-
-type ResourcePosition struct {
-	Uri               string
-	PersonUri         string
-	Label             string
-	Start             *DateResolution
-	OrganizationUri   string
-	OrganizationLabel string
-}
-*/
 
 const mappingTemplate = `{
 	"settings":{
@@ -428,13 +404,20 @@ func addPeople() {
 			resource.MiddleName}
 		image := PersonImage{resource.ImageUri, resource.ImageThumbnailUri}
 
-		// type := PersonType{resource.?}
+		personType := PersonType{resource.Type, resource.Type}
+		// keywords
 		var keywordList []PersonKeyword
 		for _, keyword := range resource.Keywords {
 			pk := PersonKeyword{keyword.Uri, keyword.Label}
 			keywordList = append(keywordList, pk)
 		}
-		person := Person{resource.Uri, resource.AlternateId, resource.PrimaryTitle, name, image, keywordList}
+
+		//overviews
+		var overviewList []PersonOverview
+		overview := PersonOverview{resource.Overview, OverviewType{"overview", "Overview"}}
+		overviewList = append(overviewList, overview)
+		person := Person{resource.Uri, resource.AlternateId, resource.PrimaryTitle,
+			name, image, personType, overviewList, keywordList}
 		put1, err := client.Index().
 			Index("people").
 			Type("person").

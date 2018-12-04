@@ -23,6 +23,7 @@ type ResourcePerson struct {
 	ImageUri          string
 	ImageThumbnailUri string
 	Type              string
+	Overview          string
 	Keywords          []Keyword
 }
 

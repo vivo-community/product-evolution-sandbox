@@ -264,6 +264,7 @@ func stashPerson(person WidgetsPerson) {
 		person.Attributes.ImageUri,
 		person.Attributes.ImageThumbnailUri,
 		person.VivoType,
+		person.Attributes.Overview,
 		keywords}
 
 	saveResource(obj, person.Uri, "Person")
