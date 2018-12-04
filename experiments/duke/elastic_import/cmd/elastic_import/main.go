@@ -4,12 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
+	"github.com/BurntSushi/toml"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
-	// NOTE: empty import is needed cause segfault
-	"flag"
-	"github.com/BurntSushi/toml"
 	_ "github.com/lib/pq"
 	"github.com/olivere/elastic"
 	"log"
@@ -275,10 +274,21 @@ func clearPeopleIndex() {
 	clearIndex("people")
 }
 
-func clearAffiliationIndex() {
+func clearAffiliationsIndex() {
 	clearIndex("affiliations")
 }
 
+func clearResources(typeName string) {
+	switch typeName {
+	case "people":
+		clearPeopleIndex()
+	case "affiliations":
+		clearAffiliationsIndex()
+	case "all":
+		clearPeopleIndex()
+		clearAffiliationsIndex()
+	}
+}
 // NOTE: 'mappingJson' is just a json string plugged into template
 func makeIndex(name string, mappingJson string) {
 	ctx := context.Background()
@@ -478,23 +488,17 @@ func main() {
 	}
 
 	dryRun := flag.Bool("dry-run", false, "just examine resources to be saved")
-	remove := flag.Bool("remove", false, "should existing records by removed")
+	remove := flag.Bool("remove", false, "remove existing records")
 	typeName := flag.String("type", "people", "type of records to import")
 
 	flag.Parse()
 
-	// NOTE: might always want to do this ?
+	// NOTE: either remove OR add?
 	if *remove {
-		// based on typeName ???
-		// clear all indexes ???
-		clearPeopleIndex()
-		//makePeopleIndex()
-
-		//clearAffiliationsIndex()
-		// makeAffiliationsIndex()
+		clearResources(*typeName)
+	} else { 
+		persistResources(*dryRun, *typeName)
 	}
-
-	persistResources(*dryRun, *typeName)
 
 	defer db.Close()
 

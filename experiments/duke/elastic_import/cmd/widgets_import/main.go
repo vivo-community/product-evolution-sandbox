@@ -63,6 +63,7 @@ func createHTTPClient() *http.Client {
 	return client
 }
 
+// widgets structs
 type ResearchArea struct {
 	Uri        string `json:"uri"`
 	Label      string `json:"label"`
@@ -137,6 +138,7 @@ type WidgetsPerson struct {
 		PrefixName        string  `json:"prefixName"`
 		ImageThumbnailUri string  `json:"imageThumbnailUri"`
 		AlternateId       string  `json:"alternateId"`
+		Overview          string  `json:"overview"`
 	} `json:"attributes"`
 	Positions     []Position     `json:"positions"`
 	Educations    []Education    `json:"educations"`
@@ -144,6 +146,7 @@ type WidgetsPerson struct {
 	Addresses     []Address      `json:"addresses"`
 	ResearchAreas []ResearchArea `json:"researchAreas"`
 }
+// ********* end widgets structs
 
 type SolrDoc struct {
 	Uri string `json:"URI"`
@@ -184,13 +187,15 @@ func widgetsParse(uri string) WidgetsPerson {
 	return person
 }
 
-// this is *not* an independent resource ?
-// or is it?
+
+// ********** database json column structs:
+// NOTE: this is *not* an independent resource, should it be?
 type Keyword struct {
 	Uri   string
 	Label string
 }
 
+// neither is this -in RDF it has to be, but seems like overkill
 type DateResolution struct {
 	//Uri        string
 	DateTime   string
@@ -206,6 +211,7 @@ type ResourcePerson struct {
 	PrimaryTitle      string
 	ImageUri          string
 	ImageThumbnailUri string
+	Type              string
 	Keywords          []Keyword
 }
 
@@ -225,6 +231,7 @@ type ResourceEducation struct {
 type ResourcePublication struct {
 	Uri string
 }
+// ********** end database json structs
 
 //https://stackoverflow.com/questions/2377881/how-to-get-a-md5-hash-from-a-string-in-golang
 //https://stackoverflow.com/questions/2377881/how-to-get-a-md5-hash-from-a-string-in-golang
@@ -313,6 +320,7 @@ func stashPerson(person WidgetsPerson) {
 		person.Attributes.PreferredTitle,
 		person.Attributes.ImageUri,
 		person.Attributes.ImageThumbnailUri,
+		person.VivoType,
 		keywords}
 
 	saveResource(obj, person.Uri, "Person")
@@ -451,9 +459,17 @@ func makeResourceSchema() {
 	}
 }
 
-func clearResources() {
+func clearResources(typeName string) {
 	db = GetConnection()
 	sql := `DELETE from resources`
+
+    switch typeName {
+        case "people":
+			sql += " WHERE type='Person'"
+		case "positions":
+			sql += " WHERE type='Position'"
+		case "all":// noop
+	}
 	tx := db.MustBegin()
 	tx.MustExec(sql)
 
@@ -535,24 +551,25 @@ func main() {
 
 	dryRun := flag.Bool("dry-run", false, "just examine widgets parsing")
 	typeName := flag.String("type", "people", "type of thing to import")
-	remove := flag.Bool("remove", false, "should existing records by removed")
+	remove := flag.Bool("remove", false, "remove existing records")
 
 	flag.Parse()
 
 	if !resourceTableExists() {
 		makeResourceSchema()
 	}
-	// NOTE: if we accept a 'type' - wouldn't want to delete all every time
+	
+	// NOTE: either remove OR add?
 	if *remove {
-		clearResources()
+		clearResources(*typeName)
+	} else {  
+		wg.Add(3)
+	    uris := produceUris()
+	    widgets := processUris(uris)
+	    persistWidgets(widgets, *dryRun, *typeName)
+
+	    wg.Wait()
 	}
-
-	wg.Add(3)
-	uris := produceUris()
-	widgets := processUris(uris)
-	persistWidgets(widgets, *dryRun, *typeName)
-
-	wg.Wait()
 
 	defer db.Close()
 
