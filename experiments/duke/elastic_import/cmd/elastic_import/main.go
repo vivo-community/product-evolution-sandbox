@@ -61,13 +61,18 @@ type Person struct {
 	KeywordList  []PersonKeyword `json:"keywordList" elastic:"type:nested"`
 }
 
-//type DateResolver struct {
-//	DateTime   string `json:"dateTime"`
-//	Resolution string `json:"resolution"`
-//}
+type Date struct {
+	DateTime   string `json:"dateTime"`
+	Resolution string `json:"resolution"`
+}
+
 type Affiliation struct {
-	Uri       string `json:"uri"`
-	PersonUri string `json:"personUri"`
+	Uri               string `json:"uri"`
+	PersonId          string `json:"personId"`
+	Label             string `json:"label"`
+	StartDate         *Date   `json:"startDate"`
+	OrganizationId    string `json:"organizationId"`
+	OrganizationLabel string `json:"organizationLabel"`
 }
 
 // end elastic data model
@@ -79,6 +84,12 @@ type Mapping struct {
 
 // FIXME: centralize - now it's duplicated
 // structs to read from resources table
+type DateResolution struct {
+	//Uri        string
+	DateTime   string
+	Resolution string
+}
+
 type Keyword struct {
 	Uri   string
 	Label string
@@ -98,15 +109,12 @@ type ResourcePerson struct {
 }
 
 type ResourcePosition struct {
-	Uri       string
-	PersonUri string
-	// needs
-	// 1. personUri
-	// 2. startDate
-	// 3. endDate
-	// 4. label
-	// 5. organizationId
-	// 6. organizationLabel
+	Uri               string
+	PersonUri         string
+	Label             string
+	Start             *DateResolution
+	OrganizationUri   string
+	OrganizationLabel string
 }
 
 const mappingTemplate = `{
@@ -151,25 +159,18 @@ const personMapping = `
 const affiliationMapping = `
 "affiliation":{
 	"properties":{
-		"personUri": { "type": "text"},
+		"personUri": { "type": "text" },
 		"uri":       { "type": "text" },
 		"label":     { "type": "text" },
 		"startDate": {
 			"type": "object",
 			"properties": {
-				"dateTime": "date",
-				"resolution": "text"
+				"dateTime":   { "type": "date" },
+				"resolution": { "type": "text" }
 			}
 		},
-		"endDate": {
-			"type": "object",
-			"properties": {
-				"dateTime": "date",
-				"resolution": "text"
-			}
-		},
-		"organizationId" : { "type": "text"},
-		"organizationLabel": { "type": "text"},
+		"organizationId":   { "type": "text"},
+		"organizationLabel": { "type": "text"}
     }
 }`
 
@@ -321,6 +322,14 @@ func makePeopleIndex() {
 	makeIndex("people", personMapping)
 }
 
+// FIXME: this doesn't seem quite right
+func makeDate(position ResourcePosition) *Date {
+  if position.Start == nil {
+	  return nil
+  }
+  return &Date{position.Start.DateTime, position.Start.Resolution}
+}
+
 func addAffiliations() {
 	ctx := context.Background()
 
@@ -342,7 +351,16 @@ func addAffiliations() {
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		affiliation := Affiliation{resource.Uri, resource.PersonUri}
+		// what if blank?
+		//date := Date{resource.Start.DateTime, resource.Start.Resolution}
+		date := makeDate(resource)
+
+		affiliation := Affiliation{resource.Uri, 
+		    resource.PersonUri,
+		    resource.Label,
+		    date,
+		    resource.OrganizationUri,
+		    resource.OrganizationLabel}
 		put1, err := client.Index().
 			Index("affiliations").
 			Type("affiliation").
@@ -392,7 +410,7 @@ func addPeople() {
 			pk := PersonKeyword{keyword.Uri, keyword.Label}
 			keywordList = append(keywordList, pk)
 		}
-		person := Person{resource.Uri, resource.AlternateId,resource.PrimaryTitle, name, image, keywordList}
+		person := Person{resource.Uri, resource.AlternateId, resource.PrimaryTitle, name, image, keywordList}
 		put1, err := client.Index().
 			Index("people").
 			Type("person").

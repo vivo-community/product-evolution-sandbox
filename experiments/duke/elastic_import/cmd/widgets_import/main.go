@@ -109,14 +109,15 @@ type Position struct {
 	Label      string `json:"label"`
 	VivoType   string `json:"vivoType"`
 	Attributes struct {
+		PersonUri         string `json:"personUri"`
 		OrganizationUri   string `json:"organizationUri"`
 		OrganizationLabel string `json:"organizationLabel"`
-		SchoolUri         string `json:"organizationUri"`
-		SchoolLabel       string `json:"organizationLabel"`
-		PersonUri         string `json:"personUri"`
-        StartDatetimeUri  string `json:"startDatetimeUri"`
-		StartYear         string `json:"startYear"`
-		DateUri           string `json:"dateUri"`
+		// NOTE: doesn't *always* have school or date
+		SchoolUri         *string `json:"schoolUri"`
+		SchoolLabel       *string `json:"schoolLabel"`
+		StartDatetimeUri  *string `json:"startDatetimeUri"`
+		StartYear         *string `json:"startYear"`
+		DateUri           *string `json:"dateUri"`
 	} `json:"attributes"`
 }
 
@@ -155,8 +156,9 @@ type SolrResults struct {
 	} `json:"response"`
 }
 
-func widgetsParse(duid string) WidgetsPerson {
-	url := "https://scholars.duke.edu/widgets/api/v0.9/people/complete/all.json?uri=" + duid
+// FIXME should probably return error if fail
+func widgetsParse(uri string) WidgetsPerson {
+	url := "https://scholars.duke.edu/widgets/api/v0.9/people/complete/all.json?uri=" + uri
 	req, err := http.NewRequest("GET", url, nil)
 
 	if err != nil {
@@ -188,13 +190,10 @@ type Keyword struct {
 	Label string
 }
 
-// this too ?
-type DatePrecision struct {
-	// URI ???
-    //"startDatetimeUri": "https://scholars.duke.edu/individual/dateValue20110902",
-    Uri        string
-	DateTime   time.Time // or just string ..
-	// interval ? start
+type DateResolution struct {
+	//Uri        string
+	// not sure how to send in nullable value, unless nullable
+	DateTime   string
 	Resolution string
 }
 
@@ -211,9 +210,12 @@ type ResourcePerson struct {
 }
 
 type ResourcePosition struct {
-	Uri       string
-	PersonUri string
-	//Start     DatePrecision
+	Uri               string
+	PersonUri         string
+	Label             string
+	Start             *DateResolution
+	OrganizationUri   string
+	OrganizationLabel string
 }
 
 type ResourceEducation struct {
@@ -304,7 +306,7 @@ func stashPerson(person WidgetsPerson) {
 	}
 
 	obj := ResourcePerson{person.Uri,
-	    person.Attributes.AlternateId,
+		person.Attributes.AlternateId,
 		person.Attributes.FirstName,
 		person.Attributes.LastName,
 		person.Attributes.MiddleName,
@@ -316,19 +318,32 @@ func stashPerson(person WidgetsPerson) {
 	saveResource(obj, person.Uri, "Person")
 }
 
+// FIXME: this seems wrong
+func makePositionDate(position Position) *DateResolution {
+	if position.Attributes.StartYear == nil {
+		return nil
+	}
+
+	return &DateResolution{*position.Attributes.StartYear, "year"}
+}
+
 func stashPositions(person WidgetsPerson) {
 	fmt.Printf("saving positions:%v\n", person.Uri)
 	db = GetConnection()
 	positions := person.Positions
 	for _, position := range positions {
-	
-		// data = StartYear, DateUri ??
-		// startYear = 2002-07-01T00:00:00
-		// ???
-		//start := DatePrecision{position.Attributes.StartYear, "year"}
 
+		start := makePositionDate(position)
+        //if err != nil {
+		//	start = nil
+		//}
 		obj := ResourcePosition{position.Uri,
-			position.Attributes.PersonUri}
+			position.Attributes.PersonUri,
+			position.Label,
+			start,
+			position.Attributes.OrganizationUri,
+			position.Attributes.OrganizationLabel}
+
 		saveResource(obj, position.Uri, "Position")
 	}
 }
@@ -354,7 +369,7 @@ func stashEducations(person WidgetsPerson) {
 }
 
 /*** channels ***/
-func processDuids(cin <-chan string) <-chan WidgetsPerson {
+func processUris(cin <-chan string) <-chan WidgetsPerson {
 	out := make(chan WidgetsPerson)
 	defer wg.Done()
 	go func() {
@@ -537,7 +552,7 @@ func main() {
 
 	wg.Add(3)
 	uris := produceUris()
-	widgets := processDuids(uris)
+	widgets := processUris(uris)
 	persistWidgets(widgets, *dryRun, *typeName)
 
 	wg.Wait()
