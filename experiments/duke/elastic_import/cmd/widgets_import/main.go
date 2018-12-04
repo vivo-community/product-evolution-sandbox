@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/BurntSushi/toml"
+	"github.com/OIT-ads-web/widgets_import"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
@@ -17,7 +18,7 @@ import (
 	"os"
 	"sync"
 	"time"
-    "github.com/OIT-ads-web/widgets_import"
+	"strings"
 )
 
 type Resource struct {
@@ -61,6 +62,20 @@ type ResearchArea struct {
 	} `json:"attributes"`
 }
 
+type Grant struct {
+	Uri        string `json:"uri"`
+	Label      string `json:"label"`
+	VivoType   string `json:"vivoType"`
+	Attributes struct {
+		PrincipalInvestigatorUri string `json:"piUri"`
+		RoleName                 string `json:"roleName"`
+		AwardedBy                string `json:"awardedBy"`
+		AdministeredBy           string `json:"administeredBy"`
+		StartDate                string `json:"startDate"`
+		EndDate                  string `json:"endDate"`
+	}
+}
+
 type Publication struct {
 	Uri        string `json:"uri"`
 	Label      string `json:"label"`
@@ -84,13 +99,14 @@ type Address struct {
 
 type Education struct {
 	Uri        string `json:"uri"`
+	VivoType   string `json:"vivoType"`
 	Label      string `json:"label"`
 	Attributes struct {
 		PersonUri       string `json:"personUri"`
 		DegreeUri       string `json:"degreeUri"`
 		Degree          string `json:"degree"`
 		OrganizationUri string `json:"organizationUri"`
-		Insitution      string `json:"institution"`
+		Institution     string `json:"institution"`
 	} `json:"attributes"`
 }
 
@@ -134,7 +150,9 @@ type WidgetsPerson struct {
 	Publications  []Publication  `json:"publications"`
 	Addresses     []Address      `json:"addresses"`
 	ResearchAreas []ResearchArea `json:"researchAreas"`
+	Grants        []Grant        `json:"grants"`
 }
+
 // ********* end widgets structs
 
 type SolrDoc struct {
@@ -194,6 +212,37 @@ func examineParse(person WidgetsPerson) {
 	fmt.Printf("**********%v\n*************", person.Uri)
 	spew.Printf("%+v\n", person)
 	fmt.Println("****************")
+}
+
+func resourceExists(uri string, typeName string) bool {
+	var exists bool
+	db = GetConnection()
+	sqlExists := `SELECT EXISTS (SELECT uri FROM RESOURCES where (uri = $1 AND type =$2))`
+	db.Get(&exists, sqlExists, uri, typeName)
+	return exists
+}
+
+// only add
+func addResource(obj interface{}, uri string, typeName string) {
+	fmt.Printf("ADD:%v\n", uri)
+	db = GetConnection()
+
+	str, err := json.Marshal(obj)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	hash := makeHash(string(str))
+
+	res := &Resource{uri, typeName, hash, str, str}
+
+	tx := db.MustBegin()
+	sql := `INSERT INTO resources (uri, type, hash, data, data_b) 
+	      VALUES (:uri, :type, :hash, :data, :data_b)`
+	_, err = tx.NamedExec(sql, res)
+	if err != nil {
+		log.Fatalln("ERROR(INSERT):%v", err)
+	}
+	tx.Commit()
 }
 
 func saveResource(obj interface{}, uri string, typeName string) {
@@ -297,13 +346,44 @@ func stashPositions(person WidgetsPerson) {
 	}
 }
 
+func makeIdFromUri(uri string) string {
+   return strings.Replace(uri, "https://scholars.duke.edu/individual", "", -1)
+}
+
+type Authorship struct {
+  PersonId string
+  PublicationId string
+}
+
+func (auth Authorship) makeUri() string {
+   // https://scholars.duke.edu/individual/author1241936-523847
+   return fmt.Sprintf("https://scholars.duke.edu/individual/author%s-%s", 
+     auth.PublicationId, auth.PersonId)
+}
+
 func stashPublications(person WidgetsPerson) {
 	fmt.Printf("saving publications:%v\n", person.Uri)
 	db = GetConnection()
 	publications := person.Publications
+
+	// stash authorships too
 	for _, publication := range publications {
-		obj := widgets_import.ResourcePublication{publication.Uri}
+		authorship := Authorship{makeIdFromUri(person.Uri), 
+		    makeIdFromUri(publication.Uri)} 
+		uri := authorship.makeUri()
+		fmt.Printf("uri=%v\n", uri)
+		//rel := widgets_import.ResourceAuthorship{uri, person.Uri, publication.Uri}
+		// TODO: give a new relationship URI
+		//saveResource(rel, uri, "Authorship")
+
+		obj := widgets_import.ResourcePublication{publication.Uri,
+			publication.Label,
+			publication.Attributes.AuthorList,
+			publication.Attributes.Doi}
 		saveResource(obj, publication.Uri, "Publication")
+		//if !resourceExists(publication.Uri, "Publication") {
+		//	addResource(obj, publication.Uri, "Publication")
+		//}
 	}
 }
 
@@ -312,8 +392,45 @@ func stashEducations(person WidgetsPerson) {
 	db = GetConnection()
 	educations := person.Educations
 	for _, education := range educations {
-		obj := widgets_import.ResourceEducation{education.Uri}
+		obj := widgets_import.ResourceEducation{education.Uri,
+			education.Attributes.PersonUri,
+			education.Label}
 		saveResource(obj, education.Uri, "Education")
+	}
+}
+
+type FundingRole struct {
+	PersonId string
+	GrantId string
+}
+
+func (role FundingRole) makeUri() string {
+  return fmt.Sprintf("http://scholars.duke.edu/individual/investigatorRole%s-%s", 
+    role.PersonId, role.GrantId)
+}
+
+func stashGrants(person WidgetsPerson) {
+	fmt.Printf("saving grants:%v\n", person.Uri)
+	db = GetConnection()
+	grants := person.Grants
+
+	// stash funding roles too
+	for _, grant := range grants {
+		// TODO: give a new relationship URI
+		fundingRole := FundingRole{makeIdFromUri(person.Uri),
+		    makeIdFromUri(grant.Uri)} 
+		uri := fundingRole.makeUri()
+		fmt.Printf("uri=%v\n", uri)
+		//rel := widgets_import.ResourceFundingRole{uri, person.Uri, grant.Uri, grant.Attributes.RoleName}
+		// TODO: give a new relationship URI
+		//saveResource(rel, uri, "FundingRole")
+
+		obj := widgets_import.ResourceGrant{grant.Uri, grant.Label,
+			grant.Attributes.PrincipalInvestigatorUri}
+		saveResource(obj, grant.Uri, "Grant")
+		//if !resourceExists(grant.Uri, "Grant") {
+		//	addResource(obj, grant.Uri, "Grant")
+		//}
 	}
 }
 
@@ -407,12 +524,12 @@ func clearResources(typeName string) {
 	db = GetConnection()
 	sql := `DELETE from resources`
 
-    switch typeName {
-        case "people":
-			sql += " WHERE type='Person'"
-		case "positions":
-			sql += " WHERE type='Position'"
-		case "all":// noop
+	switch typeName {
+	case "people":
+		sql += " WHERE type='Person'"
+	case "positions":
+		sql += " WHERE type='Position'"
+	case "all": // noop
 	}
 	tx := db.MustBegin()
 	tx.MustExec(sql)
@@ -502,17 +619,17 @@ func main() {
 	if !resourceTableExists() {
 		makeResourceSchema()
 	}
-	
+
 	// NOTE: either remove OR add?
 	if *remove {
 		clearResources(*typeName)
-	} else {  
+	} else {
 		wg.Add(3)
-	    uris := produceUris()
-	    widgets := processUris(uris)
-	    persistWidgets(widgets, *dryRun, *typeName)
+		uris := produceUris()
+		widgets := processUris(uris)
+		persistWidgets(widgets, *dryRun, *typeName)
 
-	    wg.Wait()
+		wg.Wait()
 	}
 
 	defer db.Close()

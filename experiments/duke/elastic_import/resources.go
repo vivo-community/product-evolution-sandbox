@@ -1,4 +1,5 @@
 package widgets_import
+
 // ********** database json column structs:
 // NOTE: this is *not* an independent resource, should it be?
 type Keyword struct {
@@ -8,9 +9,27 @@ type Keyword struct {
 
 // neither is this -in RDF it has to be, but seems like overkill
 type DateResolution struct {
-	//Uri        string
 	DateTime   string
 	Resolution string
+}
+
+type ResourceAuthorship struct {
+	Uri            string
+	PublicationUri string
+	PersonUri      string
+}
+
+type ResourceFundingRole struct {
+	Uri       string
+	GrantUri  string
+	PersonUri string
+	RoleName  string
+}
+
+type ResourceGrant struct {
+	Uri                      string
+	Label                    string
+	PrincipalInvestigatorUri string
 }
 
 type ResourcePerson struct {
@@ -37,12 +56,16 @@ type ResourcePosition struct {
 }
 
 type ResourceEducation struct {
-	Uri string
+	Uri       string
+	PersonUri string
+	Label     string
 }
 
 type ResourcePublication struct {
-	Uri string
+	Uri        string
+	Label      string
+	AuthorList string
+	Doi        string
 }
+
 // ********** end database json structs
-
-
