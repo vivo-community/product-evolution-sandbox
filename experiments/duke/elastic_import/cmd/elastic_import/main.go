@@ -18,6 +18,7 @@ import (
     "github.com/OIT-ads-web/widgets_import"
 ) 
 
+/*
 type Config struct {
 	Database database
 	Elastic  elasticSearch `toml:"elastic"`
@@ -34,6 +35,7 @@ type database struct {
 	User     string
 	Password string
 }
+*/
 
 // elastic 'data model'
 type PersonKeyword struct {
@@ -474,7 +476,7 @@ func persistResources(dryRun bool, typeName string) {
 	}
 }
 
-var conf Config
+var conf widgets_import.Config
 
 func main() {
 	start := time.Now()

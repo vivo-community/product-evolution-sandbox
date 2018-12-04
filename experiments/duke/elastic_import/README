@@ -35,18 +35,18 @@ or if one or other is already install locally
 
 ### Running
 
-> cmd/widgets_importer/widgets_importer -config <config_file> -dry-run=(true|false)
+> cmd/widgets_importer/widgets_importer -config <config_file> -dry-run (true|false)
 > cmd/elastic_import/elastic_importer -config <config_file> 
 
 [NOTE: only run once, unless -remove=true]
 
 If you leave off the -config option it will default to ./config.toml
 
-To delete elastic indedx
+To delete elastic index (people for instance):
 > curl -XDELETE localhost:9200/people
 
 or
 
-> cmd/elastic_import/elastic_import -remove=true
+> cmd/elastic_import/elastic_import -type people -remove true
 
 

@@ -20,65 +20,6 @@ import (
     "github.com/OIT-ads-web/widgets_import"
 )
 
-/*
-// ********** database json column structs:
-// NOTE: this is *not* an independent resource, should it be?
-type Keyword struct {
-	Uri   string
-	Label string
-}
-
-// neither is this -in RDF it has to be, but seems like overkill
-type DateResolution struct {
-	//Uri        string
-	DateTime   string
-	Resolution string
-}
-
-type ResourcePerson struct {
-	Uri               string
-	AlternateId       string
-	FirstName         string
-	LastName          string
-	MiddleName        *string
-	PrimaryTitle      string
-	ImageUri          string
-	ImageThumbnailUri string
-	Type              string
-	Keywords          []Keyword
-}
-
-type ResourcePosition struct {
-	Uri               string
-	PersonUri         string
-	Label             string
-	Start             DateResolution
-	OrganizationUri   string
-	OrganizationLabel string
-}
-
-type ResourceEducation struct {
-	Uri string
-}
-
-type ResourcePublication struct {
-	Uri string
-}
-*/
-// ********** end database json structs
-
-type Config struct {
-	Database database
-}
-
-type database struct {
-	Server   string
-	Port     int
-	Database string
-	User     string
-	Password string
-}
-
 type Resource struct {
 	Uri   string         `db:"uri"`
 	Type  string         `db:"type"`
@@ -234,54 +175,6 @@ func widgetsParse(uri string) WidgetsPerson {
 	json.Unmarshal([]byte(body), &person)
 	return person
 }
-
-
-// ********** database json column structs:
-// NOTE: this is *not* an independent resource, should it be?
-/*
-type Keyword struct {
-	Uri   string
-	Label string
-}
-
-// neither is this -in RDF it has to be, but seems like overkill
-type DateResolution struct {
-	//Uri        string
-	DateTime   string
-	Resolution string
-}
-
-type ResourcePerson struct {
-	Uri               string
-	AlternateId       string
-	FirstName         string
-	LastName          string
-	MiddleName        *string
-	PrimaryTitle      string
-	ImageUri          string
-	ImageThumbnailUri string
-	Type              string
-	Keywords          []Keyword
-}
-
-type ResourcePosition struct {
-	Uri               string
-	PersonUri         string
-	Label             string
-	Start             DateResolution
-	OrganizationUri   string
-	OrganizationLabel string
-}
-
-type ResourceEducation struct {
-	Uri string
-}
-
-type ResourcePublication struct {
-	Uri string
-}
-// ********** end database json structs
-*/
 
 //https://stackoverflow.com/questions/2377881/how-to-get-a-md5-hash-from-a-string-in-golang
 //https://stackoverflow.com/questions/2377881/how-to-get-a-md5-hash-from-a-string-in-golang
@@ -574,7 +467,7 @@ func produceUris() <-chan string {
 
 /**** end channels ****/
 var wg sync.WaitGroup
-var conf Config
+var conf widgets_import.Config
 
 func main() {
 	start := time.Now()
