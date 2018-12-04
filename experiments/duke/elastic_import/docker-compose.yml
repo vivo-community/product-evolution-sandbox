@@ -1,4 +1,4 @@
-# FIXME: this starst elastic and postgres - but does not 
+# FIXME: this starst elastic and postgres - but does not
 # deal with running the go importer code
 version: "3"
 services:
@@ -22,6 +22,22 @@ services:
       POSTGRES_DATA: /var/lib/postgresql/data/pgdata
     ports:
       - '5432:5432'
+
+  importer:
+    image: golang:1.11.1
+    working_dir: /app
+    volumes:
+      - .:/app
+      - $GOPATH/pkg/mod:/go/pkg/mod
+    environment:
+      - GOPATH=/go
+    depends_on:
+      - postgres
+      - elasticsearch
+    # command: >
+    #     bash -c "go run cmd/widgets_import/main.go
+    #     && go run cmd/elastic_import/main.go"
+
 
 volumes:
   postgres:
