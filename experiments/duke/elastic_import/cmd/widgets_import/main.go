@@ -113,11 +113,12 @@ type Position struct {
 		OrganizationUri   string `json:"organizationUri"`
 		OrganizationLabel string `json:"organizationLabel"`
 		// NOTE: doesn't *always* have school or date
-		SchoolUri         *string `json:"schoolUri"`
-		SchoolLabel       *string `json:"schoolLabel"`
-		StartDatetimeUri  *string `json:"startDatetimeUri"`
-		StartYear         *string `json:"startYear"`
-		DateUri           *string `json:"dateUri"`
+		// could make *string type - or just pass through as ""
+		SchoolUri        string `json:"schoolUri"`
+		SchoolLabel      string `json:"schoolLabel"`
+		StartDatetimeUri string `json:"startDatetimeUri"`
+		StartYear        string `json:"startYear"`
+		DateUri          string `json:"dateUri"`
 	} `json:"attributes"`
 }
 
@@ -192,7 +193,6 @@ type Keyword struct {
 
 type DateResolution struct {
 	//Uri        string
-	// not sure how to send in nullable value, unless nullable
 	DateTime   string
 	Resolution string
 }
@@ -213,7 +213,7 @@ type ResourcePosition struct {
 	Uri               string
 	PersonUri         string
 	Label             string
-	Start             *DateResolution
+	Start             DateResolution
 	OrganizationUri   string
 	OrganizationLabel string
 }
@@ -318,13 +318,13 @@ func stashPerson(person WidgetsPerson) {
 	saveResource(obj, person.Uri, "Person")
 }
 
-// FIXME: this seems wrong
-func makePositionDate(position Position) *DateResolution {
-	if position.Attributes.StartYear == nil {
-		return nil
-	}
-
-	return &DateResolution{*position.Attributes.StartYear, "year"}
+func makePositionDate(position Position) DateResolution {
+	// NOTE: to make return nil return *DateResolution and ...
+	//if position.Attributes.StartYear == nil {
+	//	return nil
+	//}
+	//return &DateResolution{*position.Attributes.StartYear, "year"}
+	return DateResolution{position.Attributes.StartYear, "year"}
 }
 
 func stashPositions(person WidgetsPerson) {
@@ -334,9 +334,6 @@ func stashPositions(person WidgetsPerson) {
 	for _, position := range positions {
 
 		start := makePositionDate(position)
-        //if err != nil {
-		//	start = nil
-		//}
 		obj := ResourcePosition{position.Uri,
 			position.Attributes.PersonUri,
 			position.Label,

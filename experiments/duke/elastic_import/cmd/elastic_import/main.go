@@ -70,7 +70,7 @@ type Affiliation struct {
 	Uri               string `json:"uri"`
 	PersonId          string `json:"personId"`
 	Label             string `json:"label"`
-	StartDate         *Date   `json:"startDate"`
+	StartDate         Date   `json:"startDate"`
 	OrganizationId    string `json:"organizationId"`
 	OrganizationLabel string `json:"organizationLabel"`
 }
@@ -156,6 +156,7 @@ const personMapping = `
     }
 }`
 
+// NOTE: dateTime is 'text' because it *can be* nil
 const affiliationMapping = `
 "affiliation":{
 	"properties":{
@@ -165,7 +166,7 @@ const affiliationMapping = `
 		"startDate": {
 			"type": "object",
 			"properties": {
-				"dateTime":   { "type": "date" },
+				"dateTime":   { "type": "text" },
 				"resolution": { "type": "text" }
 			}
 		},
@@ -322,12 +323,13 @@ func makePeopleIndex() {
 	makeIndex("people", personMapping)
 }
 
-// FIXME: this doesn't seem quite right
-func makeDate(position ResourcePosition) *Date {
-  if position.Start == nil {
-	  return nil
-  }
-  return &Date{position.Start.DateTime, position.Start.Resolution}
+func makeDate(position ResourcePosition) Date {
+	// NOTE: to make nullable, return *Date and ...
+	//if position.Start == nil {
+	//	  return nil
+	//}
+	//return &Date{position.Start.DateTime, position.Start.Resolution}
+	return Date{position.Start.DateTime, position.Start.Resolution}
 }
 
 func addAffiliations() {
@@ -352,15 +354,14 @@ func addAffiliations() {
 		json.Unmarshal(data, &resource)
 
 		// what if blank?
-		//date := Date{resource.Start.DateTime, resource.Start.Resolution}
 		date := makeDate(resource)
 
-		affiliation := Affiliation{resource.Uri, 
-		    resource.PersonUri,
-		    resource.Label,
-		    date,
-		    resource.OrganizationUri,
-		    resource.OrganizationLabel}
+		affiliation := Affiliation{resource.Uri,
+			resource.PersonUri,
+			resource.Label,
+			date,
+			resource.OrganizationUri,
+			resource.OrganizationLabel}
 		put1, err := client.Index().
 			Index("affiliations").
 			Type("affiliation").
