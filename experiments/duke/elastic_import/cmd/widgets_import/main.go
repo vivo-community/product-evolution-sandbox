@@ -16,9 +16,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"time"
-	"strings"
 )
 
 type Resource struct {
@@ -33,7 +33,7 @@ var client *http.Client
 
 const (
 	MaxIdleConnections int = 20
-	RequestTimeout     int = 50
+	RequestTimeout     int = 100
 )
 
 var psqlInfo string
@@ -179,11 +179,16 @@ func widgetsParse(uri string) WidgetsPerson {
 	}
 
 	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println("widgets-error", err)
+		return WidgetsPerson{}
+	}
+
 	body, err := ioutil.ReadAll(res.Body)
 
 	if err != nil {
 		// TODO: returning 'blank' person, should return nil
-		fmt.Println("widgets", err)
+		fmt.Println("widgets-error", err)
 		return WidgetsPerson{}
 	}
 
@@ -264,10 +269,8 @@ func saveResource(obj interface{}, uri string, typeName string) {
 
 	tx := db.MustBegin()
 	if err != nil {
-		fmt.Printf("ADD:%v\n", found.Uri)
 		// NOTE: assuming the error means it doesn't exist
-		//log.Printf("GET:%v\n", err)
-		// must be an add?
+		fmt.Printf("ADD:%v\n", res.Uri)
 		sql := `INSERT INTO resources (uri, type, hash, data, data_b) 
 	      VALUES (:uri, :type, :hash, :data, :data_b)`
 		_, err := tx.NamedExec(sql, res)
@@ -347,18 +350,18 @@ func stashPositions(person WidgetsPerson) {
 }
 
 func makeIdFromUri(uri string) string {
-   return strings.Replace(uri, "https://scholars.duke.edu/individual", "", -1)
+	return strings.Replace(uri, "https://scholars.duke.edu/individual/", "", -1)
 }
 
 type Authorship struct {
-  PersonId string
-  PublicationId string
+	PersonId      string
+	PublicationId string
 }
 
 func (auth Authorship) makeUri() string {
-   // https://scholars.duke.edu/individual/author1241936-523847
-   return fmt.Sprintf("https://scholars.duke.edu/individual/author%s-%s", 
-     auth.PublicationId, auth.PersonId)
+	// https://scholars.duke.edu/individual/author1241936-523847
+	return fmt.Sprintf("https://scholars.duke.edu/individual/authorship-%s-%s",
+		auth.PublicationId, auth.PersonId)
 }
 
 func stashPublications(person WidgetsPerson) {
@@ -368,22 +371,23 @@ func stashPublications(person WidgetsPerson) {
 
 	// stash authorships too
 	for _, publication := range publications {
-		authorship := Authorship{makeIdFromUri(person.Uri), 
-		    makeIdFromUri(publication.Uri)} 
+		authorship := Authorship{makeIdFromUri(person.Uri),
+			makeIdFromUri(publication.Uri)}
 		uri := authorship.makeUri()
-		fmt.Printf("uri=%v\n", uri)
-		//rel := widgets_import.ResourceAuthorship{uri, person.Uri, publication.Uri}
+		//fmt.Printf("uri=%v\n", uri)
+		rel := widgets_import.ResourceAuthorship{uri, publication.Uri, person.Uri}
 		// TODO: give a new relationship URI
-		//saveResource(rel, uri, "Authorship")
+		saveResource(rel, uri, "Authorship")
 
 		obj := widgets_import.ResourcePublication{publication.Uri,
 			publication.Label,
 			publication.Attributes.AuthorList,
 			publication.Attributes.Doi}
-		saveResource(obj, publication.Uri, "Publication")
-		//if !resourceExists(publication.Uri, "Publication") {
-		//	addResource(obj, publication.Uri, "Publication")
-		//}
+		//saveResource(obj, publication.Uri, "Publication")
+
+		if !resourceExists(publication.Uri, "Publication") {
+			addResource(obj, publication.Uri, "Publication")
+		}
 	}
 }
 
@@ -401,12 +405,12 @@ func stashEducations(person WidgetsPerson) {
 
 type FundingRole struct {
 	PersonId string
-	GrantId string
+	GrantId  string
 }
 
 func (role FundingRole) makeUri() string {
-  return fmt.Sprintf("http://scholars.duke.edu/individual/investigatorRole%s-%s", 
-    role.PersonId, role.GrantId)
+	return fmt.Sprintf("http://scholars.duke.edu/individual/funding-role-%s-%s",
+		role.PersonId, role.GrantId)
 }
 
 func stashGrants(person WidgetsPerson) {
@@ -418,19 +422,20 @@ func stashGrants(person WidgetsPerson) {
 	for _, grant := range grants {
 		// TODO: give a new relationship URI
 		fundingRole := FundingRole{makeIdFromUri(person.Uri),
-		    makeIdFromUri(grant.Uri)} 
+			makeIdFromUri(grant.Uri)}
 		uri := fundingRole.makeUri()
-		fmt.Printf("uri=%v\n", uri)
-		//rel := widgets_import.ResourceFundingRole{uri, person.Uri, grant.Uri, grant.Attributes.RoleName}
+		//fmt.Printf("uri=%v\n", uri)
+		rel := widgets_import.ResourceFundingRole{uri, person.Uri, grant.Uri,
+			grant.Attributes.RoleName}
 		// TODO: give a new relationship URI
-		//saveResource(rel, uri, "FundingRole")
+		saveResource(rel, uri, "FundingRole")
 
 		obj := widgets_import.ResourceGrant{grant.Uri, grant.Label,
 			grant.Attributes.PrincipalInvestigatorUri}
-		saveResource(obj, grant.Uri, "Grant")
-		//if !resourceExists(grant.Uri, "Grant") {
-		//	addResource(obj, grant.Uri, "Grant")
-		//}
+		//saveResource(obj, grant.Uri, "Grant")
+		if !resourceExists(grant.Uri, "Grant") {
+			addResource(obj, grant.Uri, "Grant")
+		}
 	}
 }
 
@@ -440,7 +445,11 @@ func processUris(cin <-chan string) <-chan WidgetsPerson {
 	defer wg.Done()
 	go func() {
 		for line := range cin {
-			out <- widgetsParse(line)
+			person := widgetsParse(line)
+			if person.Uri != "" {
+			  //out <- widgetsParse(line)
+			  out <- person
+		    }
 		}
 		close(out)
 	}()
@@ -462,11 +471,14 @@ func persistWidgets(cin <-chan WidgetsPerson, dryRun bool, typeName string) {
 					stashEducations(person)
 				case "publications":
 					stashPublications(person)
+				case "grants":
+					stashGrants(person)
 				case "all":
 					stashPerson(person)
 					stashPositions(person)
 					stashEducations(person)
 					stashPublications(person)
+					stashGrants(person)
 				default:
 					stashPerson(person)
 				}
@@ -529,6 +541,12 @@ func clearResources(typeName string) {
 		sql += " WHERE type='Person'"
 	case "positions":
 		sql += " WHERE type='Position'"
+	case "grants":
+		sql += "WHERE type='Grant' or type='FundingRole'"
+	case "publications":
+		sql += "WHERE type='Publication' or type='Authorship'"
+	case "educations":
+		sql += "WHERE type='Education'"
 	case "all": // noop
 	}
 	tx := db.MustBegin()
@@ -597,8 +615,6 @@ func main() {
 		fmt.Println("could not find config file, use -c option")
 		os.Exit(1)
 	}
-	fmt.Printf("%#v\n", conf)
-
 	psqlInfo = fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		conf.Database.Server, conf.Database.Port,
