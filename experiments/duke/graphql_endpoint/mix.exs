@@ -38,7 +38,9 @@ defmodule GraphqlEndpoint.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:absinthe, "~> 1.4"},
-      {:absinthe_plug, "~> 1.4"}
+      {:absinthe_plug, "~> 1.4"},
+      {:tirexs, "~> 0.8.15"},
+      {:elastix, "~> 0.7.0"}
     ]
   end
 end
