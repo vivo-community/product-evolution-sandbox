@@ -64,12 +64,11 @@ or
 > cmd/widgets_import/widgets_import -type=educations
 > cmd/elastic_import/elastic_import -type=educations
 
-#### Grants (Note: TDB)
+#### Grants
 > cmd/widgets_import/widgets_import -type=grants
 > cmd/elastic_import/elastic_import -type=grants
 
-
-#### Publications (Note: TDB)
+#### Publications 
 > cmd/widgets_import/widgets_import -type=publications
 > cmd/elastic_import/elastic_import -type=publications
 

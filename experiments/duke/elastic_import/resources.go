@@ -18,13 +18,6 @@ type DateResolution struct {
 	Resolution string
 }
 
-type ResourceAuthorship struct {
-	Id            string
-	Uri           string
-	PublicationId string
-	PersonId      string
-}
-
 type ResourceFundingRole struct {
 	Id       string
 	Uri      string
@@ -82,12 +75,22 @@ type ResourceEducation struct {
 	InstitutionLabel string
 }
 
+type ResourceAuthorship struct {
+	Id             string
+	Uri            string
+	PublicationId  string
+	PersonId       string
+	AuthorshipType string
+}
+
 type ResourcePublication struct {
-	Id         string
-	Uri        string
-	Label      string
-	AuthorList string
-	Doi        string
+	Id                  string
+	Uri                 string
+	Label               string
+	AuthorList          string
+	Doi                 string
+	PublishedIn         string
+	PublicationVenueUri string
 }
 
 type ResourceOrganization struct {
