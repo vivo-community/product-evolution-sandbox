@@ -4,12 +4,12 @@ defmodule GraphqlEndpoint.JsonHelper do
     |> Map.to_list()
     |> to_flat_map(%{})
   end
+
   def flatten(%{} = json) when json == %{}, do: %{}
 
   defp to_flat_map([{_k, %{} = v} | t], acc), do: to_flat_map(Map.to_list(v), to_flat_map(t, acc))
   defp to_flat_map([{k, v} | t], acc), do: to_flat_map(t, Map.put_new(acc, k, v))
   defp to_flat_map([], acc), do: acc
-
 
   # from: https://gist.github.com/kipcole9/0bd4c6fb6109bfec9955f785087f53fb
   @doc """
@@ -62,6 +62,33 @@ defmodule GraphqlEndpoint.JsonHelper do
   end
 
   @doc """
+  Convert map string keys to :atom keys in snake_case
+  """
+  def atomize_understore_keys(nil), do: nil
+
+  # Structs don't do enumerable and anyway the keys are already
+  # atoms
+  def atomize_understore_keys(struct = %{__struct__: _}) do
+    struct
+  end
+
+  def atomize_understore_keys(map = %{}) do
+    map
+    |> Enum.map(fn {k, v} -> {String.to_atom(Macro.underscore(k)), atomize_understore_keys(v)} end)
+    |> Enum.into(%{})
+  end
+
+  # Walk the list and atomize the keys of
+  # of any map members
+  def atomize_understore_keys([head | rest]) do
+    [atomize_understore_keys(head) | atomize_understore_keys(rest)]
+  end
+
+  def atomize_understore_keys(not_a_map) do
+    not_a_map
+  end
+
+  @doc """
   Convert map atom keys to strings
   """
   def stringify_keys(nil), do: nil
@@ -101,5 +128,4 @@ defmodule GraphqlEndpoint.JsonHelper do
   defp deep_resolve(_key, _left, right) do
     right
   end
-
 end
