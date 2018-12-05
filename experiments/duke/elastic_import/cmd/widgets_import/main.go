@@ -440,6 +440,18 @@ func (role FundingRole) makeUri() string {
 		role.PersonId, role.GrantId)
 }
 
+func makeGrantDates(grant Grant) (widgets_import.DateResolution, widgets_import.DateResolution) {
+	// NOTE: 'precision' information isn't actually given in widgets data
+	start := widgets_import.DateResolution{grant.Attributes.StartDate, "yearMonthDay"}
+	end := widgets_import.DateResolution{grant.Attributes.EndDate, "yearMonthDay"}
+	return start, end
+}
+
+/*
+what to do with these:
+		AwardedBy                string `json:"awardedBy"`
+		AdministeredBy           string `json:"administeredBy"`
+*/
 func stashGrants(person WidgetsPerson) {
 	fmt.Printf("saving grants:%v\n", person.Uri)
 	db = GetConnection()
@@ -462,10 +474,13 @@ func stashGrants(person WidgetsPerson) {
 		saveResource(rel, uri, "FundingRole")
 
 		pi := makeIdFromUri(grant.Attributes.PrincipalInvestigatorUri)
+		start, end := makeGrantDates(grant)
 		obj := widgets_import.ResourceGrant{grantId, 
 		    grant.Uri, 
 			grant.Label,
-			pi}
+			pi,
+		    start,
+		    end}
 		if !resourceExists(grant.Uri, "Grant") {
 			addResource(obj, grant.Uri, "Grant")
 		}

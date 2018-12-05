@@ -38,6 +38,8 @@ type ResourceGrant struct {
 	Uri                     string
 	Label                   string
 	PrincipalInvestigatorId string
+	Start                   DateResolution
+	End                     DateResolution
 }
 
 type ResourcePerson struct {
@@ -93,6 +95,7 @@ type ResourceOrganization struct {
 	Uri   string
 	Label string
 }
+
 /*** end database json column object maps */
 
 // this is the raw structure in the database
