@@ -22,4 +22,4 @@ volumes:
 networks:
   elasticsearch_network:
     external:
-      name: elasticimport_es_network
+      name: elastic_import_es_network

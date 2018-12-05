@@ -1,6 +1,5 @@
 package widgets_import
 
-
 type Config struct {
 	Database database
 	Elastic  elasticSearch `toml:"elastic"`
