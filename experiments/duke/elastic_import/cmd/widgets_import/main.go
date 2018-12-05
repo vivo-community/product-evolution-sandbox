@@ -602,6 +602,12 @@ func main() {
 	var configFile string
 	flag.StringVar(&configFile, "config", "./config.toml", "a config filename")
 
+	dryRun := flag.Bool("dry-run", false, "just examine widgets parsing")
+	typeName := flag.String("type", "people", "type of thing to import")
+	remove := flag.Bool("remove", false, "remove existing records")
+
+	flag.Parse()
+
 	if _, err := toml.DecodeFile(configFile, &conf); err != nil {
 		fmt.Println("could not find config file, use -c option")
 		os.Exit(1)
@@ -616,12 +622,6 @@ func main() {
 	if err != nil {
 		log.Println("m=GetPool,msg=connection has failed", err)
 	}
-
-	dryRun := flag.Bool("dry-run", false, "just examine widgets parsing")
-	typeName := flag.String("type", "people", "type of thing to import")
-	remove := flag.Bool("remove", false, "remove existing records")
-
-	flag.Parse()
 
 	if !resourceTableExists() {
 		makeResourceSchema()
