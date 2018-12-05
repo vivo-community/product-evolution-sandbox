@@ -19,25 +19,25 @@ type DateResolution struct {
 }
 
 type ResourceAuthorship struct {
-	Id             string
-	Uri            string
-	PublicationId  string
-	PersonId       string
+	Id            string
+	Uri           string
+	PublicationId string
+	PersonId      string
 }
 
 type ResourceFundingRole struct {
-	Id        string
-	Uri       string
-	GrantId   string
-	PersonId  string
-	RoleName  string
+	Id       string
+	Uri      string
+	GrantId  string
+	PersonId string
+	RoleName string
 }
 
 type ResourceGrant struct {
-	Id                       string
-	Uri                      string
-	Label                    string
-	PrincipalInvestigatorId  string
+	Id                      string
+	Uri                     string
+	Label                   string
+	PrincipalInvestigatorId string
 }
 
 type ResourcePerson struct {
@@ -65,11 +65,19 @@ type ResourcePosition struct {
 	OrganizationLabel string
 }
 
+type ResourceInstitution struct {
+	Id    string
+	Uri   string
+	Label string
+}
+
 type ResourceEducation struct {
-	Id        string
-	Uri       string
-	PersonId  string
-	Label     string
+	Id               string
+	Uri              string
+	PersonId         string
+	Label            string
+	InsitutionId     string
+	InstitutionLabel string
 }
 
 type ResourcePublication struct {
@@ -81,9 +89,9 @@ type ResourcePublication struct {
 }
 
 type ResourceOrganization struct {
-	Id        string
-	Uri       string
-	Label     string
+	Id    string
+	Uri   string
+	Label string
 }
 
 type Resource struct {

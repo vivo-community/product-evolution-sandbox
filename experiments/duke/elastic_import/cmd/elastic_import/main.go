@@ -70,8 +70,13 @@ type Date struct {
 }
 
 type Organization struct {
-    Id               string `json:"id"`
-	Label            string `json:"label"`
+	Id    string `json:"id"`
+	Label string `json:"label"`
+}
+
+type Institution struct {
+	Id    string `json:"id"`
+	Label string `json:"label"`
 }
 
 type Affiliation struct {
@@ -82,6 +87,14 @@ type Affiliation struct {
 	StartDate         Date   `json:"startDate"`
 	OrganizationId    string `json:"organizationId"`
 	OrganizationLabel string `json:"organizationLabel"`
+}
+
+type Education struct {
+	Id          string      `json:"id"`
+	Uri         string      `json:"id"`
+	Label       string      `json:"label"`
+	PersonId    string      `json:"personId"`
+	Institution Institution `json:"org" elastic:"type:object"`
 }
 
 // end elastic data model
@@ -152,16 +165,25 @@ const affiliationMapping = `
     }
 }`
 
-// NOTE: next 3 are still incomplete
 const educationMapping = `
 "education":{
 	"properties":{
 		"id":        { "type": "text" },
 		"uri":       { "type": "text" },
-		"label":     { "type": "text" }
+		"label":     { "type": "text" },
+		"personId":  { "type": "text" },
+		"org":     { 
+			"type": "object",
+			"properties": {
+				"id": { "type": "text" },
+				"label": { "type": "text" }
+			}
+		}
 	}
 }`
 
+// NOTE: next 2 are still incomplete
+// also to work out fundingRole, authorship
 const grantMapping = `
 "grant":{
 	"properties":{
@@ -201,7 +223,6 @@ const authorshipMapping = `
 		"label":          { "type": "text" }
 	}
 }`
-
 
 var psqlInfo string
 var db *sqlx.DB
@@ -388,12 +409,8 @@ func addToIndex(index string, typeName string, obj interface{}) {
 }
 
 func addPeople() {
-	ctx := context.Background()
-
 	db = GetConnection()
 	resources := []widgets_import.Resource{}
-
-	client = GetClient()
 
 	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Person")
 	for _, element := range resources {
@@ -420,6 +437,9 @@ func addPeople() {
 		overviewList = append(overviewList, overview)
 		person := Person{resource.Id, resource.Uri, resource.AlternateId, resource.PrimaryTitle,
 			name, image, personType, overviewList, keywordList}
+		
+		addToIndex("people", "person", person)
+		/*
 		put1, err := client.Index().
 			Index("people").
 			Type("person").
@@ -433,6 +453,7 @@ func addPeople() {
 		}
 		fmt.Printf("Indexed %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
 		log.Println(element)
+		*/
 	}
 	if err != nil {
 		log.Fatalln(err)
@@ -440,12 +461,8 @@ func addPeople() {
 }
 
 func addAffiliations() {
-	ctx := context.Background()
-
 	db = GetConnection()
 	resources := []widgets_import.Resource{}
-
-	client = GetClient()
 
 	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Position")
 	for _, element := range resources {
@@ -460,38 +477,41 @@ func addAffiliations() {
 
 		// how to get label or organization here ...
 		affiliation := Affiliation{resource.Id,
-		    resource.Uri,
+			resource.Uri,
 			resource.PersonId,
 			resource.Label,
 			date,
 			resource.OrganizationId,
-		    resource.OrganizationLabel}
-		put1, err := client.Index().
-			Index("affiliations").
-			Type("affiliation").
-			BodyJson(affiliation).
-			Do(ctx)
-		if err != nil {
-			// Handle error
-			panic(err)
-		}
-		fmt.Printf("Indexed %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
-		log.Println(element)
+			resource.OrganizationLabel}
+		addToIndex("affiliations", "affiliation", affiliation)
 	}
 	if err != nil {
 		log.Fatalln(err)
 	}
 }
 
-func addEducation() {
-	/*
-	ctx := context.Background()
-
+func addEducations() {
 	db = GetConnection()
 	resources := []widgets_import.Resource{}
 
-	client = GetClient()
-	*/
+	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Education")
+	for _, element := range resources {
+		resource := widgets_import.ResourceEducation{}
+		data := element.Data
+		json.Unmarshal(data, &resource)
+		
+	    institution := Institution{resource.InsitutionId, resource.InstitutionLabel}
+			
+		education := Education{resource.Id, 
+		    resource.Uri, 
+			resource.Label, 
+			resource.PersonId,
+			institution}
+		addToIndex("educations", "education", education)
+	}
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func addPublications() {
@@ -524,6 +544,15 @@ func persistResources(dryRun bool, typeName string) {
 		case "affiliations":
 			makeAffiliationsIndex()
 			addAffiliations()
+		case "educations":
+			makeEducationsIndex()
+			addEducations()
+		case "grants":
+			makeGrantsIndex()
+			addGrants()
+		case "publications":
+			makePublicationsIndex()
+			addPublications()
 		}
 	}
 }

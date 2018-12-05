@@ -96,6 +96,7 @@ type Education struct {
 		PersonUri       string `json:"personUri"`
 		DegreeUri       string `json:"degreeUri"`
 		Degree          string `json:"degree"`
+		// NOTE: this is not a Duke organization
 		OrganizationUri string `json:"organizationUri"`
 		Institution     string `json:"institution"`
 	} `json:"attributes"`
@@ -412,8 +413,20 @@ func stashEducations(person WidgetsPerson) {
 		obj := widgets_import.ResourceEducation{makeIdFromUri(education.Uri),
 		    education.Uri,
 			personId,
-			education.Label}
+			education.Label,
+		    makeIdFromUri(education.Attributes.OrganizationUri),
+		    education.Attributes.Institution}
+
 		saveResource(obj, education.Uri, "Education")
+
+		institutionUri := education.Attributes.OrganizationUri
+		institutionId := makeIdFromUri(institutionUri)
+		institution := widgets_import.ResourceInstitution{institutionId, 
+		    education.Attributes.OrganizationUri,
+			education.Attributes.Institution}
+		if !resourceExists(institutionUri, "Institution") {
+			addResource(institution, institutionUri, "Institution")
+		}
 	}
 }
 
@@ -562,13 +575,15 @@ func clearResources(typeName string) {
 	case "people":
 		sql += " WHERE type='Person'"
 	case "positions":
+		// NOTE: organization only come from Positions (now)
 		sql += " WHERE type='Position' or type ='Organization'"
 	case "grants":
-		sql += "WHERE type='Grant' or type='FundingRole'"
+		sql += " WHERE type='Grant' or type='FundingRole'"
 	case "publications":
-		sql += "WHERE type='Publication' or type='Authorship'"
+		sql += " WHERE type='Publication' or type='Authorship'"
 	case "educations":
-		sql += "WHERE type='Education'"
+		// NOTE: institutions only come from Educations (now)
+		sql += " WHERE type='Education' or type='Institution'"
 	case "all": // noop
 	}
 	tx := db.MustBegin()
