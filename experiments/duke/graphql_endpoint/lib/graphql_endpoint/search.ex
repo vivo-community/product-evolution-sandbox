@@ -4,6 +4,6 @@ defmodule GraphqlEndpoint.Search do
   end
 
   def endpoint do
-    Application.get_env(:elastic_search, :endpoint)
+    Application.get_env(:graphql_endpoint, :endpoint)
   end
 end
