@@ -46,12 +46,10 @@ type OverviewType struct {
 }
 
 type PersonOverview struct {
-	// Uri ??
 	Label string       `json:"overview"`
 	Type  OverviewType `json:"type"`
 }
 
-// does overview really need to be a list
 type Person struct {
 	Id           string           `json:"id"`
 	Uri          string           `json:"uri"`
@@ -79,6 +77,7 @@ type Institution struct {
 	Label string `json:"label"`
 }
 
+// NOTE: model doesn't have org as sub-object
 type Affiliation struct {
 	Id                string `json:"id"`
 	Uri               string `json:"uri"`
@@ -439,21 +438,6 @@ func addPeople() {
 			name, image, personType, overviewList, keywordList}
 		
 		addToIndex("people", "person", person)
-		/*
-		put1, err := client.Index().
-			Index("people").
-			Type("person").
-			// TODO: to give ID or not?
-			//Id(resource.Uri).
-			BodyJson(person).
-			Do(ctx)
-		if err != nil {
-			// Handle error
-			panic(err)
-		}
-		fmt.Printf("Indexed %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
-		log.Println(element)
-		*/
 	}
 	if err != nil {
 		log.Fatalln(err)
@@ -466,16 +450,12 @@ func addAffiliations() {
 
 	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Position")
 	for _, element := range resources {
-		// TODO: this is the main difference between differnet types
-		// maybe factor out
 		resource := widgets_import.ResourcePosition{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		// what if blank?
 		date := makeDate(resource)
 
-		// how to get label or organization here ...
 		affiliation := Affiliation{resource.Id,
 			resource.Uri,
 			resource.PersonId,
@@ -522,8 +502,6 @@ func addGrants() {
 
 func persistResources(dryRun bool, typeName string) {
 	if dryRun {
-		// what do do here? list?
-		//examineParse(person)
 		switch typeName {
 		case "people":
 			listPeople()

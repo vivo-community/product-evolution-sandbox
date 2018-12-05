@@ -445,21 +445,20 @@ func stashGrants(person WidgetsPerson) {
 	db = GetConnection()
 	grants := person.Grants
 
-	// stash funding roles too
+	// NOTE: stashes funding roles AND grants
 	for _, grant := range grants {
 		personId := makeIdFromUri(person.Uri)
 		grantId := makeIdFromUri(grant.Uri)
 		fundingRoleId := fmt.Sprintf("%s-%s", grantId, personId)
-		// TODO: give a new relationship URI
 		fundingRole := FundingRole{personId, grantId}
+		
+		// NOTE: this is an approximation of real function, uri is fake
 		uri := fundingRole.makeUri()
-		//fmt.Printf("uri=%v\n", uri)
 		rel := widgets_import.ResourceFundingRole{fundingRoleId,
 		    uri, 
-		    personId, 
-			grantId,
+		    grantId, 
+			personId,
 			grant.Attributes.RoleName}
-		// TODO: give a new relationship URI
 		saveResource(rel, uri, "FundingRole")
 
 		pi := makeIdFromUri(grant.Attributes.PrincipalInvestigatorUri)
@@ -467,7 +466,6 @@ func stashGrants(person WidgetsPerson) {
 		    grant.Uri, 
 			grant.Label,
 			pi}
-		//saveResource(obj, grant.Uri, "Grant")
 		if !resourceExists(grant.Uri, "Grant") {
 			addResource(obj, grant.Uri, "Grant")
 		}

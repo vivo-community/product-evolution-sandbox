@@ -47,6 +47,30 @@ To delete elastic index (people for instance):
 
 or
 
-> cmd/elastic_import/elastic_import -type people -remove true
+> cmd/elastic_import/elastic_import -type=people -remove=true
+
+
+### Getting started
+
+#### People
+> cmd/widgets_import/widgets_import -type=people
+> cmd/elastic_import/elastic_import -type=people
+
+#### Affiliations
+> cmd/widgets_import/widgets_import -type=positions
+> cmd/elastic_import/elastic_import -type=affiliations
+
+#### Educations
+> cmd/widgets_import/widgets_import -type=educations
+> cmd/elastic_import/elastic_import -type=educations
+
+#### Grants (Note: TDB)
+> cmd/widgets_import/widgets_import -type=grants
+> cmd/elastic_import/elastic_import -type=grants
+
+
+#### Publications (Note: TDB)
+> cmd/widgets_import/widgets_import -type=publications
+> cmd/elastic_import/elastic_import -type=publications
 
 

@@ -93,7 +93,12 @@ type ResourceOrganization struct {
 	Uri   string
 	Label string
 }
+/*** end database json column object maps */
 
+// this is the raw structure in the database
+// two json columms:
+// * 'data' can be used for change comparison with hash
+// * 'data_b' can be used for searches
 type Resource struct {
 	Uri   string         `db:"uri"`
 	Type  string         `db:"type"`
