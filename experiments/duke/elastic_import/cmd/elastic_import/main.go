@@ -96,6 +96,39 @@ type Education struct {
 	Institution Institution `json:"org" elastic:"type:object"`
 }
 
+type FundingRole struct {
+	Id       string `json:"id"`
+	Uri      string `json:"uri"`
+	GrantId  string `json:"grantId"`
+	PersonId string `json:"personId"`
+	Label    string `json:"label"`
+}
+
+type Grant struct {
+	Id        string `json:"id"`
+	Uri       string `json:"uri"`
+	Label     string `json:"label"`
+	StartDate Date   `json:"startDate"`
+	EndDate   Date   `json:"endDate"`
+}
+
+type Authorship struct {
+	Id            string `json:"id"`
+	Uri           string `json:"uri"`
+	PersonId      string `json:"personId"`
+	PublicationId string `json:"publicationId"`
+	Label         string `json:"label"`
+}
+
+type Publication struct {
+	Id         string `json:"id"`
+	Uri        string `json:"uri"`
+	Label      string `json:"label"`
+	// NOTE: this is supposed to be an array
+	AuthorList string `json:"authorList"`
+	Doi        string `json:"doi"`
+}
+
 // end elastic data model
 
 // for elastic mapping definitions template
@@ -181,19 +214,31 @@ const educationMapping = `
 	}
 }`
 
-// NOTE: next 2 are still incomplete
-// also to work out fundingRole, authorship
 const grantMapping = `
 "grant":{
 	"properties":{
 		"id":        { "type": "text" },
 		"uri":       { "type": "text" },
-		"label":     { "type": "text" }
+		"label":     { "type": "text" },
+		"startDate": {
+			"type": "object",
+			"properties": {
+				"dateTime":   { "type": "text" },
+				"resolution": { "type": "text" }
+			}
+		},
+		"endDate": {
+			"type": "object",
+			"properties": {
+				"dateTime":   { "type": "text" },
+				"resolution": { "type": "text" }
+			}
+		}
 	}
 }`
 
 const fundingRoleMapping = `
-"fundingRole":{
+"funding-role":{
 	"properties":{
 		"id":        { "type": "text" },
 		"uri":       { "type": "text" },
@@ -203,6 +248,7 @@ const fundingRoleMapping = `
 	}
 }`
 
+// TODO: publications not quite worked out
 const publicationMapping = `
 "publication":{
 	"properties":{
@@ -251,23 +297,27 @@ func listType(typeName string) {
 }
 
 func listPeople() {
-	listType("People")
+	listType("Person")
 }
 
 func listPositions() {
-	listType("Positions")
-}
-
-func listPublications() {
-	listType("Publications")
+	listType("Position")
 }
 
 func listEducations() {
-	listType("Educations")
+	listType("Education")
 }
 
 func listGrants() {
-	listType("Grants")
+	listType("Grant")
+}
+
+func listFundingRoles() {
+	listType("FundingRole")
+}
+
+func listPublications() {
+	listType("Publication")
 }
 
 func clearIndex(name string) {
@@ -300,12 +350,16 @@ func clearEducationsIndex() {
 	clearIndex("educations")
 }
 
-func clearPublicationsIndex() {
-	clearIndex("publications")
-}
-
 func clearGrantsIndex() {
 	clearIndex("grants")
+}
+
+func clearFundingRolesIndex() {
+	clearIndex("funding-roles")
+}
+
+func clearPublicationsIndex() {
+	clearIndex("publications")
 }
 
 func clearResources(typeName string) {
@@ -316,10 +370,11 @@ func clearResources(typeName string) {
 		clearAffiliationsIndex()
 	case "educations":
 		clearEducationsIndex()
-	case "publications":
-		clearPublicationsIndex()
 	case "grants":
 		clearGrantsIndex()
+		//clearFundingRolesIndex()
+	case "publications":
+		clearPublicationsIndex()
 	case "all":
 		clearPeopleIndex()
 		clearAffiliationsIndex()
@@ -371,21 +426,20 @@ func makeEducationsIndex() {
 	makeIndex("educations", educationMapping)
 }
 
-func makePublicationsIndex() {
-	makeIndex("publications", publicationMapping)
-}
-
 func makeGrantsIndex() {
 	makeIndex("grants", grantMapping)
 }
 
-func makeDate(position widgets_import.ResourcePosition) Date {
-	// NOTE: to make nullable, return *Date and ...
-	//if position.Start == nil {
-	//	  return nil
-	//}
-	//return &Date{position.Start.DateTime, position.Start.Resolution}
-	return Date{position.Start.DateTime, position.Start.Resolution}
+func makeFundingRolesIndex() {
+	makeIndex("funding-roles", fundingRoleMapping)
+}
+
+func makePublicationsIndex() {
+	makeIndex("publications", publicationMapping)
+}
+
+func makeAuthorshipsIndex() {
+	makeIndex("authorships", authorshipMapping)
 }
 
 // TODO: sketch of way to make slightly more generic
@@ -403,7 +457,7 @@ func addToIndex(index string, typeName string, obj interface{}) {
 		// Handle error
 		panic(err)
 	}
-	fmt.Printf("Indexed to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
+	fmt.Printf("Indexed %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
 	spew.Println(obj)
 }
 
@@ -436,12 +490,16 @@ func addPeople() {
 		overviewList = append(overviewList, overview)
 		person := Person{resource.Id, resource.Uri, resource.AlternateId, resource.PrimaryTitle,
 			name, image, personType, overviewList, keywordList}
-		
+
 		addToIndex("people", "person", person)
 	}
 	if err != nil {
 		log.Fatalln(err)
 	}
+}
+
+func makePositionDate(position widgets_import.ResourcePosition) Date {
+	return Date{position.Start.DateTime, position.Start.Resolution}
 }
 
 func addAffiliations() {
@@ -454,7 +512,7 @@ func addAffiliations() {
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		date := makeDate(resource)
+		date := makePositionDate(resource)
 
 		affiliation := Affiliation{resource.Id,
 			resource.Uri,
@@ -479,12 +537,12 @@ func addEducations() {
 		resource := widgets_import.ResourceEducation{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
-		
-	    institution := Institution{resource.InsitutionId, resource.InstitutionLabel}
-			
-		education := Education{resource.Id, 
-		    resource.Uri, 
-			resource.Label, 
+
+		institution := Institution{resource.InsitutionId, resource.InstitutionLabel}
+
+		education := Education{resource.Id,
+			resource.Uri,
+			resource.Label,
 			resource.PersonId,
 			institution}
 		addToIndex("educations", "education", education)
@@ -494,10 +552,117 @@ func addEducations() {
 	}
 }
 
-func addPublications() {
+func makeGrantDates(grant widgets_import.ResourceGrant) (Date, Date) {
+	start := Date{grant.Start.DateTime, grant.Start.Resolution}
+	end := Date{grant.End.DateTime, grant.End.Resolution}
+	return start, end
 }
 
+/*
+type ResourceGrant struct {
+	Id                      string
+	Uri                     string
+	Label                   string
+	PrincipalInvestigatorId strin
+	Start                   DateResolution
+	End                     DateResolution
+}
+
+into this:
+
+type Grant struct {
+	Id        string `json:"id"`
+	Uri       string `json:"uri"`
+	Label     string `json:"label"`
+	StartDate Date   `json:"startDate"`
+	EndDate   Date   `json:"startDate"`
+}
+*/
 func addGrants() {
+ 	db = GetConnection()
+	resources := []widgets_import.Resource{}
+
+	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Grant")
+	for _, element := range resources {
+		resource := widgets_import.ResourceGrant{}
+		data := element.Data
+		json.Unmarshal(data, &resource)
+        start, end := makeGrantDates(resource)
+
+		grant := Grant{resource.Id,
+			resource.Uri,
+			resource.Label,
+			start,
+			end}
+		addToIndex("grants", "grant", grant)
+	}
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
+/*
+type ResourceFundingRole struct {
+	Id       string
+	Uri      string
+	GrantId  string
+	PersonId string
+	RoleName string
+}
+into this:
+
+type FundingRole struct {
+	Id       string `json:"id"`
+	Uri      string `json:"uri"`
+	GrantId  string `json:"grantId"`
+	PersonId string `json:"personId"`
+	Label    string `json:"label"`
+}
+*/
+func addFundingRoles() {
+ 	db = GetConnection()
+	resources := []widgets_import.Resource{}
+
+	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "FundingRole")
+	for _, element := range resources {
+		resource := widgets_import.ResourceFundingRole{}
+		data := element.Data
+		json.Unmarshal(data, &resource)
+
+		role := FundingRole{resource.Id,
+			resource.Uri,
+			resource.GrantId,
+			resource.PersonId,
+			resource.RoleName}
+		addToIndex("funding-roles", "funding-role", role)
+	}
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
+/*
+type ResourcePublication struct {
+	Id         string
+	Uri        string
+	Label      string
+	AuthorList string
+	Doi        string
+}
+*/
+func addPublications() {
+
+}
+/*
+type ResourceAuthorship struct {
+	Id            string
+	Uri           string
+	PublicationId string
+	PersonId      string
+}
+*/
+func addAuthorships() {
+
 }
 
 func persistResources(dryRun bool, typeName string) {
@@ -507,12 +672,12 @@ func persistResources(dryRun bool, typeName string) {
 			listPeople()
 		case "affiliations":
 			listPositions()
-		case "publications":
-			listPublications()
 		case "educations":
 			listEducations()
 		case "grants":
 			listGrants()
+		case "publications":
+			listPublications()
 		}
 	} else {
 		switch typeName {
@@ -528,9 +693,16 @@ func persistResources(dryRun bool, typeName string) {
 		case "grants":
 			makeGrantsIndex()
 			addGrants()
+			makeFundingRolesIndex()
+			addFundingRoles()
+		case "funding-roles":
+			makeFundingRolesIndex()
+			addFundingRoles()
 		case "publications":
 			makePublicationsIndex()
 			addPublications()
+			makeAuthorshipsIndex()
+			addAuthorships()
 		}
 	}
 }
