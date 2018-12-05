@@ -29,7 +29,3 @@ config :elastix,
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
 
-# The default adapter, which makes no changes to incoming query document ASTs or
-# outgoing results.
-config :absinthe,
-  adapter: Absinthe.Adapter.Passthrough
