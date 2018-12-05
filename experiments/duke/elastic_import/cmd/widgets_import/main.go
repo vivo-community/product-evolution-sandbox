@@ -111,7 +111,7 @@ type Position struct {
 		OrganizationUri   string `json:"organizationUri"`
 		OrganizationLabel string `json:"organizationLabel"`
 		// NOTE: doesn't *always* have school or date
-		// could make *string type - or just pass through as ""
+		// so it will send them in as "" 
 		SchoolUri        string `json:"schoolUri"`
 		SchoolLabel      string `json:"schoolLabel"`
 		StartDatetimeUri string `json:"startDatetimeUri"`
@@ -360,50 +360,6 @@ func makeIdFromUri(uri string) string {
 	return strings.Replace(uri, "https://scholars.duke.edu/individual/", "", -1)
 }
 
-type Authorship struct {
-	PublicationId string
-	PersonId      string
-}
-
-func (auth Authorship) makeUri() string {
-	// https://scholars.duke.edu/individual/author1241936-523847
-	return fmt.Sprintf("https://scholars.duke.edu/individual/authorship-%s-%s",
-		auth.PublicationId, auth.PersonId)
-}
-
-func stashPublications(person WidgetsPerson) {
-	fmt.Printf("saving publications:%v\n", person.Uri)
-	db = GetConnection()
-	publications := person.Publications
-
-	// stash authorships too
-	for _, publication := range publications {
-		personId := makeIdFromUri(person.Uri)
-		publicationId := makeIdFromUri(publication.Uri)
-		authorshipId := fmt.Sprintf("%s-%s", publicationId, personId)
-		authorship := Authorship{publicationId, personId}
-		uri := authorship.makeUri()
-		//fmt.Printf("uri=%v\n", uri)
-		rel := widgets_import.ResourceAuthorship{authorshipId,
-		    uri, 
-		    publication.Uri, 
-			person.Uri}
-		// TODO: give a new relationship URI
-		saveResource(rel, uri, "Authorship")
-
-		obj := widgets_import.ResourcePublication{publicationId,
-		    publication.Uri,
-			publication.Label,
-			publication.Attributes.AuthorList,
-			publication.Attributes.Doi}
-		//saveResource(obj, publication.Uri, "Publication")
-
-		if !resourceExists(publication.Uri, "Publication") {
-			addResource(obj, publication.Uri, "Publication")
-		}
-	}
-}
-
 func stashEducations(person WidgetsPerson) {
 	fmt.Printf("saving educations:%v\n", person.Uri)
 	db = GetConnection()
@@ -487,6 +443,45 @@ func stashGrants(person WidgetsPerson) {
 	}
 }
 
+type Authorship struct {
+	PublicationId string
+	PersonId      string
+}
+
+func (auth Authorship) makeUri() string {
+	return fmt.Sprintf("https://scholars.duke.edu/individual/authorship-%s-%s",
+		auth.PublicationId, auth.PersonId)
+}
+
+func stashPublications(person WidgetsPerson) {
+	fmt.Printf("saving publications:%v\n", person.Uri)
+	db = GetConnection()
+	publications := person.Publications
+
+	for _, publication := range publications {
+		personId := makeIdFromUri(person.Uri)
+		publicationId := makeIdFromUri(publication.Uri)
+		authorshipId := fmt.Sprintf("%s-%s", publicationId, personId)
+		authorship := Authorship{publicationId, personId}
+		
+		uri := authorship.makeUri()
+		rel := widgets_import.ResourceAuthorship{authorshipId,
+		    uri, 
+		    publicationId, 
+			personId}
+		saveResource(rel, uri, "Authorship")
+
+		obj := widgets_import.ResourcePublication{publicationId,
+		    publication.Uri,
+			publication.Label,
+			publication.Attributes.AuthorList,
+			publication.Attributes.Doi}
+		if !resourceExists(publication.Uri, "Publication") {
+			addResource(obj, publication.Uri, "Publication")
+		}
+	}
+}
+
 /*** channels ***/
 func processUris(cin <-chan string) <-chan WidgetsPerson {
 	out := make(chan WidgetsPerson)
@@ -517,16 +512,16 @@ func persistWidgets(cin <-chan WidgetsPerson, dryRun bool, typeName string) {
 					stashPositions(person)
 				case "educations":
 					stashEducations(person)
-				case "publications":
-					stashPublications(person)
 				case "grants":
 					stashGrants(person)
+				case "publications":
+					stashPublications(person)
 				case "all":
 					stashPerson(person)
 					stashPositions(person)
 					stashEducations(person)
-					stashPublications(person)
 					stashGrants(person)
+					stashPublications(person)
 				default:
 					stashPerson(person)
 				}
