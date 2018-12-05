@@ -1,5 +1,5 @@
 #!/bin/sh
 
 cd ../
-cmd/elastic_import/elastic_import -remove -type all
+cmd/elastic_import/elastic_import -remove=true -type=all
 

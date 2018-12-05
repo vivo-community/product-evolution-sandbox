@@ -1,5 +1,5 @@
 #!/bin/sh
 
 cd ../
-cmd/widgets_importer/widgets_importer -remove -type all
+cmd/widgets_importer/widgets_importer -remove=true -type=all
 

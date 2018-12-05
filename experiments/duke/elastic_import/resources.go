@@ -7,6 +7,7 @@ import (
 // ********** database json column structs:
 // NOTE: this is *not* an independent resource, should it be?
 type Keyword struct {
+	// not sure an 'id' makes sense - they are like #mesh, LOC etc...
 	Uri   string
 	Label string
 }
@@ -18,25 +19,29 @@ type DateResolution struct {
 }
 
 type ResourceAuthorship struct {
+	Id             string
 	Uri            string
-	PublicationUri string
-	PersonUri      string
+	PublicationId  string
+	PersonId       string
 }
 
 type ResourceFundingRole struct {
+	Id        string
 	Uri       string
-	GrantUri  string
-	PersonUri string
+	GrantId   string
+	PersonId  string
 	RoleName  string
 }
 
 type ResourceGrant struct {
+	Id                       string
 	Uri                      string
 	Label                    string
-	PrincipalInvestigatorUri string
+	PrincipalInvestigatorId  string
 }
 
 type ResourcePerson struct {
+	Id                string
 	Uri               string
 	AlternateId       string
 	FirstName         string
@@ -51,25 +56,34 @@ type ResourcePerson struct {
 }
 
 type ResourcePosition struct {
+	Id                string
 	Uri               string
-	PersonUri         string
+	PersonId          string
 	Label             string
 	Start             DateResolution
-	OrganizationUri   string
+	OrganizationId    string
 	OrganizationLabel string
 }
 
 type ResourceEducation struct {
+	Id        string
 	Uri       string
-	PersonUri string
+	PersonId  string
 	Label     string
 }
 
 type ResourcePublication struct {
+	Id         string
 	Uri        string
 	Label      string
 	AuthorList string
 	Doi        string
+}
+
+type ResourceOrganization struct {
+	Id        string
+	Uri       string
+	Label     string
 }
 
 type Resource struct {

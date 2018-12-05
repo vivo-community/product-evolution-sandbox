@@ -220,7 +220,7 @@ func resourceExists(uri string, typeName string) bool {
 
 // only add
 func addResource(obj interface{}, uri string, typeName string) {
-	fmt.Printf("ADD:%v\n", uri)
+	fmt.Printf(">ADD:%v\n", uri)
 	db = GetConnection()
 
 	str, err := json.Marshal(obj)
@@ -236,7 +236,7 @@ func addResource(obj interface{}, uri string, typeName string) {
 	      VALUES (:uri, :type, :hash, :data, :data_b)`
 	_, err = tx.NamedExec(sql, res)
 	if err != nil {
-		log.Fatalln("ERROR(INSERT):%v", err)
+		log.Fatalln(">ERROR(INSERT):%v", err)
 	}
 	tx.Commit()
 }
@@ -261,15 +261,15 @@ func saveResource(obj interface{}, uri string, typeName string) {
 	tx := db.MustBegin()
 	if err != nil {
 		// NOTE: assuming the error means it doesn't exist
-		fmt.Printf("ADD:%v\n", res.Uri)
+		fmt.Printf(">ADD:%v\n", res.Uri)
 		sql := `INSERT INTO resources (uri, type, hash, data, data_b) 
 	      VALUES (:uri, :type, :hash, :data, :data_b)`
 		_, err := tx.NamedExec(sql, res)
 		if err != nil {
-			log.Fatalln("ERROR(INSERT):%v", err)
+			log.Fatalln(">ERROR(INSERT):%v", err)
 		}
 	} else {
-		fmt.Printf("UPDATE:%v\n", found.Uri)
+		fmt.Printf(">UPDATE:%v\n", found.Uri)
 		sql := `UPDATE resources 
 	    set uri = :uri, 
 		type = :type, 
@@ -280,7 +280,7 @@ func saveResource(obj interface{}, uri string, typeName string) {
 		_, err := tx.NamedExec(sql, res)
 
 		if err != nil {
-			log.Fatalln("ERROR(UPDATE):%v", err)
+			log.Fatalln(">ERROR(UPDATE):%v", err)
 		}
 	}
 	tx.Commit()
@@ -298,7 +298,8 @@ func stashPerson(person WidgetsPerson) {
 		keywords = append(keywords, keyword)
 	}
 
-	obj := widgets_import.ResourcePerson{person.Uri,
+	obj := widgets_import.ResourcePerson{makeIdFromUri(person.Uri),
+	    person.Uri,
 		person.Attributes.AlternateId,
 		person.Attributes.FirstName,
 		person.Attributes.LastName,
@@ -329,14 +330,28 @@ func stashPositions(person WidgetsPerson) {
 	for _, position := range positions {
 
 		start := makePositionDate(position)
-		obj := widgets_import.ResourcePosition{position.Uri,
-			position.Attributes.PersonUri,
+		personId := makeIdFromUri(position.Attributes.PersonUri)
+		organizationId := makeIdFromUri(position.Attributes.OrganizationUri)
+		
+		// NOTE: adding org label just for convenience
+		obj := widgets_import.ResourcePosition{makeIdFromUri(position.Uri),
+		    position.Uri,
+			personId,
 			position.Label,
 			start,
-			position.Attributes.OrganizationUri,
-			position.Attributes.OrganizationLabel}
+			organizationId,
+		    position.Attributes.OrganizationLabel}
 
-		saveResource(obj, position.Uri, "Position")
+		saveResource(obj, position.Uri, "Position") 
+		
+		orgUri := position.Attributes.OrganizationUri
+		organization := widgets_import.ResourceOrganization{organizationId, 
+		    position.Attributes.OrganizationUri,
+			position.Attributes.OrganizationLabel}
+		if !resourceExists(orgUri, "Organization") {
+			addResource(organization, orgUri, "Organization")
+		}
+
 	}
 }
 
@@ -345,8 +360,8 @@ func makeIdFromUri(uri string) string {
 }
 
 type Authorship struct {
-	PersonId      string
 	PublicationId string
+	PersonId      string
 }
 
 func (auth Authorship) makeUri() string {
@@ -362,15 +377,21 @@ func stashPublications(person WidgetsPerson) {
 
 	// stash authorships too
 	for _, publication := range publications {
-		authorship := Authorship{makeIdFromUri(person.Uri),
-			makeIdFromUri(publication.Uri)}
+		personId := makeIdFromUri(person.Uri)
+		publicationId := makeIdFromUri(publication.Uri)
+		authorshipId := fmt.Sprintf("%s-%s", publicationId, personId)
+		authorship := Authorship{publicationId, personId}
 		uri := authorship.makeUri()
 		//fmt.Printf("uri=%v\n", uri)
-		rel := widgets_import.ResourceAuthorship{uri, publication.Uri, person.Uri}
+		rel := widgets_import.ResourceAuthorship{authorshipId,
+		    uri, 
+		    publication.Uri, 
+			person.Uri}
 		// TODO: give a new relationship URI
 		saveResource(rel, uri, "Authorship")
 
-		obj := widgets_import.ResourcePublication{publication.Uri,
+		obj := widgets_import.ResourcePublication{publicationId,
+		    publication.Uri,
 			publication.Label,
 			publication.Attributes.AuthorList,
 			publication.Attributes.Doi}
@@ -387,8 +408,10 @@ func stashEducations(person WidgetsPerson) {
 	db = GetConnection()
 	educations := person.Educations
 	for _, education := range educations {
-		obj := widgets_import.ResourceEducation{education.Uri,
-			education.Attributes.PersonUri,
+		personId := makeIdFromUri(education.Attributes.PersonUri)
+		obj := widgets_import.ResourceEducation{makeIdFromUri(education.Uri),
+		    education.Uri,
+			personId,
 			education.Label}
 		saveResource(obj, education.Uri, "Education")
 	}
@@ -411,18 +434,26 @@ func stashGrants(person WidgetsPerson) {
 
 	// stash funding roles too
 	for _, grant := range grants {
+		personId := makeIdFromUri(person.Uri)
+		grantId := makeIdFromUri(grant.Uri)
+		fundingRoleId := fmt.Sprintf("%s-%s", grantId, personId)
 		// TODO: give a new relationship URI
-		fundingRole := FundingRole{makeIdFromUri(person.Uri),
-			makeIdFromUri(grant.Uri)}
+		fundingRole := FundingRole{personId, grantId}
 		uri := fundingRole.makeUri()
 		//fmt.Printf("uri=%v\n", uri)
-		rel := widgets_import.ResourceFundingRole{uri, person.Uri, grant.Uri,
+		rel := widgets_import.ResourceFundingRole{fundingRoleId,
+		    uri, 
+		    personId, 
+			grantId,
 			grant.Attributes.RoleName}
 		// TODO: give a new relationship URI
 		saveResource(rel, uri, "FundingRole")
 
-		obj := widgets_import.ResourceGrant{grant.Uri, grant.Label,
-			grant.Attributes.PrincipalInvestigatorUri}
+		pi := makeIdFromUri(grant.Attributes.PrincipalInvestigatorUri)
+		obj := widgets_import.ResourceGrant{grantId, 
+		    grant.Uri, 
+			grant.Label,
+			pi}
 		//saveResource(obj, grant.Uri, "Grant")
 		if !resourceExists(grant.Uri, "Grant") {
 			addResource(obj, grant.Uri, "Grant")
@@ -531,7 +562,7 @@ func clearResources(typeName string) {
 	case "people":
 		sql += " WHERE type='Person'"
 	case "positions":
-		sql += " WHERE type='Position'"
+		sql += " WHERE type='Position' or type ='Organization'"
 	case "grants":
 		sql += "WHERE type='Grant' or type='FundingRole'"
 	case "publications":
@@ -543,9 +574,10 @@ func clearResources(typeName string) {
 	tx := db.MustBegin()
 	tx.MustExec(sql)
 
+	log.Println(sql)
 	err := tx.Commit()
 	if err != nil {
-		log.Fatalln("ERROR(DELETE):%v", err)
+		log.Fatalln(">ERROR(DELETE):%v", err)
 	}
 }
 

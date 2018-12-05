@@ -53,6 +53,7 @@ type PersonOverview struct {
 
 // does overview really need to be a list
 type Person struct {
+	Id           string           `json:"id"`
 	Uri          string           `json:"uri"`
 	SourceId     string           `json:"sourceId"`
 	PrimaryTitle string           `json:"primaryTitle"`
@@ -68,7 +69,13 @@ type Date struct {
 	Resolution string `json:"resolution"`
 }
 
+type Organization struct {
+    Id               string `json:"id"`
+	Label            string `json:"label"`
+}
+
 type Affiliation struct {
+	Id                string `json:"id"`
 	Uri               string `json:"uri"`
 	PersonId          string `json:"personId"`
 	Label             string `json:"label"`
@@ -97,6 +104,8 @@ const mappingTemplate = `{
 const personMapping = `
 "person":{
 	"properties":{
+		"id":           { "type": "text" },
+		"uri":          { "type": "text" },
 		"primaryTitle": { "type": "text" },
 		"name":{
 			"type":"object",
@@ -127,8 +136,9 @@ const personMapping = `
 const affiliationMapping = `
 "affiliation":{
 	"properties":{
-		"personUri": { "type": "text" },
+		"id":        { "type": "text" },
 		"uri":       { "type": "text" },
+		"personId":  { "type": "text" },
 		"label":     { "type": "text" },
 		"startDate": {
 			"type": "object",
@@ -137,8 +147,8 @@ const affiliationMapping = `
 				"resolution": { "type": "text" }
 			}
 		},
-		"organizationId":   { "type": "text"},
-		"organizationLabel": { "type": "text"}
+		"organizationId":    { "type": "text" },
+		"organizationLabel": { "type": "text" } 
     }
 }`
 
@@ -146,6 +156,7 @@ const affiliationMapping = `
 const educationMapping = `
 "education":{
 	"properties":{
+		"id":        { "type": "text" },
 		"uri":       { "type": "text" },
 		"label":     { "type": "text" }
 	}
@@ -154,7 +165,19 @@ const educationMapping = `
 const grantMapping = `
 "grant":{
 	"properties":{
+		"id":        { "type": "text" },
 		"uri":       { "type": "text" },
+		"label":     { "type": "text" }
+	}
+}`
+
+const fundingRoleMapping = `
+"fundingRole":{
+	"properties":{
+		"id":        { "type": "text" },
+		"uri":       { "type": "text" },
+		"grantId":   { "type": "text" },
+		"personId":  { "type": "text" },
 		"label":     { "type": "text" }
 	}
 }`
@@ -162,10 +185,23 @@ const grantMapping = `
 const publicationMapping = `
 "publication":{
 	"properties":{
+		"id":        { "type": "text" },
 		"uri":       { "type": "text" },
 		"label":     { "type": "text" }
 	}
 }`
+
+const authorshipMapping = `
+"authorship":{
+	"properties":{
+		"id":             { "type": "text" },
+		"uri":            { "type": "text" },
+		"publicationId":  { "type": "text" },
+		"personId":       { "type": "text" },
+		"label":          { "type": "text" }
+	}
+}`
+
 
 var psqlInfo string
 var db *sqlx.DB
@@ -382,7 +418,7 @@ func addPeople() {
 		var overviewList []PersonOverview
 		overview := PersonOverview{resource.Overview, OverviewType{"overview", "Overview"}}
 		overviewList = append(overviewList, overview)
-		person := Person{resource.Uri, resource.AlternateId, resource.PrimaryTitle,
+		person := Person{resource.Id, resource.Uri, resource.AlternateId, resource.PrimaryTitle,
 			name, image, personType, overviewList, keywordList}
 		put1, err := client.Index().
 			Index("people").
@@ -422,12 +458,14 @@ func addAffiliations() {
 		// what if blank?
 		date := makeDate(resource)
 
-		affiliation := Affiliation{resource.Uri,
-			resource.PersonUri,
+		// how to get label or organization here ...
+		affiliation := Affiliation{resource.Id,
+		    resource.Uri,
+			resource.PersonId,
 			resource.Label,
 			date,
-			resource.OrganizationUri,
-			resource.OrganizationLabel}
+			resource.OrganizationId,
+		    resource.OrganizationLabel}
 		put1, err := client.Index().
 			Index("affiliations").
 			Type("affiliation").
