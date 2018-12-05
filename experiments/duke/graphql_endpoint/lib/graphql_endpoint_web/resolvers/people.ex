@@ -27,12 +27,11 @@ defmodule GraphqlEndpointWeb.Resolvers.People do
     |> hd()
     |> Map.get("_source")
     |> IO.inspect(label: "object")
-    |> JsonHelper.atomize_keys()
+    |> JsonHelper.atomize_understore_keys()
   end
 
   def process_body(body) do
-    IO.puts("FULL_BODY")
-    IO.inspect(body)
+    IO.inspect(body, label: "FULL BODY")
     %{"error" => "unable to process request"}
   end
 end
