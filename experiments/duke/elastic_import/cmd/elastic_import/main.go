@@ -115,18 +115,24 @@ type Grant struct {
 type Authorship struct {
 	Id            string `json:"id"`
 	Uri           string `json:"uri"`
-	PersonId      string `json:"personId"`
 	PublicationId string `json:"publicationId"`
+	PersonId      string `json:"personId"`
 	Label         string `json:"label"`
 }
 
+type PublicationVenue struct {
+	Uri   string `json:"uri"`
+	Label string `json:"label"`
+}
+
 type Publication struct {
-	Id         string `json:"id"`
-	Uri        string `json:"uri"`
-	Label      string `json:"label"`
+	Id    string `json:"id"`
+	Uri   string `json:"uri"`
+	Label string `json:"label"`
 	// NOTE: this is supposed to be an array
-	AuthorList string `json:"authorList"`
-	Doi        string `json:"doi"`
+	AuthorList string           `json:"authorList"`
+	Doi        string           `json:"doi"`
+	Venue      PublicationVenue `json:"venue"`
 }
 
 // end elastic data model
@@ -248,16 +254,44 @@ const fundingRoleMapping = `
 	}
 }`
 
-// TODO: publications not quite worked out
+/*
+type Publication struct {
+	Id         string `json:"id"`
+	Uri        string `json:"uri"`
+	Label      string `json:"label"`
+	// NOTE: this is supposed to be an array
+	AuthorList string `json:"authorList"`
+	Doi        string `json:"doi"`
+	Venue      PublicationVenue  `json:"venue"`
+}
+*/
 const publicationMapping = `
 "publication":{
 	"properties":{
-		"id":        { "type": "text" },
-		"uri":       { "type": "text" },
-		"label":     { "type": "text" }
+		"id":         { "type": "text" },
+		"uri":        { "type": "text" },
+		"label":      { "type": "text" },
+		"authorList": { "type": "text" },
+		"doi":        { "type": "text" },
+        "venue":      { 
+			"type": "object",
+			"properties": {
+				"uri":   { "type": "text" },
+				"label": { "type": "text" }
+			}
+		}
 	}
 }`
 
+/*
+type Authorship struct {
+	Id            string `json:"id"`
+	Uri           string `json:"uri"`
+	PublicationId string `json:"publicationId"`
+	PersonId      string `json:"personId"`
+	Label         string `json:"label"`
+}
+*/
 const authorshipMapping = `
 "authorship":{
 	"properties":{
@@ -579,7 +613,7 @@ type Grant struct {
 }
 */
 func addGrants() {
- 	db = GetConnection()
+	db = GetConnection()
 	resources := []widgets_import.Resource{}
 
 	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Grant")
@@ -587,7 +621,7 @@ func addGrants() {
 		resource := widgets_import.ResourceGrant{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
-        start, end := makeGrantDates(resource)
+		start, end := makeGrantDates(resource)
 
 		grant := Grant{resource.Id,
 			resource.Uri,
@@ -620,7 +654,7 @@ type FundingRole struct {
 }
 */
 func addFundingRoles() {
- 	db = GetConnection()
+	db = GetConnection()
 	resources := []widgets_import.Resource{}
 
 	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "FundingRole")
@@ -649,20 +683,85 @@ type ResourcePublication struct {
 	AuthorList string
 	Doi        string
 }
+
+into this:
+
+type Publication struct {
+	Id         string `json:"id"`
+	Uri        string `json:"uri"`
+	Label      string `json:"label"`
+	// NOTE: this is supposed to be an array
+	AuthorList string `json:"authorList"`
+	Doi        string `json:"doi"`
+}
+
 */
 func addPublications() {
+	db = GetConnection()
+	resources := []widgets_import.Resource{}
+
+	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Publication")
+	for _, element := range resources {
+		resource := widgets_import.ResourcePublication{}
+		data := element.Data
+		json.Unmarshal(data, &resource)
+
+		venue := PublicationVenue{resource.PublicationVenueUri, resource.PublishedIn}
+
+		publication := Publication{resource.Id,
+			resource.Uri,
+			resource.Label,
+			resource.AuthorList,
+			resource.Doi,
+		    venue}
+		addToIndex("publications", "publication", publication)
+	}
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 }
+
 /*
 type ResourceAuthorship struct {
-	Id            string
-	Uri           string
-	PublicationId string
-	PersonId      string
+	Id             string
+	Uri            string
+	PublicationId  string
+	PersonId       string
+	AuthorshipType string
 }
+
+into this:
+
+type Authorship struct {
+	Id            string `json:"id"`
+	Uri           string `json:"uri"`
+	PublicationId string `json:"publicationId"`
+	PersonId      string `json:"personId"`
+	Label         string `json:"label"`
+}
+
 */
 func addAuthorships() {
+	db = GetConnection()
+	resources := []widgets_import.Resource{}
 
+	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Authorship")
+	for _, element := range resources {
+		resource := widgets_import.ResourceAuthorship{}
+		data := element.Data
+		json.Unmarshal(data, &resource)
+
+		authorship := Authorship{resource.Id,
+			resource.Uri,
+			resource.PublicationId,
+			resource.PersonId,
+			resource.AuthorshipType}
+		addToIndex("authorship", "authorship", authorship)
+	}
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func persistResources(dryRun bool, typeName string) {

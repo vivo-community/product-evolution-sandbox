@@ -70,9 +70,14 @@ type Grant struct {
 type Publication struct {
 	Uri        string `json:"uri"`
 	Label      string `json:"label"`
+	VivoType   string `json:"vivoType"`
 	Attributes struct {
-		AuthorList string `json:"authorList"`
-		Doi        string `json:"doi"`
+		// this is kind of like the 'journal'
+		PublicationVenue string `json:"publicationVenue"`
+		PublishedIn      string `json:"publishedIn"`
+		AuthorshipType   string `json:"authorshipType"`
+		AuthorList       string `json:"authorList"`
+		Doi              string `json:"doi"`
 	} `json:"attributes"`
 }
 
@@ -93,9 +98,9 @@ type Education struct {
 	VivoType   string `json:"vivoType"`
 	Label      string `json:"label"`
 	Attributes struct {
-		PersonUri       string `json:"personUri"`
-		DegreeUri       string `json:"degreeUri"`
-		Degree          string `json:"degree"`
+		PersonUri string `json:"personUri"`
+		DegreeUri string `json:"degreeUri"`
+		Degree    string `json:"degree"`
 		// NOTE: this is not a Duke organization
 		OrganizationUri string `json:"organizationUri"`
 		Institution     string `json:"institution"`
@@ -111,7 +116,7 @@ type Position struct {
 		OrganizationUri   string `json:"organizationUri"`
 		OrganizationLabel string `json:"organizationLabel"`
 		// NOTE: doesn't *always* have school or date
-		// so it will send them in as "" 
+		// so it will send them in as ""
 		SchoolUri        string `json:"schoolUri"`
 		SchoolLabel      string `json:"schoolLabel"`
 		StartDatetimeUri string `json:"startDatetimeUri"`
@@ -300,7 +305,7 @@ func stashPerson(person WidgetsPerson) {
 	}
 
 	obj := widgets_import.ResourcePerson{makeIdFromUri(person.Uri),
-	    person.Uri,
+		person.Uri,
 		person.Attributes.AlternateId,
 		person.Attributes.FirstName,
 		person.Attributes.LastName,
@@ -333,21 +338,21 @@ func stashPositions(person WidgetsPerson) {
 		start := makePositionDate(position)
 		personId := makeIdFromUri(position.Attributes.PersonUri)
 		organizationId := makeIdFromUri(position.Attributes.OrganizationUri)
-		
+
 		// NOTE: adding org label just for convenience
 		obj := widgets_import.ResourcePosition{makeIdFromUri(position.Uri),
-		    position.Uri,
+			position.Uri,
 			personId,
 			position.Label,
 			start,
 			organizationId,
-		    position.Attributes.OrganizationLabel}
+			position.Attributes.OrganizationLabel}
 
-		saveResource(obj, position.Uri, "Position") 
-		
+		saveResource(obj, position.Uri, "Position")
+
 		orgUri := position.Attributes.OrganizationUri
-		organization := widgets_import.ResourceOrganization{organizationId, 
-		    position.Attributes.OrganizationUri,
+		organization := widgets_import.ResourceOrganization{organizationId,
+			position.Attributes.OrganizationUri,
 			position.Attributes.OrganizationLabel}
 		if !resourceExists(orgUri, "Organization") {
 			addResource(organization, orgUri, "Organization")
@@ -367,18 +372,18 @@ func stashEducations(person WidgetsPerson) {
 	for _, education := range educations {
 		personId := makeIdFromUri(education.Attributes.PersonUri)
 		obj := widgets_import.ResourceEducation{makeIdFromUri(education.Uri),
-		    education.Uri,
+			education.Uri,
 			personId,
 			education.Label,
-		    makeIdFromUri(education.Attributes.OrganizationUri),
-		    education.Attributes.Institution}
+			makeIdFromUri(education.Attributes.OrganizationUri),
+			education.Attributes.Institution}
 
 		saveResource(obj, education.Uri, "Education")
 
 		institutionUri := education.Attributes.OrganizationUri
 		institutionId := makeIdFromUri(institutionUri)
-		institution := widgets_import.ResourceInstitution{institutionId, 
-		    education.Attributes.OrganizationUri,
+		institution := widgets_import.ResourceInstitution{institutionId,
+			education.Attributes.OrganizationUri,
 			education.Attributes.Institution}
 		if !resourceExists(institutionUri, "Institution") {
 			addResource(institution, institutionUri, "Institution")
@@ -419,24 +424,24 @@ func stashGrants(person WidgetsPerson) {
 		grantId := makeIdFromUri(grant.Uri)
 		fundingRoleId := fmt.Sprintf("%s-%s", grantId, personId)
 		fundingRole := FundingRole{personId, grantId}
-		
+
 		// NOTE: this is an approximation of real function, uri is fake
 		uri := fundingRole.makeUri()
 		rel := widgets_import.ResourceFundingRole{fundingRoleId,
-		    uri, 
-		    grantId, 
+			uri,
+			grantId,
 			personId,
 			grant.Attributes.RoleName}
 		saveResource(rel, uri, "FundingRole")
 
 		pi := makeIdFromUri(grant.Attributes.PrincipalInvestigatorUri)
 		start, end := makeGrantDates(grant)
-		obj := widgets_import.ResourceGrant{grantId, 
-		    grant.Uri, 
+		obj := widgets_import.ResourceGrant{grantId,
+			grant.Uri,
 			grant.Label,
 			pi,
-		    start,
-		    end}
+			start,
+			end}
 		if !resourceExists(grant.Uri, "Grant") {
 			addResource(obj, grant.Uri, "Grant")
 		}
@@ -463,19 +468,22 @@ func stashPublications(person WidgetsPerson) {
 		publicationId := makeIdFromUri(publication.Uri)
 		authorshipId := fmt.Sprintf("%s-%s", publicationId, personId)
 		authorship := Authorship{publicationId, personId}
-		
+
 		uri := authorship.makeUri()
 		rel := widgets_import.ResourceAuthorship{authorshipId,
-		    uri, 
-		    publicationId, 
-			personId}
+			uri,
+			publicationId,
+			personId,
+		    publication.Attributes.AuthorshipType}
 		saveResource(rel, uri, "Authorship")
 
 		obj := widgets_import.ResourcePublication{publicationId,
-		    publication.Uri,
+			publication.Uri,
 			publication.Label,
 			publication.Attributes.AuthorList,
-			publication.Attributes.Doi}
+			publication.Attributes.Doi,
+		    publication.Attributes.PublishedIn,
+		    publication.Attributes.PublicationVenue}
 		if !resourceExists(publication.Uri, "Publication") {
 			addResource(obj, publication.Uri, "Publication")
 		}
