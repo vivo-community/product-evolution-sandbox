@@ -1,5 +1,9 @@
 package widgets_import
 
+import (
+	"github.com/jmoiron/sqlx/types"
+)
+
 // ********** database json column structs:
 // NOTE: this is *not* an independent resource, should it be?
 type Keyword struct {
@@ -66,6 +70,14 @@ type ResourcePublication struct {
 	Label      string
 	AuthorList string
 	Doi        string
+}
+
+type Resource struct {
+	Uri   string         `db:"uri"`
+	Type  string         `db:"type"`
+	Hash  string         `db:"hash"`
+	Data  types.JSONText `db:"data"`
+	DataB types.JSONText `db:"data_b"`
 }
 
 // ********** end database json structs

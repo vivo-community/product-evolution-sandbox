@@ -10,7 +10,6 @@ import (
 	"github.com/OIT-ads-web/widgets_import"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/jmoiron/sqlx"
-	"github.com/jmoiron/sqlx/types"
 	_ "github.com/lib/pq"
 	"io/ioutil"
 	"log"
@@ -20,14 +19,6 @@ import (
 	"sync"
 	"time"
 )
-
-type Resource struct {
-	Uri   string         `db:"uri"`
-	Type  string         `db:"type"`
-	Hash  string         `db:"hash"`
-	Data  types.JSONText `db:"data"`
-	DataB types.JSONText `db:"data_b"`
-}
 
 var client *http.Client
 
@@ -238,7 +229,7 @@ func addResource(obj interface{}, uri string, typeName string) {
 	}
 	hash := makeHash(string(str))
 
-	res := &Resource{uri, typeName, hash, str, str}
+	res := &widgets_import.Resource{uri, typeName, hash, str, str}
 
 	tx := db.MustBegin()
 	sql := `INSERT INTO resources (uri, type, hash, data, data_b) 
@@ -259,8 +250,8 @@ func saveResource(obj interface{}, uri string, typeName string) {
 	}
 	hash := makeHash(string(str))
 
-	found := Resource{}
-	res := &Resource{uri, typeName, hash, str, str}
+	found := widgets_import.Resource{}
+	res := &widgets_import.Resource{uri, typeName, hash, str, str}
 
 	findSql := `SELECT uri, type, hash, data, data_b  FROM resources 
 	  WHERE (uri = $1 AND type = $2)`
@@ -447,9 +438,9 @@ func processUris(cin <-chan string) <-chan WidgetsPerson {
 		for line := range cin {
 			person := widgetsParse(line)
 			if person.Uri != "" {
-			  //out <- widgetsParse(line)
-			  out <- person
-		    }
+				//out <- widgetsParse(line)
+				out <- person
+			}
 		}
 		close(out)
 	}()
