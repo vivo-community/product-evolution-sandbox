@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"github.com/BurntSushi/toml"
 	"github.com/OIT-ads-web/widgets_import"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/jmoiron/sqlx"
-	"github.com/jmoiron/sqlx/types"
 	_ "github.com/lib/pq"
 	"github.com/olivere/elastic"
 	"log"
@@ -17,25 +17,6 @@ import (
 	"text/template"
 	"time"
 )
-
-/*
-type Config struct {
-	Database database
-	Elastic  elasticSearch `toml:"elastic"`
-}
-
-type elasticSearch struct {
-	Url string
-}
-
-type database struct {
-	Server   string
-	Port     int
-	Database string
-	User     string
-	Password string
-}
-*/
 
 // elastic 'data model'
 type PersonKeyword struct {
@@ -161,27 +142,49 @@ const affiliationMapping = `
     }
 }`
 
-type Resource struct {
-	Uri   string         `db:"uri"`
-	Type  string         `db:"type"`
-	Hash  string         `db:"hash"`
-	Data  types.JSONText `db:"data"`
-	DataB types.JSONText `db:"data_b"`
-}
+// NOTE: next 3 are still incomplete
+const educationMapping = `
+"education":{
+	"properties":{
+		"uri":       { "type": "text" },
+		"label":     { "type": "text" }
+	}
+}`
+
+const grantMapping = `
+"grant":{
+	"properties":{
+		"uri":       { "type": "text" },
+		"label":     { "type": "text" }
+	}
+}`
+
+const publicationMapping = `
+"publication":{
+	"properties":{
+		"uri":       { "type": "text" },
+		"label":     { "type": "text" }
+	}
+}`
 
 var psqlInfo string
 var db *sqlx.DB
+var client *elastic.Client
 
 func GetConnection() *sqlx.DB {
 	return db
 }
 
-func listPeople() {
+func GetClient() *elastic.Client {
+	return client
+}
+
+func listType(typeName string) {
 	db = GetConnection()
-	resources := []Resource{}
+	resources := []widgets_import.Resource{}
 
 	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1",
-		"Person")
+		typeName)
 	for _, element := range resources {
 		log.Println(element)
 		// element is the element from someSlice for where we are
@@ -189,63 +192,32 @@ func listPeople() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+}
+
+func listPeople() {
+	listType("People")
 }
 
 func listPositions() {
-	db = GetConnection()
-	resources := []Resource{}
-
-	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1",
-		"Position")
-	for _, element := range resources {
-		log.Println(element)
-		// element is the element from someSlice for where we are
-	}
-	if err != nil {
-		log.Fatalln(err)
-	}
+	listType("Positions")
 }
 
 func listPublications() {
-	db = GetConnection()
-	resources := []Resource{}
-
-	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1",
-		"Publication")
-	for _, element := range resources {
-		log.Println(element)
-		// element is the element from someSlice for where we are
-	}
-	if err != nil {
-		log.Fatalln(err)
-	}
+	listType("Publications")
 }
 
 func listEducations() {
-	db = GetConnection()
-	resources := []Resource{}
+	listType("Educations")
+}
 
-	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1",
-		"Educations")
-	for _, element := range resources {
-		log.Println(element)
-		// element is the element from someSlice for where we are
-	}
-	if err != nil {
-		log.Fatalln(err)
-	}
+func listGrants() {
+	listType("Grants")
 }
 
 func clearIndex(name string) {
 	ctx := context.Background()
 
-	client, err := elastic.NewClient(elastic.SetURL(conf.Elastic.Url))
-	if err != nil {
-		// Handle error
-		panic(err)
-	}
-
-	defer client.Stop()
+	client = GetClient()
 
 	deleteIndex, err := client.DeleteIndex(name).Do(ctx)
 	if err != nil {
@@ -254,6 +226,9 @@ func clearIndex(name string) {
 	}
 	if !deleteIndex.Acknowledged {
 		// Not acknowledged
+		log.Println("Not acknowledged")
+	} else {
+		log.Println("Acknowledged!")
 	}
 }
 
@@ -265,15 +240,36 @@ func clearAffiliationsIndex() {
 	clearIndex("affiliations")
 }
 
+func clearEducationsIndex() {
+	clearIndex("educations")
+}
+
+func clearPublicationsIndex() {
+	clearIndex("publications")
+}
+
+func clearGrantsIndex() {
+	clearIndex("grants")
+}
+
 func clearResources(typeName string) {
 	switch typeName {
 	case "people":
 		clearPeopleIndex()
 	case "affiliations":
 		clearAffiliationsIndex()
+	case "educations":
+		clearEducationsIndex()
+	case "publications":
+		clearPublicationsIndex()
+	case "grants":
+		clearGrantsIndex()
 	case "all":
 		clearPeopleIndex()
 		clearAffiliationsIndex()
+		clearEducationsIndex()
+		clearPublicationsIndex()
+		clearGrantsIndex()
 	}
 }
 
@@ -286,13 +282,7 @@ func makeIndex(name string, mappingJson string) {
 	if err := t.Execute(&tpl, mapping); err != nil {
 		log.Fatalln(err)
 	}
-	client, err := elastic.NewClient(elastic.SetURL(conf.Elastic.Url))
-	if err != nil {
-		// Handle error
-		panic(err)
-	}
-
-	defer client.Stop()
+	client = GetClient()
 
 	// Use the IndexExists service to check if a specified index exists.
 	exists, err := client.IndexExists(name).Do(ctx)
@@ -313,12 +303,24 @@ func makeIndex(name string, mappingJson string) {
 	}
 }
 
+func makePeopleIndex() {
+	makeIndex("people", personMapping)
+}
+
 func makeAffiliationsIndex() {
 	makeIndex("affiliations", affiliationMapping)
 }
 
-func makePeopleIndex() {
-	makeIndex("people", personMapping)
+func makeEducationsIndex() {
+	makeIndex("educations", educationMapping)
+}
+
+func makePublicationsIndex() {
+	makeIndex("publications", publicationMapping)
+}
+
+func makeGrantsIndex() {
+	makeIndex("grants", grantMapping)
 }
 
 func makeDate(position widgets_import.ResourcePosition) Date {
@@ -330,70 +332,34 @@ func makeDate(position widgets_import.ResourcePosition) Date {
 	return Date{position.Start.DateTime, position.Start.Resolution}
 }
 
-func addAffiliations() {
+// TODO: sketch of way to make slightly more generic
+// every type will have different db -> elastic mapping though
+func addToIndex(index string, typeName string, obj interface{}) {
 	ctx := context.Background()
+	client = GetClient()
 
-	db = GetConnection()
-	resources := []Resource{}
-
-	client, err := elastic.NewClient(elastic.SetURL(conf.Elastic.Url))
+	put1, err := client.Index().
+		Index(index).
+		Type(typeName).
+		BodyJson(obj).
+		Do(ctx)
 	if err != nil {
 		// Handle error
 		panic(err)
 	}
-
-	defer client.Stop()
-
-	err = db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Position")
-	for _, element := range resources {
-		// NOTE: this is the main difference between types
-		resource := widgets_import.ResourcePosition{}
-		data := element.Data
-		json.Unmarshal(data, &resource)
-
-		// what if blank?
-		date := makeDate(resource)
-
-		affiliation := Affiliation{resource.Uri,
-			resource.PersonUri,
-			resource.Label,
-			date,
-			resource.OrganizationUri,
-			resource.OrganizationLabel}
-		put1, err := client.Index().
-			Index("affiliations").
-			Type("affiliation").
-			// TODO: to give ID or not?
-			//Id(resource.Uri).
-			BodyJson(affiliation).
-			Do(ctx)
-		if err != nil {
-			// Handle error
-			panic(err)
-		}
-		fmt.Printf("Indexed person %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
-		log.Println(element)
-	}
-	if err != nil {
-		log.Fatalln(err)
-	}
+	fmt.Printf("Indexed to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
+	spew.Println(obj)
 }
 
 func addPeople() {
 	ctx := context.Background()
 
 	db = GetConnection()
-	resources := []Resource{}
+	resources := []widgets_import.Resource{}
 
-	client, err := elastic.NewClient(elastic.SetURL(conf.Elastic.Url))
-	if err != nil {
-		// Handle error
-		panic(err)
-	}
+	client = GetClient()
 
-	defer client.Stop()
-
-	err = db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Person")
+	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Person")
 	for _, element := range resources {
 		// NOTE: this is the main difference between types
 		resource := widgets_import.ResourcePerson{}
@@ -429,12 +395,71 @@ func addPeople() {
 			// Handle error
 			panic(err)
 		}
-		fmt.Printf("Indexed person %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
+		fmt.Printf("Indexed %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
 		log.Println(element)
 	}
 	if err != nil {
 		log.Fatalln(err)
 	}
+}
+
+func addAffiliations() {
+	ctx := context.Background()
+
+	db = GetConnection()
+	resources := []widgets_import.Resource{}
+
+	client = GetClient()
+
+	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Position")
+	for _, element := range resources {
+		// TODO: this is the main difference between differnet types
+		// maybe factor out
+		resource := widgets_import.ResourcePosition{}
+		data := element.Data
+		json.Unmarshal(data, &resource)
+
+		// what if blank?
+		date := makeDate(resource)
+
+		affiliation := Affiliation{resource.Uri,
+			resource.PersonUri,
+			resource.Label,
+			date,
+			resource.OrganizationUri,
+			resource.OrganizationLabel}
+		put1, err := client.Index().
+			Index("affiliations").
+			Type("affiliation").
+			BodyJson(affiliation).
+			Do(ctx)
+		if err != nil {
+			// Handle error
+			panic(err)
+		}
+		fmt.Printf("Indexed %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
+		log.Println(element)
+	}
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func addEducation() {
+	/*
+	ctx := context.Background()
+
+	db = GetConnection()
+	resources := []widgets_import.Resource{}
+
+	client = GetClient()
+	*/
+}
+
+func addPublications() {
+}
+
+func addGrants() {
 }
 
 func persistResources(dryRun bool, typeName string) {
@@ -446,6 +471,12 @@ func persistResources(dryRun bool, typeName string) {
 			listPeople()
 		case "affiliations":
 			listPositions()
+		case "publications":
+			listPublications()
+		case "educations":
+			listEducations()
+		case "grants":
+			listGrants()
 		}
 	} else {
 		switch typeName {
@@ -483,6 +514,13 @@ func main() {
 		log.Println("m=GetPool,msg=connection has failed", err)
 	}
 
+	// NOTE: elastic client is supposed to be long-lived
+	// see https://github.com/olivere/elastic/blob/release-branch.v6/client.go
+	client, err = elastic.NewClient(elastic.SetURL(conf.Elastic.Url))
+	if err != nil {
+		panic(err)
+	}
+
 	dryRun := flag.Bool("dry-run", false, "just examine resources to be saved")
 	remove := flag.Bool("remove", false, "remove existing records")
 	typeName := flag.String("type", "people", "type of records to import")
@@ -497,6 +535,7 @@ func main() {
 	}
 
 	defer db.Close()
+	defer client.Stop()
 
 	elapsed := time.Since(start)
 	fmt.Printf("%s\n", elapsed)
