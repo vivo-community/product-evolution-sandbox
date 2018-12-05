@@ -3,14 +3,16 @@ defmodule GraphqlEndpointWeb.Schema do
 
   import_types(Absinthe.Type.Custom)
   import_types(GraphqlEndpointWeb.Schema.Types)
-  # import_types BlogWeb.Schema.ContentTypes
+
+  alias GraphqlEndpointWeb.Resolvers
 
   query do
     @desc """
-    Retrieve a person based on their URI.
+    Retrieve a person based on their ID.
     """
     field :person, :person do
-      arg(:uri, non_null(:string), description: "URI of the person")
+      arg(:id, non_null(:string), description: "ID of the person")
+      resolve(&Resolvers.People.fetch/3)
     end
   end
 end

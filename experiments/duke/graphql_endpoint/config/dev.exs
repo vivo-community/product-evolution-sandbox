@@ -1,6 +1,6 @@
 use Mix.Config
 
-config :elastic_search, endpoint: "http://elasticsearch:9200/"
+config :graphql_endpoint, endpoint: "http://elasticsearch:9200/"
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
