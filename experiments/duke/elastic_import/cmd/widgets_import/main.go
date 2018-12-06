@@ -197,7 +197,6 @@ func widgetsParse(uri string) WidgetsPerson {
 }
 
 //https://stackoverflow.com/questions/2377881/how-to-get-a-md5-hash-from-a-string-in-golang
-//https://stackoverflow.com/questions/2377881/how-to-get-a-md5-hash-from-a-string-in-golang
 func makeHash(text string) string {
 	hasher := md5.New()
 	hasher.Write([]byte(text))

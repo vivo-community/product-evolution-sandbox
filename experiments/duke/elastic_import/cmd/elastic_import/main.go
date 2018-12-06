@@ -361,8 +361,8 @@ func clearIndex(name string) {
 
 	deleteIndex, err := client.DeleteIndex(name).Do(ctx)
 	if err != nil {
-		// Handle error
-		panic(err)
+		log.Printf("ERROR:%v\n", err)
+		return
 	}
 	if !deleteIndex.Acknowledged {
 		// Not acknowledged
@@ -413,8 +413,8 @@ func clearResources(typeName string) {
 		clearPeopleIndex()
 		clearAffiliationsIndex()
 		clearEducationsIndex()
-		clearPublicationsIndex()
 		clearGrantsIndex()
+		clearPublicationsIndex()
 	}
 }
 
@@ -713,7 +713,7 @@ func addPublications() {
 			resource.Label,
 			resource.AuthorList,
 			resource.Doi,
-		    venue}
+			venue}
 		addToIndex("publications", "publication", publication)
 	}
 	if err != nil {
@@ -798,6 +798,26 @@ func persistResources(dryRun bool, typeName string) {
 			makeFundingRolesIndex()
 			addFundingRoles()
 		case "publications":
+			makePublicationsIndex()
+			addPublications()
+			makeAuthorshipsIndex()
+			addAuthorships()
+		case "authorships":
+			makeAuthorshipsIndex()
+			addAuthorships()
+		case "all":
+			// people
+			makePeopleIndex()
+			addPeople()
+			//affilations
+			makeAffiliationsIndex()
+			addAffiliations()
+			// grants
+			makeGrantsIndex()
+			addGrants()
+			makeFundingRolesIndex()
+			addFundingRoles()
+			// publications
 			makePublicationsIndex()
 			addPublications()
 			makeAuthorshipsIndex()
