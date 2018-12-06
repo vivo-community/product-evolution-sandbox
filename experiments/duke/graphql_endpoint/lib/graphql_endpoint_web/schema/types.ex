@@ -1,7 +1,6 @@
 defmodule GraphqlEndpointWeb.Schema.Types do
   use Absinthe.Schema.Notation
-
-  alias GraphqlEndpointWeb.Resolvers.Common
+  alias GraphqlEndpointWeb.Resolvers
 
   @desc """
   A person
@@ -11,6 +10,9 @@ defmodule GraphqlEndpointWeb.Schema.Types do
     field(:image, :image)
     field(:name, :name)
     field(:overview_list, list_of(:overview))
+    field(:affiliation_list, list_of(:affiliation)) do
+      resolve &Resolvers.Affiliations.fetch/3
+    end
   end
 
   object :image do
@@ -33,6 +35,30 @@ defmodule GraphqlEndpointWeb.Schema.Types do
     field(:code, :string)
     field(:label, :string)
   end
+
+  object :affiliation do
+    field(:id, :string)
+    field(:label, :string)
+    field(:start_date, :date_resolution)
+  end
+
+  object :date_resolution do
+    field(:date_time, :string)
+    field(:resolution, :string)
+  end
+
+  #    "_source" => %{
+  #    "id" => "apt4043039",
+  #    "label" => "Assistant Consulting Professor of Psychiatry and Behavioral Sciences",
+  #    "organizationId" => "org50000913",
+  #    "organizationLabel" => "Psychiatry & Behavioral Sciences, General Psychiatry",
+  #    "personId" => "per6025762",
+  #    "startDate" => %{
+  #      "dateTime" => "2013-07-01T00:00:00",
+  #      "resolution" => "year"
+  #    },
+  #    "uri" => "https://scholars.duke.edu/individual/apt4043039"
+  #  },
 
   # pe_graphql |   "id" => "per1709582",
   # pe_graphql |   "image" => %{

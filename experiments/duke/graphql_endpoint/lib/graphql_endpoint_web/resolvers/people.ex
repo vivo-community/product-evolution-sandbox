@@ -10,7 +10,7 @@ defmodule GraphqlEndpointWeb.Resolvers.People do
     {:error, "Unable to retrieve"}
   end
 
-  def fetch_by_id(id) do
+  defp fetch_by_id(id) do
     q = %{query: %{match: %{id: id}}, size: 10}
 
     case Search.fetch("people", ["person"], q) do
@@ -22,7 +22,7 @@ defmodule GraphqlEndpointWeb.Resolvers.People do
     end
   end
 
-  def process_body(%{"hits" => _h = %{"hits" => hits, "total" => 1}}) do
+  defp process_body(%{"hits" => _h = %{"hits" => hits}}) do # , "total" => 1
     hits
     |> hd()
     |> Map.get("_source")
@@ -30,7 +30,7 @@ defmodule GraphqlEndpointWeb.Resolvers.People do
     |> JsonHelper.atomize_understore_keys()
   end
 
-  def process_body(body) do
+  defp process_body(body) do
     IO.inspect(body, label: "FULL BODY")
     %{"error" => "unable to process request"}
   end

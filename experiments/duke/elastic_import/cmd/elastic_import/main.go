@@ -834,6 +834,12 @@ func main() {
 	var configFile string
 	flag.StringVar(&configFile, "config", "./config.toml", "a config filename")
 
+	dryRun := flag.Bool("dry-run", false, "just examine resources to be saved")
+	remove := flag.Bool("remove", false, "remove existing records")
+	typeName := flag.String("type", "people", "type of records to import")
+
+	flag.Parse()
+
 	if _, err := toml.DecodeFile(configFile, &conf); err != nil {
 		fmt.Println("could not find config file, use -c option")
 		os.Exit(1)
@@ -857,11 +863,6 @@ func main() {
 		panic(err)
 	}
 
-	dryRun := flag.Bool("dry-run", false, "just examine resources to be saved")
-	remove := flag.Bool("remove", false, "remove existing records")
-	typeName := flag.String("type", "people", "type of records to import")
-
-	flag.Parse()
 
 	// NOTE: either remove OR add?
 	if *remove {
