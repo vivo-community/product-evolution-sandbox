@@ -35,8 +35,8 @@ or if one or other is already install locally
 
 ### Running
 
-> cmd/widgets_importer/widgets_importer -config <config_file> -dry-run (true|false)
-> cmd/elastic_import/elastic_importer -config <config_file> 
+> cmd/widgets_import/widgets_import -config <config_file> -dry-run (true|false)
+> cmd/elastic_import/elastic_import -config <config_file> 
 
 [NOTE: only run once, unless -remove=true]
 
@@ -73,3 +73,20 @@ or
 > cmd/elastic_import/elastic_import -type=publications
 
 
+## Exporting from Elasticsearch
+> npm install elasticdump
+
+### Backup index map to a file:
+> ./bin/elasticdump \
+  --input=http://docker:9200/people \
+  --output=people_index_mapping.json \
+  --type=mapping
+
+### Backup index map to a file:
+> ./bin/elasticdump \
+  --input=http://docker:9200/people \
+  --output=people_index_data.json \
+  --type=data
+
+- For additional elasticdumpt commands and options, see:
+https://hub.docker.com/r/taskrabbit/elasticsearch-dump/

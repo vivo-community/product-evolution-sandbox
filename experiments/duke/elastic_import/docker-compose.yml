@@ -1,6 +1,6 @@
 # FIXME: this starst elastic and postgres - but does not
 # deal with running the go importer code
-version: "3"
+version: "2"
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.5.1
