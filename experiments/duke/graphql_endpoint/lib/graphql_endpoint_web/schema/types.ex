@@ -6,6 +6,7 @@ defmodule GraphqlEndpointWeb.Schema.Types do
   A person
   """
   object :person do
+    field(:id, :string)
     field(:uri, :string)
     field(:image, :image)
     field(:name, :name)
