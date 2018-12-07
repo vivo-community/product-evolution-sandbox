@@ -1,0 +1,9 @@
+.pager {
+  width: 100%;
+}
+.page {
+  display: inline-block;
+  border: 1px solid blue;
+  padding: 0.25em;
+  margin: 0.25em;
+}

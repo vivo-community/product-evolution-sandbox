@@ -1,33 +1,37 @@
 import axios from 'axios'
+import Scholars from './src/fetchers/scholars'
+import { makePageRoutes } from 'react-static/node'
 
 export default {
   getSiteData: () => ({
-    title: 'React Static',
+    title: 'Scholars Graphql Example',
   }),
   getRoutes: async () => {
-    const { data: posts } = await axios.get('https://jsonplaceholder.typicode.com/posts')
+    const { data: people } = await Scholars.allPeople()
     return [
       {
         path: '/',
         component: 'src/containers/Home',
       },
+      ...makePageRoutes({
+        items: people.personList,
+        pageSize: 10,
+        pageToken: 'page',
+        route: {
+          path: '/people',
+          component: 'src/containers/people',
+        },
+        decorate: (items, i, totalPages) => ({
+          getData: () => ({
+            people: items,
+            currentPage: i,
+            totalPages
+          })
+        })
+      }),
       {
         path: '/about',
         component: 'src/containers/About',
-      },
-      {
-        path: '/blog',
-        component: 'src/containers/Blog',
-        getData: () => ({
-          posts,
-        }),
-        children: posts.map(post => ({
-          path: `/post/${post.id}`,
-          component: 'src/containers/Post',
-          getData: () => ({
-            post,
-          }),
-        })),
       },
       {
         is404: true,
