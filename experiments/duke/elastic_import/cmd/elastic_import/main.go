@@ -722,6 +722,9 @@ func persistResources(dryRun bool, typeName string) {
 			//affilations
 			makeAffiliationsIndex()
 			addAffiliations()
+			// educations
+			makeEducationsIndex()
+			addEducations()
 			// grants
 			makeGrantsIndex()
 			addGrants()
