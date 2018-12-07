@@ -1,0 +1,9 @@
+[database]
+server = "localhost"
+port = 5432
+database = "vivo_data"
+user = "vivo_data"
+password = "vivo_data"
+
+[dgraph]
+url = "http://localhost:9080"
