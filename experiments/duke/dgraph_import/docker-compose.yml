@@ -1,0 +1,53 @@
+version: "3.2"
+services:
+  zero:
+    image: dgraph/dgraph:latest
+    volumes:
+      - type: volume
+        source: dgraph
+        target: /dgraph
+        volume:
+          nocopy: true
+    ports:
+      - 5080:5080
+      - 6080:6080
+    restart: on-failure
+    command: dgraph zero --my=zero:5080
+    networks:
+      - elasticsearch_network
+  server:
+    image: dgraph/dgraph:latest
+    volumes:
+      - type: volume
+        source: dgraph
+        target: /dgraph
+        volume:
+          nocopy: true
+    ports:
+      - 8080:8080
+      - 9080:9080
+    restart: on-failure
+    command: dgraph alpha --my=server:7080 --lru_mb=2048 --zero=zero:5080
+    networks:
+      - elasticsearch_network
+  ratel:
+    image: dgraph/dgraph:latest
+    volumes:
+      - type: volume
+        source: dgraph
+        target: /dgraph
+        volume:
+          nocopy: true
+    ports:
+      - 8000:8000
+    command: dgraph-ratel
+    networks:
+      - elasticsearch_network
+
+volumes:
+  dgraph:
+
+networks:
+  elasticsearch_network:
+    external:
+      name: elastic_import_es_network
