@@ -51,8 +51,7 @@ defmodule GraphqlEndpointWeb.Resolvers.Grants do
         {:error, reason}
     end
 
-    role = es_object
-    |> Map.get("_source")
+    role = role
     |> JsonHelper.atomize_understore_keys()
 
     grant_match = Enum.at(elem(grant, 1), 0)
