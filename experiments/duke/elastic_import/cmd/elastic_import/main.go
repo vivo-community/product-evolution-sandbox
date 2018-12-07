@@ -6,16 +6,17 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
+	"os"
+	"text/template"
+	"time"
+
 	"github.com/BurntSushi/toml"
 	"github.com/OIT-ads-web/widgets_import"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/olivere/elastic"
-	"log"
-	"os"
-	"text/template"
-	"time"
 )
 
 // elastic 'data model'
@@ -90,7 +91,7 @@ type Affiliation struct {
 
 type Education struct {
 	Id          string      `json:"id"`
-	Uri         string      `json:"id"`
+	Uri         string      `json:"Uri"`
 	Label       string      `json:"label"`
 	PersonId    string      `json:"personId"`
 	Institution Institution `json:"org" elastic:"type:object"`
@@ -254,17 +255,6 @@ const fundingRoleMapping = `
 	}
 }`
 
-/*
-type Publication struct {
-	Id         string `json:"id"`
-	Uri        string `json:"uri"`
-	Label      string `json:"label"`
-	// NOTE: this is supposed to be an array
-	AuthorList string `json:"authorList"`
-	Doi        string `json:"doi"`
-	Venue      PublicationVenue  `json:"venue"`
-}
-*/
 const publicationMapping = `
 "publication":{
 	"properties":{
@@ -283,15 +273,6 @@ const publicationMapping = `
 	}
 }`
 
-/*
-type Authorship struct {
-	Id            string `json:"id"`
-	Uri           string `json:"uri"`
-	PublicationId string `json:"publicationId"`
-	PersonId      string `json:"personId"`
-	Label         string `json:"label"`
-}
-*/
 const authorshipMapping = `
 "authorship":{
 	"properties":{
@@ -396,6 +377,11 @@ func clearPublicationsIndex() {
 	clearIndex("publications")
 }
 
+func clearAuthorshipsIndex() {
+	// NOTE: mistakenly forgot to make this plural
+	clearIndex("authorships")
+}
+
 func clearResources(typeName string) {
 	switch typeName {
 	case "people":
@@ -406,15 +392,18 @@ func clearResources(typeName string) {
 		clearEducationsIndex()
 	case "grants":
 		clearGrantsIndex()
-		//clearFundingRolesIndex()
+		clearFundingRolesIndex()
 	case "publications":
 		clearPublicationsIndex()
+		clearAuthorshipsIndex()
 	case "all":
 		clearPeopleIndex()
 		clearAffiliationsIndex()
 		clearEducationsIndex()
 		clearGrantsIndex()
+		clearFundingRolesIndex()
 		clearPublicationsIndex()
+		clearAuthorshipsIndex()
 	}
 }
 
@@ -592,26 +581,6 @@ func makeGrantDates(grant widgets_import.ResourceGrant) (Date, Date) {
 	return start, end
 }
 
-/*
-type ResourceGrant struct {
-	Id                      string
-	Uri                     string
-	Label                   string
-	PrincipalInvestigatorId strin
-	Start                   DateResolution
-	End                     DateResolution
-}
-
-into this:
-
-type Grant struct {
-	Id        string `json:"id"`
-	Uri       string `json:"uri"`
-	Label     string `json:"label"`
-	StartDate Date   `json:"startDate"`
-	EndDate   Date   `json:"startDate"`
-}
-*/
 func addGrants() {
 	db = GetConnection()
 	resources := []widgets_import.Resource{}
@@ -635,24 +604,6 @@ func addGrants() {
 	}
 }
 
-/*
-type ResourceFundingRole struct {
-	Id       string
-	Uri      string
-	GrantId  string
-	PersonId string
-	RoleName string
-}
-into this:
-
-type FundingRole struct {
-	Id       string `json:"id"`
-	Uri      string `json:"uri"`
-	GrantId  string `json:"grantId"`
-	PersonId string `json:"personId"`
-	Label    string `json:"label"`
-}
-*/
 func addFundingRoles() {
 	db = GetConnection()
 	resources := []widgets_import.Resource{}
@@ -675,27 +626,6 @@ func addFundingRoles() {
 	}
 }
 
-/*
-type ResourcePublication struct {
-	Id         string
-	Uri        string
-	Label      string
-	AuthorList string
-	Doi        string
-}
-
-into this:
-
-type Publication struct {
-	Id         string `json:"id"`
-	Uri        string `json:"uri"`
-	Label      string `json:"label"`
-	// NOTE: this is supposed to be an array
-	AuthorList string `json:"authorList"`
-	Doi        string `json:"doi"`
-}
-
-*/
 func addPublications() {
 	db = GetConnection()
 	resources := []widgets_import.Resource{}
@@ -722,26 +652,6 @@ func addPublications() {
 
 }
 
-/*
-type ResourceAuthorship struct {
-	Id             string
-	Uri            string
-	PublicationId  string
-	PersonId       string
-	AuthorshipType string
-}
-
-into this:
-
-type Authorship struct {
-	Id            string `json:"id"`
-	Uri           string `json:"uri"`
-	PublicationId string `json:"publicationId"`
-	PersonId      string `json:"personId"`
-	Label         string `json:"label"`
-}
-
-*/
 func addAuthorships() {
 	db = GetConnection()
 	resources := []widgets_import.Resource{}
@@ -757,7 +667,7 @@ func addAuthorships() {
 			resource.PublicationId,
 			resource.PersonId,
 			resource.AuthorshipType}
-		addToIndex("authorship", "authorship", authorship)
+		addToIndex("authorships", "authorship", authorship)
 	}
 	if err != nil {
 		log.Fatalln(err)
@@ -862,7 +772,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 
 	// NOTE: either remove OR add?
 	if *remove {

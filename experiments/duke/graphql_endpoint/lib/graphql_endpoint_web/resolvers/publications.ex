@@ -20,7 +20,7 @@ defmodule GraphqlEndpointWeb.Resolvers.Publications do
   defp fetch_by_person_id(id) do
     q = %{query: %{match: %{"personId" => id}}, size: 10}
 
-    case Search.fetch("authorship", ["authorship"], q) do
+    case Search.fetch("authorships", ["authorship"], q) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         {:ok, process_body(body)}
 
