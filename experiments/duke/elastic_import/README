@@ -1,4 +1,4 @@
-imports vivo_widgets data into an elastic instance
+Imports vivo_widgets data into an Elastic instance
 
 # Go 
 
@@ -17,7 +17,7 @@ read from a './config.toml' file (see config.toml.example):
 	
 ## elastic
 Running instance of elasticsearch
-* localhost:9200
+* localhost:9200 
 
 NOTE: these can both be started via docker-compose
 
@@ -50,6 +50,19 @@ or
 > cmd/elastic_import/elastic_import -type=people -remove=true
 
 
+### Elastic caveats
+
+It is possible that elastic_import may only work inside of the Docker instance. In which case you would do the following:
+
+> cd produce-evolution-sandbox/experiments/duke/elastic_import
+> docker-compose run --rm importer sh
+> bash
+> ./build.sh
+> ./cmd/elastic_import/elastic_import -type all
+
+If localhost:9200 does not display the Elasticsearch instance in your browser, try docker:9200 instead.
+
+
 ### Getting started
 
 #### People
@@ -73,7 +86,7 @@ or
 > cmd/elastic_import/elastic_import -type=publications
 
 
-## Exporting from Elasticsearch
+## Exporting data from Elasticsearch
 > npm install elasticdump
 
 ### Backup index map to a file:
@@ -82,11 +95,10 @@ or
   --output=people_index_mapping.json \
   --type=mapping
 
-### Backup index map to a file:
+### Backup index data to a file:
 > ./bin/elasticdump \
   --input=http://docker:9200/people \
   --output=people_index_data.json \
   --type=data
 
-- For additional elasticdumpt commands and options, see:
-https://hub.docker.com/r/taskrabbit/elasticsearch-dump/
+For additional elasticdump commands and options, see: https://hub.docker.com/r/taskrabbit/elasticsearch-dump/
