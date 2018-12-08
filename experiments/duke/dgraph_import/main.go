@@ -3,9 +3,13 @@ package main
 import (
 	"context"
 	"os"
+
 	//"encoding/json"
 	"flag"
 	"fmt"
+	"log"
+	"time"
+
 	"github.com/BurntSushi/toml"
 	"github.com/dgraph-io/dgo"
 	"github.com/dgraph-io/dgo/protos/api"
@@ -13,8 +17,6 @@ import (
 	"github.com/jmoiron/sqlx/types"
 	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
-	"log"
-	"time"
 )
 
 type database struct {
@@ -77,7 +79,7 @@ type ResourcePerson struct {
 	ImageThumbnailUri string    `dgraph:"image_thumbnail_uri"`
 	Type              string    `dgraph:"type"`
 	Overview          string    `dgraph:"overview"`
-	Keywords          []Keyword `dgraph:~keywords"` // reverse edges
+	Keywords          []Keyword `dgraph:"~keywords"` // reverse edges
 }
 type ResourcePosition struct {
 	Id                string
@@ -272,7 +274,7 @@ func main() {
 	typeName := flag.String("type", "people", "type of records to import")
 	dryRun := flag.Bool("dry-run", false, "just examine resources to be saved")
 	remove := flag.Bool("remove", false, "remove existing records")
-	
+
 	flag.Parse()
 
 	if _, err := toml.DecodeFile(configFile, &conf); err != nil {
