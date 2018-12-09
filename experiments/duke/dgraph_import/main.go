@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"os"
 
 	//"encoding/json"
@@ -68,18 +69,39 @@ type ResourceGrant struct {
 }
 
 type ResourcePerson struct {
-	Id                string    `dgraph:"id"`
-	Uri               string    `dgraph:"uri"`
-	AlternateId       string    `dgraph:"alternate_id"`
-	FirstName         string    `dgraph:"first_name"`
-	LastName          string    `dgraph:"last_name"`
-	MiddleName        *string   `dgraph:"middle_name"`
-	PrimaryTitle      string    `dgraph:"primary_title"`
-	ImageUri          string    `dgraph:"image_uri"`
-	ImageThumbnailUri string    `dgraph:"image_thumbnail_uri"`
-	Type              string    `dgraph:"type"`
-	Overview          string    `dgraph:"overview"`
-	Keywords          []Keyword `dgraph:"~keywords"` // reverse edges
+	Id                string
+	Uri               string
+	AlternateId       string
+	FirstName         string
+	LastName          string
+	MiddleName        *string
+	PrimaryTitle      string
+	ImageUri          string
+	ImageThumbnailUri string
+	Type              string
+	Overview          string
+	Keywords          []Keyword
+}
+
+type PersonKeyword struct {
+	// not sure an 'id' makes sense - they are like #mesh, LOC etc...
+	Uri   string `json:"keywordUri,omitempty"`
+	Label string `json:"keywordLabel,omitempty"`
+}
+
+type Person struct {
+	Id                string          `json:"personId,omitempty"`
+	Uri               string          `json:"personUri,omitempty"`
+	AlternateId       string          `json:"personAlternateId,omitempty"`
+	FirstName         string          `json:"personFirstName,omitempty"`
+	LastName          string          `json:"personLastName,omitempty"`
+	MiddleName        *string         `json:"personMiddleName,omitempty"`
+	PrimaryTitle      string          `json:"personPrimaryTitle,omitempty"`
+	ImageUri          string          `json:"personImageUri,omitempty"`
+	ImageThumbnailUri string          `json:"personImageThumbnailUri,omitempty"`
+	Type              string          `json:"personType,omitempty"`
+	Overview          string          `json:"personOverview,omitempty"`
+	Keywords          []PersonKeyword `json:"personKeywords,omitempty"`
 }
 type ResourcePosition struct {
 	Id                string
@@ -184,12 +206,12 @@ func makePeopleIndex() {
 
 	op := &api.Operation{}
 	op.Schema = `
-        Id: string @index(exact) .
-		FirstName: string @index(exact) .
-		LastName: string @index(exact) .
-	    AlternateId: string @index(exact) .
-	    PrimaryTitle: string @index(exact) .
-	    Overview: string @index(fulltext) .
+        personId: string @index(exact) .
+		personFirstName: string @index(exact) .
+		personLastName: string @index(exact) .
+	    personAlternateId: string @index(exact) .
+	    personPrimaryTitle: string @index(exact) .
+	    personOverview: string @index(fulltext) .
 	`
 
 	ctx := context.Background()
@@ -221,14 +243,44 @@ func addPeople() {
 		log.Println(row)
 		personJson := row.DataB
 
-		log.Println(personJson)
-		mu.SetJson = personJson
-		assigned, err := dg.NewTxn().Mutate(ctx, mu)
+		// 1. get db stract
+		var resource ResourcePerson
+		json.Unmarshal(personJson, &resource)
+
+		// 2. copy PersonResource->Person (for dgraph)
+		// conversion?
+		var personKeywords []PersonKeyword
+		for _, keyword := range resource.Keywords {
+			// implicit conversion (since they are exactly the same)
+			personKeywords = append(personKeywords, PersonKeyword(keyword))
+		}
+
+		person := Person{resource.Id,
+			resource.Uri,
+			resource.AlternateId,
+			resource.FirstName,
+			resource.LastName,
+			resource.MiddleName,
+			resource.PrimaryTitle,
+			resource.ImageUri,
+			resource.ImageThumbnailUri,
+			resource.Type,
+			resource.Overview,
+			personKeywords}
+
+		// then back to Json
+		json, err := json.Marshal(person)
+		if err != nil {
+			continue
+		}
+		log.Println(json)
+		mu.SetJson = json
+		_, err = dg.NewTxn().Mutate(ctx, mu)
 		if err != nil {
 			log.Fatal(err)
 		}
-		variables := map[string]string{"$id": assigned.Uids["blank-0"]}
-		log.Println(variables)
+		//variables := map[string]string{"$id": assigned.Uids["blank-0"]}
+		//log.Println(variables)
 	}
 }
 
