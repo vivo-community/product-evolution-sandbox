@@ -53,6 +53,22 @@ query personById($id: String) {
         label
       }
     }
+    educationList {
+      label
+      org {
+        id
+        label
+      }
+    }
+    publicationList {
+      id
+      label
+      venue {
+        label
+        uri
+      }
+      authorList
+    }
   }
 }
 `

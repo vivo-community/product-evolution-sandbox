@@ -44,3 +44,7 @@
   color: #333;
   font-weight: bold;
 }
+
+.publication-label {
+  font-style: italic;
+}
