@@ -6,10 +6,12 @@ defmodule GraphqlEndpointWeb.Resolvers.Grants do
     fetch_by_person_id(person_id)
   end
 
-  def fetch(parent=%{id: person_id}, _args, _context) do
+  def fetch(parent = %{id: person_id}, _args, _context) do
     IO.puts(">>>> inside of fetch: ")
+
     parent
     |> IO.inspect(label: "parent")
+
     fetch_by_person_id(person_id)
   end
 
@@ -44,15 +46,18 @@ defmodule GraphqlEndpointWeb.Resolvers.Grants do
     grant_id = Map.get(role, "grantId")
     q = %{query: %{match: %{"id" => grant_id}}, size: 100}
 
-    grant = case Search.fetch("grants", ["grant"], q) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        {:ok, process_grant_body(body)}
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, reason}
-    end
+    grant =
+      case Search.fetch("grants", ["grant"], q) do
+        {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+          {:ok, process_grant_body(body)}
 
-    role = role
-    |> JsonHelper.atomize_understore_keys()
+        {:error, %HTTPoison.Error{reason: reason}} ->
+          {:error, reason}
+      end
+
+    role =
+      role
+      |> JsonHelper.atomize_understore_keys()
 
     grant_match = Enum.at(elem(grant, 1), 0)
 
@@ -63,6 +68,7 @@ defmodule GraphqlEndpointWeb.Resolvers.Grants do
       start_date: grant_match[:start_date],
       end_date: grant_match[:end_date]
     }
+
     compound
   end
 
@@ -80,5 +86,4 @@ defmodule GraphqlEndpointWeb.Resolvers.Grants do
     |> Map.get("_source")
     |> JsonHelper.atomize_understore_keys()
   end
-
 end

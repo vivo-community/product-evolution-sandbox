@@ -6,10 +6,12 @@ defmodule GraphqlEndpointWeb.Resolvers.Affiliations do
     fetch_by_person_id(person_id)
   end
 
-  def fetch(parent=%{id: person_id}, _args, _context) do
+  def fetch(parent = %{id: person_id}, _args, _context) do
     IO.puts(">>>> inside of fetch: ")
+
     parent
     |> IO.inspect(label: "parent")
+
     fetch_by_person_id(person_id)
   end
 
