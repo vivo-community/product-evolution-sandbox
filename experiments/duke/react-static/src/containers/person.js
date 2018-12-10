@@ -28,7 +28,7 @@ const Person = ({person}) => {
     <div className="person">
       <div className="person-header">
         <img className="person-image" src={main} alt={`${displayName} Profile Image`}/>
-        <div className="person-name">{displayName}</div>
+        <h1 className="person-name">{displayName}</h1>
         <div className="person-title">{displayTitle}</div>
         { overviewList.map(({overview, type: { code }}) => {
           return (
@@ -39,36 +39,36 @@ const Person = ({person}) => {
             />
           )
         }) }
+        { affiliationList.length > 0 ?
+        <div className="person-collection">
+          <h3>Current Appointments and Affiliations</h3>
+          { affiliationList.map((affiliation) => {
+            let {dateTime, resolution} = affiliation.startDate
+            return (
+              <div key={affiliation.id} className="person-affiliation person-collection-item">
+                <span className="affiliation-label">{affiliation.label}</span>
+                <span className="affiliation-date">
+                  <DisplayDate dateTime={dateTime} resolution={resolution}/>
+                </span>
+              </div>
+            )
+          })}
+        </div>
+        : null }
+        { educationList.length > 0 ?
+        <div className="person-collection">
+          <h3>Education</h3>
+          { educationList.map((education) => {
+            return (
+              <div key={education.id} className="person-education person-collection-item">
+                <span className="education-label">{education.label}</span>
+                <span className="education-org">, {education.org.label}</span>
+              </div>
+            )
+          })}
+        </div>
+        : null }
       </div>
-      { affiliationList.length > 0 ?
-      <div className="person-collection">
-        <h3>Current Appointments and Affiliations</h3>
-        { affiliationList.map((affiliation) => {
-          let {dateTime, resolution} = affiliation.startDate
-          return (
-            <div key={affiliation.id} className="person-affiliation person-collection-item">
-              <span className="affiliation-label">{affiliation.label}</span>
-              <span className="affiliation-date">
-                <DisplayDate dateTime={dateTime} resolution={resolution}/>
-              </span>
-            </div>
-          )
-        })}
-      </div>
-      : null }
-      { educationList.length > 0 ?
-      <div className="person-collection">
-        <h3>Education</h3>
-        { educationList.map((education) => {
-          return (
-            <div key={education.id} className="person-education person-collection-item">
-              <span className="education-label">{education.label}</span>
-              <span className="education-org">, {education.org.label}</span>
-            </div>
-          )
-        })}
-      </div>
-      : null }
       { publicationList.length > 0 ?
       <div className="person-collection">
         <h3>Publications</h3>

@@ -1,7 +1,7 @@
 .person {
   display: flex;
   flex-flow: column;
-  max-width: 800px;
+  max-width: 1024px;
   margin: 0 auto;
 }
 
@@ -13,11 +13,6 @@
   margin-left: .75em;
   margin-bottom: .75em;
   border: 1px solid #ccc;
-}
-
-.person-header .person-name {
-  font-size: 1.4em;
-  font-weight: bold;
 }
 
 .person-header .person-title {

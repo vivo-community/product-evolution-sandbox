@@ -13,10 +13,12 @@ const App = () => (
   <ApolloProvider client={client}>
     <Router>
       <div>
-        <nav>
-          <Link exact to="/">Home</Link>
-          <Link to="/people">People</Link>
-        </nav>
+        <div className="navigation">
+          <nav>
+            <Link exact to="/">Home</Link>
+            <Link to="/people">People</Link>
+          </nav>
+        </div>
         <div className="content">
           <Routes />
         </div>

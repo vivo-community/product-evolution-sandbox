@@ -17,9 +17,14 @@ img {
   max-width: 100%;
 }
 
-nav {
+.navigation {
   width: 100%;
   background: #001a57;
+}
+
+nav {
+  max-width: 1024px;
+  margin: 0 auto;
 }
 
 nav a {
@@ -28,6 +33,15 @@ nav a {
   display: inline-block;
 }
 
+nav a:first-child {
+  padding-left: 0;
+}
+
 .content {
-  padding: 1rem;
+  max-width: 1024px;
+  margin: 1rem auto;
+}
+
+h1 {
+  color: #a1b70d;
 }
