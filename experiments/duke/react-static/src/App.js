@@ -16,7 +16,6 @@ const App = () => (
         <nav>
           <Link exact to="/">Home</Link>
           <Link to="/people">People</Link>
-          <Link to="/about">About</Link>
         </nav>
         <div className="content">
           <Routes />
