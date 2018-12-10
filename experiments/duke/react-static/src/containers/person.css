@@ -7,8 +7,8 @@
 
 .person-header .person-image {
   display: block;
-  height: 250px;
-  height: 250px;
+  width: 250px;
+  height: auto;
   float: right;
   margin-left: .75em;
   margin-bottom: .75em;

@@ -21,7 +21,7 @@ const PersonTile = ({person}) => {
   let displayTitle = affiliationList[0].label
   return (
     <div className="person-tile">
-      <Link to={`/person/${id}`}>
+      <Link to={`/people/${id}`}>
         <img className="person-tile-image" src={thumbnail} alt={`${displayName} Thumbnail`}/>
         <div className="person-tile-name">{displayName}</div>
         <div className="person-tile-title">{displayTitle}</div>

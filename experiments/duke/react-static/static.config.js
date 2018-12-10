@@ -35,7 +35,7 @@ export default {
         component: 'src/containers/404',
       },
       {
-        path: '/person',
+        path: '/people',
         children: allPeople.map(person => ({
           path: `/${person.id}`,
           component: 'src/containers/person',
