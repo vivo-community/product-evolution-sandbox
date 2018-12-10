@@ -14,7 +14,8 @@ const Person = ({person}) => {
       main
     },
     affiliationList,
-    overviewList
+    overviewList,
+    educationList
   } = person
 
   let displayName = [firstName,middleName,lastName].filter((n) => n).join(" ")
@@ -45,9 +46,22 @@ const Person = ({person}) => {
             displayDate = new Date(dateTime).getFullYear();
           }
           return (
-            <div key={affiliation.id} className="person-affiliaiton person-collection-item">
+            <div key={affiliation.id} className="person-affiliation person-collection-item">
               <span className="affiliation-label">{affiliation.label}</span>
               <span className="affiliation-date">{displayDate}</span>
+            </div>
+          )
+        })}
+      </div>
+      : null }
+      { educationList.length > 0 ?
+      <div className="person-collection">
+        <h3>Education</h3>
+        { educationList.map((education) => {
+          return (
+            <div key={education.id} className="person-education person-collection-item">
+              <span className="education-label">{education.label}</span>
+              <span className="education-org">, {education.org.label}</span>
             </div>
           )
         })}
