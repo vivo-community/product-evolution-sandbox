@@ -1,14 +1,32 @@
 .person-tile {
   display: inline-block;
-  flex-basis: 20%;
-  height: 200px;
-  border: 1px solid green;
+  flex-basis: 200px;
+  height: 300px;
+  border: 1px solid #efefef;
   margin: 25px;
+  font-size: 0.8em;
+}
+
+.person-tile a {
+  font-weight: normal;
+  font-color: inherit;
+}
+
+.person-tile-name {
+  font-weight: bold
+}
+
+.person-tile-title {
+  color: #666;
+}
+
+.person-tile-name, .person-tile-title {
+  padding: 0.5em;
 }
 
 .person-tile-image {
   display: bock;
-  width: 160px;
-  height: 160px;
+  width: 200px;
+  height: 200px;
 }
 

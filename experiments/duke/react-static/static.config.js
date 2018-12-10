@@ -8,13 +8,14 @@ export default {
   }),
   getRoutes: async () => {
     const { data: people } = await Scholars.allPeople()
+    const allPeople = people.personList.filter((p) => p.image.thumbnail != "")
     return [
       {
         path: '/',
         component: 'src/containers/Home',
       },
       ...makePageRoutes({
-        items: people.personList,
+        items: allPeople,
         pageSize: 40,
         pageToken: 'page',
         route: {
@@ -39,7 +40,7 @@ export default {
       },
       {
         path: '/person',
-        children: people.personList.map(person => ({
+        children: allPeople.map(person => ({
           path: `/${person.id}`,
           component: 'src/containers/person',
           getData: async () => {
