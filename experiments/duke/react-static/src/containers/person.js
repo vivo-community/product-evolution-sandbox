@@ -1,5 +1,7 @@
 import React from 'react'
 import { withRouteData, Link } from 'react-static'
+import DisplayDate from './display_date.js'
+import DateRange from './date_range.js'
 import './person.css'
 
 const Person = ({person}) => {
@@ -16,7 +18,8 @@ const Person = ({person}) => {
     affiliationList,
     overviewList,
     educationList,
-    publicationList
+    publicationList,
+    grantList
   } = person
 
   let displayName = [firstName,middleName,lastName].filter((n) => n).join(" ")
@@ -42,14 +45,12 @@ const Person = ({person}) => {
         <h3>Current Appointments and Affiliations</h3>
         { affiliationList.map((affiliation) => {
           let {dateTime, resolution} = affiliation.startDate
-          let displayDate
-          if (resolution === 'year') {
-            displayDate = new Date(dateTime).getFullYear();
-          }
           return (
             <div key={affiliation.id} className="person-affiliation person-collection-item">
               <span className="affiliation-label">{affiliation.label}</span>
-              <span className="affiliation-date">{displayDate}</span>
+              <span className="affiliation-date">
+                <DisplayDate dateTime={dateTime} resolution={resolution}/>
+              </span>
             </div>
           )
         })}
@@ -81,6 +82,21 @@ const Person = ({person}) => {
               { publication.venue.label ?
               <span className="publication-venue">. {publication.venue.label}</span>
               : null }
+            </div>
+          )
+        })}
+      </div>
+      : null }
+      { grantList.length > 0 ?
+      <div className="person-collection">
+        <h3>Grants</h3>
+        { grantList.map((grant) => {
+          return (
+            <div key={grant.id} className="person-grant person-collection-item">
+              <span className="grant-label">{grant.label}</span>
+              <span className="grant-daterange">
+                <DateRange startDate={grant.startDate} endDate={grant.endDate}/>
+              </span>
             </div>
           )
         })}

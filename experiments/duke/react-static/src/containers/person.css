@@ -36,15 +36,10 @@
   margin-bottom: 0.5em;
 }
 
-.affiliation-date {
-  font-size: 0.8em;
-  margin-left: 0.75em;
-  padding: 0.25em;
-  background-color: #efefef;
-  color: #333;
-  font-weight: bold;
-}
-
 .publication-label {
   font-style: italic;
+}
+
+.affiliation-date, .grant-daterange {
+  margin-left: 0.75em;
 }

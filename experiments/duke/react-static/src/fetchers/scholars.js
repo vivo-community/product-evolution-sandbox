@@ -69,6 +69,19 @@ query personById($id: String) {
       }
       authorList
     }
+    grantList {
+      id
+      label
+      startDate {
+        dateTime
+        resolution
+      }
+      endDate {
+        dateTime
+        resolution
+      }
+      roleName
+    }
   }
 }
 `

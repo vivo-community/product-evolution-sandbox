@@ -1,0 +1,8 @@
+.display-date {
+  display: inline-block;
+  font-size: 0.8em;
+  padding: 0.25em;
+  background-color: #efefef;
+  color: #333;
+  font-weight: bold;
+}
