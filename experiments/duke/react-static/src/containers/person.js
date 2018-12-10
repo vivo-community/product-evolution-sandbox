@@ -45,7 +45,7 @@ const Person = ({person}) => {
           { affiliationList.map((affiliation) => {
             let {dateTime, resolution} = affiliation.startDate
             return (
-              <div key={affiliation.id} className="person-affiliation person-collection-item">
+              <div key={`affiliation-${affiliation.id}`} className="person-affiliation person-collection-item">
                 <span className="affiliation-label">{affiliation.label}</span>
                 <span className="affiliation-date">
                   <DisplayDate dateTime={dateTime} resolution={resolution}/>
@@ -58,9 +58,9 @@ const Person = ({person}) => {
         { educationList.length > 0 ?
         <div className="person-collection">
           <h3>Education</h3>
-          { educationList.map((education) => {
+          { educationList.map((education,index) => {
             return (
-              <div key={education.id} className="person-education person-collection-item">
+              <div key={`education-${index}`} className="person-education person-collection-item">
                 <span className="education-label">{education.label}</span>
                 <span className="education-org">, {education.org.label}</span>
               </div>
@@ -74,7 +74,7 @@ const Person = ({person}) => {
         <h3>Publications</h3>
         { publicationList.map((publication) => {
           return (
-            <div key={publication.id} className="person-publication person-collection-item">
+            <div key={`publication-${publication.id}`} className="person-publication person-collection-item">
               { publication.authorList ?
               <span className="publication-authors">{publication.authorList}. </span>
               : null }
@@ -92,7 +92,7 @@ const Person = ({person}) => {
         <h3>Grants</h3>
         { grantList.map((grant) => {
           return (
-            <div key={grant.id} className="person-grant person-collection-item">
+            <div key={`grant-${grant.id}`} className="person-grant person-collection-item">
               <span className="grant-label">{grant.label}</span>
               <span className="grant-daterange">
                 <DateRange startDate={grant.startDate} endDate={grant.endDate}/>
