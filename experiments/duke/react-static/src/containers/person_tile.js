@@ -1,5 +1,6 @@
 import React from 'react'
-import { withRouteData, Link } from 'react-static'
+import { Link } from 'react-static'
+import './person_tile.css'
 
 const PersonTile = ({person}) => {
   let {
@@ -15,12 +16,16 @@ const PersonTile = ({person}) => {
     affiliationList
   } = person
 
-  let displayName = `${lastName}, ${firstName} ${middleName}`
+  let givenName = [firstName,middleName].filter((n) => n).join(" ")
+  let displayName = `${lastName}, ${givenName}`
   let displayTitle = affiliationList[0].label
   return (
     <div className="person-tile">
-      <p>{displayName}</p>
-      <p>{displayTitle}</p>
+      <Link to={`/person/${id}`}>
+        <img className="person-tile-image" src={thumbnail} alt={`${displayName} Thumbnail`}/>
+        <div className="person-tile-name">{displayName}</div>
+        <div className="person-tile-title">{displayTitle}</div>
+      </Link>
     </div>
   )
 

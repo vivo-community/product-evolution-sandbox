@@ -1,0 +1,14 @@
+.person-tile {
+  display: inline-block;
+  flex-basis: 20%;
+  height: 200px;
+  border: 1px solid green;
+  margin: 25px;
+}
+
+.person-tile-image {
+  display: bock;
+  width: 160px;
+  height: 160px;
+}
+

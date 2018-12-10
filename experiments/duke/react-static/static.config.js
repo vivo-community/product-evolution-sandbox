@@ -15,7 +15,7 @@ export default {
       },
       ...makePageRoutes({
         items: people.personList,
-        pageSize: 10,
+        pageSize: 40,
         pageToken: 'page',
         route: {
           path: '/people',
@@ -37,6 +37,17 @@ export default {
         is404: true,
         component: 'src/containers/404',
       },
+      {
+        path: '/person',
+        children: people.personList.map(person => ({
+          path: `/${person.id}`,
+          component: 'src/containers/person',
+          getData: async () => {
+            let {data} = await Scholars.personById(person.id)
+            return data
+          }
+        }))
+      }
     ]
   },
   // webpack: (config, { defaultLoaders }) => {

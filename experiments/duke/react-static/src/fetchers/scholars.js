@@ -10,12 +10,12 @@ query {
       lastName
       middleName
     }
+    image {
+      thumbnail
+    }
     affiliationList {
       id
       label
-    }
-    image {
-      thumbnail
     }
   }
 }
@@ -26,8 +26,49 @@ let allPeople = () => {
   })
 }
 
+const PERSON_BY_ID = gql`
+query personById($id: String) {
+  person(id: $id) {
+    id
+    name {
+      firstName
+      lastName
+      middleName
+    }
+    image {
+      main
+    }
+    affiliationList {
+      id
+      label
+      startDate {
+        dateTime
+        resolution
+      }
+    }
+    overviewList {
+      overview
+      type {
+        code
+        label
+      }
+    }
+  }
+}
+`
+
+let personById = (id) => {
+  return apollo.query({
+    query: PERSON_BY_ID,
+    variables: {
+      id: id
+    }
+  })
+}
+
 export default {
-  allPeople
+  allPeople,
+  personById
 }
 
 
