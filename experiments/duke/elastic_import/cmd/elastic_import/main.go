@@ -26,8 +26,8 @@ type PersonKeyword struct {
 }
 
 type PersonImage struct {
-	Thumbnail string `json:"thumbnail"`
 	Main      string `json:"main"`
+	Thumbnail string `json:"thumbnail"`
 }
 
 type PersonName struct {
