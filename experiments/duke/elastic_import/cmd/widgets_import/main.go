@@ -129,18 +129,20 @@ type WidgetsPerson struct {
 	Uri        string `json:"uri"`
 	VivoType   string `json:"vivoType"`
 	Attributes struct {
-		FirstName         string  `json:"firstName"`
-		LastName          string  `json:"lastName"`
-		MiddleName        *string `json:"middleName"`
-		PreferredTitle    string  `json:"preferredTitle"`
-		PhoneNumber       string  `json:"phoneNumber"`
-		PrimaryEmail      string  `json:"primaryEmail"`
-		ProfileUrl        string  `json:"profileUrl"`
-		ImageUri          string  `json:"imageUri"`
-		PrefixName        string  `json:"prefixName"`
-		ImageThumbnailUri string  `json:"imageThumbnailUri"`
-		AlternateId       string  `json:"alternateId"`
-		Overview          string  `json:"overview"`
+		FirstName              string  `json:"firstName"`
+		LastName               string  `json:"lastName"`
+		MiddleName             *string `json:"middleName"`
+		PreferredTitle         string  `json:"preferredTitle"`
+		PhoneNumber            string  `json:"phoneNumber"`
+		PrimaryEmail           string  `json:"primaryEmail"`
+		ProfileUrl             string  `json:"profileUrl"`
+		ImageUri               string  `json:"imageUri"`
+		ImageDownload          string  `json:"imageDownload"`
+		ImageThumbnailDownload string  `json:"imageThumbnailDownload"`
+		PrefixName             string  `json:"prefixName"`
+		ImageThumbnailUri      string  `json:"imageThumbnailUri"`
+		AlternateId            string  `json:"alternateId"`
+		Overview               string  `json:"overview"`
 	} `json:"attributes"`
 	Positions     []Position     `json:"positions"`
 	Educations    []Education    `json:"educations"`
@@ -310,8 +312,8 @@ func stashPerson(person WidgetsPerson) {
 		person.Attributes.LastName,
 		person.Attributes.MiddleName,
 		person.Attributes.PreferredTitle,
-		person.Attributes.ImageUri,
-		person.Attributes.ImageThumbnailUri,
+		person.Attributes.ImageDownload,
+		person.Attributes.ImageThumbnailDownload,
 		person.VivoType,
 		person.Attributes.Overview,
 		keywords}
@@ -473,7 +475,7 @@ func stashPublications(person WidgetsPerson) {
 			uri,
 			publicationId,
 			personId,
-		    publication.Attributes.AuthorshipType}
+			publication.Attributes.AuthorshipType}
 		saveResource(rel, uri, "Authorship")
 
 		obj := widgets_import.ResourcePublication{publicationId,
@@ -481,8 +483,8 @@ func stashPublications(person WidgetsPerson) {
 			publication.Label,
 			publication.Attributes.AuthorList,
 			publication.Attributes.Doi,
-		    publication.Attributes.PublishedIn,
-		    publication.Attributes.PublicationVenue}
+			publication.Attributes.PublishedIn,
+			publication.Attributes.PublicationVenue}
 		if !resourceExists(publication.Uri, "Publication") {
 			addResource(obj, publication.Uri, "Publication")
 		}
