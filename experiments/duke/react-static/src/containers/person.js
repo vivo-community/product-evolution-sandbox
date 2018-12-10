@@ -35,6 +35,24 @@ const Person = ({person}) => {
           )
         }) }
       </div>
+      { affiliationList.length > 0 ?
+      <div className="person-collection">
+        <h3>Current Appointments and Affiliations</h3>
+        { affiliationList.map((affiliation) => {
+          let {dateTime, resolution} = affiliation.startDate
+          let displayDate
+          if (resolution === 'year') {
+            displayDate = new Date(dateTime).getFullYear();
+          }
+          return (
+            <div key={affiliation.id} className="person-affiliaiton person-collection-item">
+              <span className="affiliation-label">{affiliation.label}</span>
+              <span className="affiliation-date">{displayDate}</span>
+            </div>
+          )
+        })}
+      </div>
+      : null }
     </div>
   )
   return <p>person</p>
