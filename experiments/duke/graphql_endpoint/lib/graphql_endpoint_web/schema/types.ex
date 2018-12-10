@@ -11,17 +11,21 @@ defmodule GraphqlEndpointWeb.Schema.Types do
     field(:image, :image)
     field(:name, :name)
     field(:overview_list, list_of(:overview))
+
     field(:affiliation_list, list_of(:affiliation)) do
-      resolve &Resolvers.Affiliations.fetch/3
+      resolve(&Resolvers.Affiliations.fetch/3)
     end
+
     field(:education_list, list_of(:education)) do
-      resolve &Resolvers.Educations.fetch/3
+      resolve(&Resolvers.Educations.fetch/3)
     end
+
     field(:grant_list, list_of(:grant)) do
-      resolve &Resolvers.Grants.fetch/3
+      resolve(&Resolvers.Grants.fetch/3)
     end
+
     field(:publication_list, list_of(:publication)) do
-      resolve &Resolvers.Publications.fetch/3
+      resolve(&Resolvers.Publications.fetch/3)
     end
   end
 
@@ -67,15 +71,15 @@ defmodule GraphqlEndpointWeb.Schema.Types do
     field(:resolution, :string)
   end
 
-  #object :funding_role do
-    #field(:date_time, :string)
-    #field(:label, :string)
-  #end
+  # object :funding_role do
+  # field(:date_time, :string)
+  # field(:label, :string)
+  # end
 
-  #object :authorship do
-    #field(:date_time, :string)
-    #field(:resolution, :string)
-  #end
+  # object :authorship do
+  # field(:date_time, :string)
+  # field(:resolution, :string)
+  # end
 
   object :grant do
     field(:id, :string)
@@ -99,4 +103,14 @@ defmodule GraphqlEndpointWeb.Schema.Types do
     field(:venue, :venue)
   end
 
+  object :publication_list do
+    field(:results, list_of(:publication))
+    field(:page_info, :page_info)
+  end
+
+  object :page_info do
+    field(:per_page, :integer)
+    field(:page, :integer)
+    field(:total_pages, :integer)
+  end
 end

@@ -2,14 +2,42 @@ defmodule GraphqlEndpointWeb.Resolvers.Publications do
   alias GraphqlEndpoint.Search
   alias GraphqlEndpoint.JsonHelper
 
+  def all(args, _info) do
+    fetch_all(args)
+  end
+
+  defp fetch_all(args) do
+    size = Map.get(args, :size, 100)
+    from = Map.get(args, :from, 0)
+    q = %{query: publication_matching(args), size: size, from: from}
+
+    case Search.fetch("publications", ["publication"], q) do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        {:ok, %{results: process_publication_body(body)}}
+
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        {:error, reason}
+    end
+  end
+
+  def publication_matching(%{query: q}) do
+    %{match: %{label: q}}
+  end
+
+  def publication_matching(_q) do
+    %{match_all: %{}}
+  end
+
   def fetch(_parent, %{person_id: person_id}, _context) do
     fetch_by_person_id(person_id)
   end
 
-  def fetch(parent=%{id: person_id}, _args, _context) do
+  def fetch(parent = %{id: person_id}, _args, _context) do
     IO.puts(">>>> inside of fetch: ")
+
     parent
     |> IO.inspect(label: "parent")
+
     fetch_by_person_id(person_id)
   end
 
@@ -44,16 +72,19 @@ defmodule GraphqlEndpointWeb.Resolvers.Publications do
     publication_id = Map.get(authorship, "publicationId")
     q = %{query: %{match: %{"id" => publication_id}}, size: 100}
 
-    publication = case Search.fetch("publications", ["publication"], q) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        {:ok, process_publication_body(body)}
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, reason}
-    end
+    publication =
+      case Search.fetch("publications", ["publication"], q) do
+        {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+          {:ok, process_publication_body(body)}
+
+        {:error, %HTTPoison.Error{reason: reason}} ->
+          {:error, reason}
+      end
 
     # probably don't need to get this twice
-    authorship = authorship
-    |> JsonHelper.atomize_understore_keys()
+    authorship =
+      authorship
+      |> JsonHelper.atomize_understore_keys()
 
     # just assuming one
     publication_match = Enum.at(elem(publication, 1), 0)
@@ -66,10 +97,12 @@ defmodule GraphqlEndpointWeb.Resolvers.Publications do
       venue: publication_match[:venue],
       role_name: authorship[:label]
     }
+
     compound
   end
 
-  defp process_publication_body(%{"hits" => _h = %{"hits" => hits}}) do
+  defp process_publication_body(%{"hits" => %{"hits" => hits}}) do
+    # IO.puts ">>>> we have hits #{Map.get(hits, "total")}"
     Enum.map(hits, &process_publication/1)
   end
 
@@ -83,5 +116,4 @@ defmodule GraphqlEndpointWeb.Resolvers.Publications do
     |> Map.get("_source")
     |> JsonHelper.atomize_understore_keys()
   end
-
 end

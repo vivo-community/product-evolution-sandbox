@@ -38,7 +38,8 @@ defmodule GraphqlEndpointWeb.Resolvers.People do
     end
   end
 
-  defp process_body(%{"hits" => _h = %{"hits" => hits}}) do # , "total" => 1
+  # , "total" => 1
+  defp process_body(%{"hits" => _h = %{"hits" => hits}}) do
     hits
     |> hd()
     |> Map.get("_source")
