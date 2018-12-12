@@ -102,3 +102,163 @@ If localhost:9200 does not display the Elasticsearch instance in your browser, t
   --type=data
 
 For additional elasticdump commands and options, see: https://hub.docker.com/r/taskrabbit/elasticsearch-dump/
+
+## Elastic Mappings
+
+If you want to use the graphql_endpoint and react-static parts of this duke/experiment
+folder without using this particular, duke-specific data ingest method, you only need
+to bring in data however it is easiest for you in the following elastic mappings:
+
+
+### personMapping
+
+```json
+"person":{
+	"properties":{
+		"id":           { "type": "text" },
+		"uri":          { "type": "text" },
+		"primaryTitle": { "type": "text" },
+		"name":{
+			"type":"object",
+			"properties": {
+				"firstName":  { "type": "text" },
+				"lastName":   { "type": "text" },
+				"middleName": { "type": "text" }
+		    }
+		},
+		"image": {
+			"type": "object",
+			"properties": {
+				"main":      { "type": "text" },
+				"thumbnail": { "type": "text" }
+			}
+		},
+	    "keywordList": {
+	      "type": "nested",
+	      "properties": {
+		      "uri":   { "type": "text" },
+		      "label": { "type": "text" }
+	      }
+	    }
+    }
+}
+```
+
+### affiliations (positions)
+
+```json
+"affiliation":{
+	"properties":{
+		"id":        { "type": "text" },
+		"uri":       { "type": "text" },
+		"personId":  { "type": "text" },
+		"label":     { "type": "text" },
+		"startDate": {
+			"type": "object",
+			"properties": {
+				"dateTime":   { "type": "text" },
+				"resolution": { "type": "text" }
+			}
+		},
+		"organizationId":    { "type": "text" },
+		"organizationLabel": { "type": "text" } 
+    }
+}
+```
+
+### educations
+
+```json
+"education":{
+	"properties":{
+		"id":        { "type": "text" },
+		"uri":       { "type": "text" },
+		"label":     { "type": "text" },
+		"personId":  { "type": "text" },
+		"org":     { 
+			"type": "object",
+			"properties": {
+				"id": { "type": "text" },
+				"label": { "type": "text" }
+			}
+		}
+	}
+}
+```
+
+### grants
+
+```json
+"grant":{
+	"properties":{
+		"id":        { "type": "text" },
+		"uri":       { "type": "text" },
+		"label":     { "type": "text" },
+		"startDate": {
+			"type": "object",
+			"properties": {
+				"dateTime":   { "type": "text" },
+				"resolution": { "type": "text" }
+			}
+		},
+		"endDate": {
+			"type": "object",
+			"properties": {
+				"dateTime":   { "type": "text" },
+				"resolution": { "type": "text" }
+			}
+		}
+	}
+}
+```
+
+### funding-roles
+
+```json
+"funding-role":{
+	"properties":{
+		"id":        { "type": "text" },
+		"uri":       { "type": "text" },
+		"grantId":   { "type": "text" },
+		"personId":  { "type": "text" },
+		"label":     { "type": "text" }
+	}
+}
+
+
+### publications
+
+```json
+"publication":{
+	"properties":{
+		"id":         { "type": "text" },
+		"uri":        { "type": "text" },
+		"label":      { "type": "text" },
+		"authorList": { "type": "text" },
+		"doi":        { "type": "text" },
+        "venue":      { 
+			"type": "object",
+			"properties": {
+				"uri":   { "type": "text" },
+				"label": { "type": "text" }
+			}
+		}
+	}
+}
+```
+
+### authorships
+
+```json
+"authorship":{
+	"properties":{
+		"id":             { "type": "text" },
+		"uri":            { "type": "text" },
+		"publicationId":  { "type": "text" },
+		"personId":       { "type": "text" },
+		"label":          { "type": "text" }
+	}
+}
+```
+
+
