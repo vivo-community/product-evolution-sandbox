@@ -224,7 +224,7 @@ to bring in data however it is easiest for you in the following elastic mappings
 		"label":     { "type": "text" }
 	}
 }
-
+```
 
 ### publications
 
