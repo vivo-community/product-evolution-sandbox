@@ -1,5 +1,6 @@
 import React from 'react'
-import { withRouteData, Link } from 'react-static'
+import { withRouteData } from 'react-static'
+import { Link } from '@reach/router'
 import DisplayDate from './display_date.js'
 import DateRange from './date_range.js'
 import './person.css'
