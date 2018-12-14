@@ -652,12 +652,12 @@ func parseOrganizationPage(orgUri string) WidgetsOrganization {
 	return results
 }
 
-func produceUris(org string) <-chan string {
+func produceUris(org *string) <-chan string {
 	c := make(chan string)
 	defer wg.Done()
 
 	go func() {
-		org := parseOrganizationPage("https://scholars.duke.edu/individual/" + org)
+		org := parseOrganizationPage("https://scholars.duke.edu/individual/" + *org)
 		for _, doc := range org {
 			uri := doc.Uri
 			c <- uri
