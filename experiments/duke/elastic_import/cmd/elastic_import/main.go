@@ -19,125 +19,6 @@ import (
 	"github.com/olivere/elastic"
 )
 
-// elastic 'data model'
-type PersonKeyword struct {
-	Uri   string `json:"uri"`
-	Label string `json:"label"`
-}
-
-type PersonImage struct {
-	Main      string `json:"main"`
-	Thumbnail string `json:"thumbnail"`
-}
-
-type PersonName struct {
-	FirstName  string  `json:"firstName"`
-	LastName   string  `json:"lastName"`
-	MiddleName *string `json:"middleName"`
-}
-
-type PersonType struct {
-	Code  string `json:"code"`
-	Label string `json:"label"`
-}
-
-type OverviewType struct {
-	Code  string `json:"code"`
-	Label string `json:"label"`
-}
-
-type PersonOverview struct {
-	Label string       `json:"overview"`
-	Type  OverviewType `json:"type"`
-}
-
-type Person struct {
-	Id           string           `json:"id"`
-	Uri          string           `json:"uri"`
-	SourceId     string           `json:"sourceId"`
-	PrimaryTitle string           `json:"primaryTitle"`
-	Name         PersonName       `json:"name" elastic:"type:object"`
-	Image        PersonImage      `json:"image" elastic:"type:object"`
-	Type         PersonType       `json:"type" elastic:"type:object"`
-	OverviewList []PersonOverview `json:"overviewList" elastic:"type:nested"`
-	KeywordList  []PersonKeyword  `json:"keywordList" elastic:"type:nested"`
-}
-
-type Date struct {
-	DateTime   string `json:"dateTime"`
-	Resolution string `json:"resolution"`
-}
-
-type Organization struct {
-	Id    string `json:"id"`
-	Label string `json:"label"`
-}
-
-type Institution struct {
-	Id    string `json:"id"`
-	Label string `json:"label"`
-}
-
-// NOTE: model doesn't have org as sub-object
-type Affiliation struct {
-	Id                string `json:"id"`
-	Uri               string `json:"uri"`
-	PersonId          string `json:"personId"`
-	Label             string `json:"label"`
-	StartDate         Date   `json:"startDate"`
-	OrganizationId    string `json:"organizationId"`
-	OrganizationLabel string `json:"organizationLabel"`
-}
-
-type Education struct {
-	Id          string      `json:"id"`
-	Uri         string      `json:"Uri"`
-	Label       string      `json:"label"`
-	PersonId    string      `json:"personId"`
-	Institution Institution `json:"org" elastic:"type:object"`
-}
-
-type FundingRole struct {
-	Id       string `json:"id"`
-	Uri      string `json:"uri"`
-	GrantId  string `json:"grantId"`
-	PersonId string `json:"personId"`
-	Label    string `json:"label"`
-}
-
-type Grant struct {
-	Id        string `json:"id"`
-	Uri       string `json:"uri"`
-	Label     string `json:"label"`
-	StartDate Date   `json:"startDate"`
-	EndDate   Date   `json:"endDate"`
-}
-
-type Authorship struct {
-	Id            string `json:"id"`
-	Uri           string `json:"uri"`
-	PublicationId string `json:"publicationId"`
-	PersonId      string `json:"personId"`
-	Label         string `json:"label"`
-}
-
-type PublicationVenue struct {
-	Uri   string `json:"uri"`
-	Label string `json:"label"`
-}
-
-type Publication struct {
-	Id    string `json:"id"`
-	Uri   string `json:"uri"`
-	Label string `json:"label"`
-	// NOTE: this is supposed to be an array
-	AuthorList string           `json:"authorList"`
-	Doi        string           `json:"doi"`
-	Venue      PublicationVenue `json:"venue"`
-}
-
-// end elastic data model
-
 // for elastic mapping definitions template
 type Mapping struct {
 	Definition string
@@ -180,7 +61,14 @@ const personMapping = `
 		      "uri":   { "type": "text" },
 		      "label": { "type": "text" }
 	      }
-	    }
+		},
+		"extensions": {
+			"type": "nested",
+			"properties": {
+				"key":   { "type": "text" },
+				"value": { "type": "text" }
+			}			
+		}
     }
 }`
 
@@ -296,11 +184,22 @@ func GetClient() *elastic.Client {
 	return client
 }
 
+func retrieveType(typeName string) []widgets_import.Resource {
+	db = GetConnection()
+	resources := []widgets_import.Resource{}
+
+	err := db.Select(&resources, "SELECT uri, type, hash, data FROM resources WHERE type =  $1", typeName)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return resources
+}
+
 func listType(typeName string) {
 	db = GetConnection()
 	resources := []widgets_import.Resource{}
 
-	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1",
+	err := db.Select(&resources, "SELECT uri, type, hash, data FROM resources WHERE type =  $1",
 		typeName)
 	for _, element := range resources {
 		log.Println(element)
@@ -378,7 +277,6 @@ func clearPublicationsIndex() {
 }
 
 func clearAuthorshipsIndex() {
-	// NOTE: mistakenly forgot to make this plural
 	clearIndex("authorships")
 }
 
@@ -485,192 +383,79 @@ func addToIndex(index string, typeName string, obj interface{}) {
 }
 
 func addPeople() {
-	db = GetConnection()
-	resources := []widgets_import.Resource{}
-
-	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Person")
-	for _, element := range resources {
-		// NOTE: this is the main difference between types
-		resource := widgets_import.ResourcePerson{}
+	people := retrieveType("Person")
+	for _, element := range people {
+		resource := widgets_import.Person{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		name := PersonName{resource.FirstName, resource.LastName,
-			resource.MiddleName}
-		image := PersonImage{resource.ImageUri, resource.ImageThumbnailUri}
-
-		personType := PersonType{resource.Type, resource.Type}
-		// keywords
-		var keywordList []PersonKeyword
-		for _, keyword := range resource.Keywords {
-			pk := PersonKeyword{keyword.Uri, keyword.Label}
-			keywordList = append(keywordList, pk)
-		}
-
-		//overviews
-		var overviewList []PersonOverview
-		overview := PersonOverview{resource.Overview, OverviewType{"overview", "Overview"}}
-		overviewList = append(overviewList, overview)
-		person := Person{resource.Id, resource.Uri, resource.AlternateId, resource.PrimaryTitle,
-			name, image, personType, overviewList, keywordList}
-
-		addToIndex("people", "person", person)
+		addToIndex("people", "person", resource)
 	}
-	if err != nil {
-		log.Fatalln(err)
-	}
-}
-
-func makePositionDate(position widgets_import.ResourcePosition) Date {
-	return Date{position.Start.DateTime, position.Start.Resolution}
 }
 
 func addAffiliations() {
-	db = GetConnection()
-	resources := []widgets_import.Resource{}
-
-	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Position")
-	for _, element := range resources {
-		resource := widgets_import.ResourcePosition{}
+	positions := retrieveType("Position")
+	for _, element := range positions {
+		resource := widgets_import.Affiliation{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		date := makePositionDate(resource)
-
-		affiliation := Affiliation{resource.Id,
-			resource.Uri,
-			resource.PersonId,
-			resource.Label,
-			date,
-			resource.OrganizationId,
-			resource.OrganizationLabel}
-		addToIndex("affiliations", "affiliation", affiliation)
-	}
-	if err != nil {
-		log.Fatalln(err)
+		addToIndex("affiliations", "affiliation", resource)
 	}
 }
 
 func addEducations() {
-	db = GetConnection()
-	resources := []widgets_import.Resource{}
-
-	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Education")
-	for _, element := range resources {
-		resource := widgets_import.ResourceEducation{}
+	educations := retrieveType("Education")
+	for _, element := range educations {
+		resource := widgets_import.Education{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		institution := Institution{resource.InsitutionId, resource.InstitutionLabel}
-
-		education := Education{resource.Id,
-			resource.Uri,
-			resource.Label,
-			resource.PersonId,
-			institution}
-		addToIndex("educations", "education", education)
+		addToIndex("educations", "education", resource)
 	}
-	if err != nil {
-		log.Fatalln(err)
-	}
-}
-
-func makeGrantDates(grant widgets_import.ResourceGrant) (Date, Date) {
-	start := Date{grant.Start.DateTime, grant.Start.Resolution}
-	end := Date{grant.End.DateTime, grant.End.Resolution}
-	return start, end
 }
 
 func addGrants() {
-	db = GetConnection()
-	resources := []widgets_import.Resource{}
-
-	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Grant")
-	for _, element := range resources {
-		resource := widgets_import.ResourceGrant{}
+	grants := retrieveType("Grant")
+	for _, element := range grants {
+		resource := widgets_import.Grant{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
-		start, end := makeGrantDates(resource)
 
-		grant := Grant{resource.Id,
-			resource.Uri,
-			resource.Label,
-			start,
-			end}
-		addToIndex("grants", "grant", grant)
-	}
-	if err != nil {
-		log.Fatalln(err)
+		addToIndex("grants", "grant", resource)
 	}
 }
 
 func addFundingRoles() {
-	db = GetConnection()
-	resources := []widgets_import.Resource{}
-
-	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "FundingRole")
-	for _, element := range resources {
-		resource := widgets_import.ResourceFundingRole{}
+	fundingRoles := retrieveType("Funding-Role")
+	for _, element := range fundingRoles {
+		resource := widgets_import.FundingRole{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		role := FundingRole{resource.Id,
-			resource.Uri,
-			resource.GrantId,
-			resource.PersonId,
-			resource.RoleName}
-		addToIndex("funding-roles", "funding-role", role)
-	}
-	if err != nil {
-		log.Fatalln(err)
+		addToIndex("funding-roles", "funding-role", resource)
 	}
 }
 
 func addPublications() {
-	db = GetConnection()
-	resources := []widgets_import.Resource{}
-
-	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Publication")
-	for _, element := range resources {
-		resource := widgets_import.ResourcePublication{}
+	publications := retrieveType("Publication")
+	for _, element := range publications {
+		resource := widgets_import.Publication{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		venue := PublicationVenue{resource.PublicationVenueUri, resource.PublishedIn}
-
-		publication := Publication{resource.Id,
-			resource.Uri,
-			resource.Label,
-			resource.AuthorList,
-			resource.Doi,
-			venue}
-		addToIndex("publications", "publication", publication)
+		addToIndex("publications", "publication", resource)
 	}
-	if err != nil {
-		log.Fatalln(err)
-	}
-
 }
 
 func addAuthorships() {
-	db = GetConnection()
-	resources := []widgets_import.Resource{}
-
-	err := db.Select(&resources, "SELECT uri, type, hash, data, data_b FROM resources WHERE type =  $1", "Authorship")
-	for _, element := range resources {
-		resource := widgets_import.ResourceAuthorship{}
+	authorships := retrieveType("Authorship")
+	for _, element := range authorships {
+		resource := widgets_import.Authorship{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		authorship := Authorship{resource.Id,
-			resource.Uri,
-			resource.PublicationId,
-			resource.PersonId,
-			resource.AuthorshipType}
-		addToIndex("authorships", "authorship", authorship)
-	}
-	if err != nil {
-		log.Fatalln(err)
+		addToIndex("authorships", "authorship", resource)
 	}
 }
 

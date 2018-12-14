@@ -6,11 +6,10 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+
 	"github.com/BurntSushi/toml"
 	"github.com/OIT-ads-web/widgets_import"
-	"github.com/davecgh/go-spew/spew"
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
+
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -18,6 +17,10 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/davecgh/go-spew/spew"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 var client *http.Client
@@ -141,6 +144,7 @@ type WidgetsPerson struct {
 		ImageThumbnailDownload string  `json:"imageThumbnailDownload"`
 		PrefixName             string  `json:"prefixName"`
 		ImageThumbnailUri      string  `json:"imageThumbnailUri"`
+		NetId                  string  `json:"netid"`
 		AlternateId            string  `json:"alternateId"`
 		Overview               string  `json:"overview"`
 	} `json:"attributes"`
@@ -153,18 +157,11 @@ type WidgetsPerson struct {
 }
 
 // ********* end widgets structs
-
-type SolrDoc struct {
-	Uri string `json:"URI"`
+type WidgetsPersonStub struct {
+	Uri string `json:"uri"`
 }
 
-type SolrResults struct {
-	Response struct {
-		NumFound int       `json:"numFound"`
-		Start    int       `json:"start"`
-		Docs     []SolrDoc `json:"docs"`
-	} `json:"response"`
-}
+type WidgetsOrganization []WidgetsPersonStub
 
 // FIXME should probably return error if fail
 func widgetsParse(uri string) WidgetsPerson {
@@ -299,34 +296,49 @@ func stashPerson(person WidgetsPerson) {
 
 	// FIXME: if person.Uri is null - should probably exit
 	researchAreas := person.ResearchAreas
-	var keywords []widgets_import.Keyword
+	var keywords []widgets_import.PersonKeyword
 	for _, area := range researchAreas {
-		keyword := widgets_import.Keyword{area.Uri, area.Label}
+		keyword := widgets_import.PersonKeyword{area.Uri, area.Label}
 		keywords = append(keywords, keyword)
 	}
 
-	obj := widgets_import.ResourcePerson{makeIdFromUri(person.Uri),
+	personImage := widgets_import.PersonImage{person.Attributes.ImageDownload,
+		person.Attributes.ImageThumbnailDownload}
+
+	// NOTE: this is kind of bogus
+	personType := widgets_import.PersonType{person.VivoType, person.VivoType}
+	personName := widgets_import.PersonName{person.Attributes.FirstName,
+		person.Attributes.LastName,
+		person.Attributes.MiddleName}
+
+	var overviews []widgets_import.PersonOverview
+	overviewType := widgets_import.OverviewType{"overview", "Overview"}
+	overview := widgets_import.PersonOverview{person.Attributes.Overview,
+		overviewType}
+	// NOTE: just an array of one for now
+	overviews = append(overviews, overview)
+
+	var extensions []widgets_import.Extension
+	extension := widgets_import.Extension{"netid",
+		person.Attributes.NetId}
+	// NOTE: just an array of one for now
+	extensions = append(extensions, extension)
+
+	obj := widgets_import.Person{makeIdFromUri(person.Uri),
 		person.Uri,
 		person.Attributes.AlternateId,
-		person.Attributes.FirstName,
-		person.Attributes.LastName,
-		person.Attributes.MiddleName,
 		person.Attributes.PreferredTitle,
-		person.Attributes.ImageDownload,
-		person.Attributes.ImageThumbnailDownload,
-		person.VivoType,
-		person.Attributes.Overview,
-		keywords}
+		personName,
+		personImage,
+		personType,
+		overviews,
+		keywords,
+		extensions}
 
 	saveResource(obj, person.Uri, "Person")
 }
 
 func makePositionDate(position Position) widgets_import.DateResolution {
-	// NOTE: to make return nil return *DateResolution and ...
-	//if position.Attributes.StartYear == nil {
-	//	return nil
-	//}
-	//return &DateResolution{*position.Attributes.StartYear, "year"}
 	return widgets_import.DateResolution{position.Attributes.StartYear, "year"}
 }
 
@@ -340,25 +352,26 @@ func stashPositions(person WidgetsPerson) {
 		personId := makeIdFromUri(position.Attributes.PersonUri)
 		organizationId := makeIdFromUri(position.Attributes.OrganizationUri)
 
-		// NOTE: adding org label just for convenience
-		obj := widgets_import.ResourcePosition{makeIdFromUri(position.Uri),
+		org := widgets_import.Organization{organizationId,
+			position.Attributes.OrganizationUri,
+			position.Attributes.OrganizationLabel}
+
+		obj := widgets_import.Affiliation{makeIdFromUri(position.Uri),
 			position.Uri,
 			personId,
 			position.Label,
 			start,
-			organizationId,
-			position.Attributes.OrganizationLabel}
+			org}
 
 		saveResource(obj, position.Uri, "Position")
 
 		orgUri := position.Attributes.OrganizationUri
-		organization := widgets_import.ResourceOrganization{organizationId,
+		organization := widgets_import.Organization{organizationId,
 			position.Attributes.OrganizationUri,
 			position.Attributes.OrganizationLabel}
 		if !resourceExists(orgUri, "Organization") {
 			addResource(organization, orgUri, "Organization")
 		}
-
 	}
 }
 
@@ -372,20 +385,20 @@ func stashEducations(person WidgetsPerson) {
 	educations := person.Educations
 	for _, education := range educations {
 		personId := makeIdFromUri(education.Attributes.PersonUri)
-		obj := widgets_import.ResourceEducation{makeIdFromUri(education.Uri),
+
+		institutionId := makeIdFromUri(education.Attributes.OrganizationUri)
+		institutionUri := education.Attributes.OrganizationUri
+		institution := widgets_import.Institution{institutionId,
+			education.Attributes.OrganizationUri,
+			institutionUri}
+		obj := widgets_import.Education{makeIdFromUri(education.Uri),
 			education.Uri,
-			personId,
 			education.Label,
-			makeIdFromUri(education.Attributes.OrganizationUri),
-			education.Attributes.Institution}
+			personId,
+			institution}
 
 		saveResource(obj, education.Uri, "Education")
 
-		institutionUri := education.Attributes.OrganizationUri
-		institutionId := makeIdFromUri(institutionUri)
-		institution := widgets_import.ResourceInstitution{institutionId,
-			education.Attributes.OrganizationUri,
-			education.Attributes.Institution}
 		if !resourceExists(institutionUri, "Institution") {
 			addResource(institution, institutionUri, "Institution")
 		}
@@ -409,11 +422,6 @@ func makeGrantDates(grant Grant) (widgets_import.DateResolution, widgets_import.
 	return start, end
 }
 
-/*
-what to do with these:
-		AwardedBy                string `json:"awardedBy"`
-		AdministeredBy           string `json:"administeredBy"`
-*/
 func stashGrants(person WidgetsPerson) {
 	fmt.Printf("saving grants:%v\n", person.Uri)
 	db = GetConnection()
@@ -428,19 +436,19 @@ func stashGrants(person WidgetsPerson) {
 
 		// NOTE: this is an approximation of real function, uri is fake
 		uri := fundingRole.makeUri()
-		rel := widgets_import.ResourceFundingRole{fundingRoleId,
+		rel := widgets_import.FundingRole{fundingRoleId,
 			uri,
 			grantId,
 			personId,
 			grant.Attributes.RoleName}
 		saveResource(rel, uri, "FundingRole")
 
-		pi := makeIdFromUri(grant.Attributes.PrincipalInvestigatorUri)
+		//pi := makeIdFromUri(grant.Attributes.PrincipalInvestigatorUri)
 		start, end := makeGrantDates(grant)
-		obj := widgets_import.ResourceGrant{grantId,
+		obj := widgets_import.Grant{grantId,
 			grant.Uri,
 			grant.Label,
-			pi,
+			/*pi ,*/
 			start,
 			end}
 		if !resourceExists(grant.Uri, "Grant") {
@@ -449,6 +457,7 @@ func stashGrants(person WidgetsPerson) {
 	}
 }
 
+// NOTE: just an intermediary object
 type Authorship struct {
 	PublicationId string
 	PersonId      string
@@ -471,20 +480,23 @@ func stashPublications(person WidgetsPerson) {
 		authorship := Authorship{publicationId, personId}
 
 		uri := authorship.makeUri()
-		rel := widgets_import.ResourceAuthorship{authorshipId,
+		rel := widgets_import.Authorship{authorshipId,
 			uri,
 			publicationId,
 			personId,
 			publication.Attributes.AuthorshipType}
 		saveResource(rel, uri, "Authorship")
 
-		obj := widgets_import.ResourcePublication{publicationId,
+		venue := widgets_import.PublicationVenue{
+			publication.Attributes.PublishedIn,
+			publication.Attributes.PublicationVenue}
+
+		obj := widgets_import.Publication{publicationId,
 			publication.Uri,
 			publication.Label,
 			publication.Attributes.AuthorList,
 			publication.Attributes.Doi,
-			publication.Attributes.PublishedIn,
-			publication.Attributes.PublicationVenue}
+			venue}
 		if !resourceExists(publication.Uri, "Publication") {
 			addResource(obj, publication.Uri, "Publication")
 		}
@@ -613,16 +625,16 @@ func clearResources(typeName string) {
 	}
 }
 
-func parseSolr() SolrResults {
-	// FIXME: could allow different numbers (for rows) - and/or paging
-	// -- 100, 1000 -- NOTE: SolrResults has numFound and start
-	//could add-> &sort=timestamp%20asc ??
-	url := "https://scholars.duke.edu/vivosolr?q=type:(*FacultyMember)&fl=URI&rows=1000&wt=json"
+// examples:
+// * computer science=https://scholars.duke.edu/individual/org50000500
+// * trinity=https://scholars.duke.edu/individual/org50000491
+func parseOrganizationPage(orgUri string) WidgetsOrganization {
+	url := "https://scholars.duke.edu/widgets/api/v0.9/organizations/people/5.json?uri=" + orgUri
 	req, err := http.NewRequest("GET", url, nil)
 
 	if err != nil {
 		fmt.Println("widgets", err)
-		return SolrResults{}
+		return WidgetsOrganization{}
 	}
 
 	res, err := client.Do(req)
@@ -630,24 +642,23 @@ func parseSolr() SolrResults {
 
 	if err != nil {
 		fmt.Println("widgets", err)
-		return SolrResults{}
+		return WidgetsOrganization{}
 	}
 
 	defer res.Body.Close()
 
-	var results SolrResults
+	var results WidgetsOrganization
 	json.Unmarshal([]byte(body), &results)
 	return results
-
 }
 
-func produceUris() <-chan string {
+func produceUris(org string) <-chan string {
 	c := make(chan string)
 	defer wg.Done()
 
 	go func() {
-		solr := parseSolr()
-		for _, doc := range solr.Response.Docs {
+		org := parseOrganizationPage("https://scholars.duke.edu/individual/" + org)
+		for _, doc := range org {
 			uri := doc.Uri
 			c <- uri
 		}
@@ -670,6 +681,7 @@ func main() {
 	typeName := flag.String("type", "people", "type of thing to import")
 	remove := flag.Bool("remove", false, "remove existing records")
 
+	org := flag.String("org", "org50000500", "which org id to import (defaults to CS)")
 	flag.Parse()
 
 	if _, err := toml.DecodeFile(configFile, &conf); err != nil {
@@ -696,7 +708,8 @@ func main() {
 		clearResources(*typeName)
 	} else {
 		wg.Add(3)
-		uris := produceUris()
+		// could make orgUri a parameter maybe?
+		uris := produceUris(org)
 		widgets := processUris(uris)
 		persistWidgets(widgets, *dryRun, *typeName)
 
