@@ -365,20 +365,52 @@ func makeAuthorshipsIndex() {
 
 // TODO: sketch of way to make slightly more generic
 // every type will have different db -> elastic mapping though
-func addToIndex(index string, typeName string, obj interface{}) {
+func addToIndex(index string, typeName string, id string, obj interface{}) {
 	ctx := context.Background()
 	client = GetClient()
 
-	put1, err := client.Index().
+	get1, err := client.Get().
 		Index(index).
 		Type(typeName).
-		BodyJson(obj).
+		Id(id).
 		Do(ctx)
 	if err != nil {
 		// Handle error
 		panic(err)
 	}
-	fmt.Printf("Indexed %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
+
+	if get1.Found {
+		update1, err := client.Update().
+			Index(index).
+			Type(typeName).
+			Id(id).
+			Doc(obj).
+			Do(ctx)
+
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("UPDATED %s to index %s, type %s\n", update1.Id, update1.Index, update1.Type)
+	} else {
+		put1, err := client.Index().
+			Index(index).
+			Type(typeName).
+			Id(id).
+			BodyJson(obj).
+			Do(ctx)
+
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("ADDED %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
+	}
+
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
 	spew.Println(obj)
 }
 
@@ -389,7 +421,7 @@ func addPeople() {
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		addToIndex("people", "person", resource)
+		addToIndex("people", "person", resource.Id, resource)
 	}
 }
 
@@ -400,7 +432,7 @@ func addAffiliations() {
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		addToIndex("affiliations", "affiliation", resource)
+		addToIndex("affiliations", "affiliation", resource.Id, resource)
 	}
 }
 
@@ -411,7 +443,7 @@ func addEducations() {
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		addToIndex("educations", "education", resource)
+		addToIndex("educations", "education", resource.Id, resource)
 	}
 }
 
@@ -422,7 +454,7 @@ func addGrants() {
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		addToIndex("grants", "grant", resource)
+		addToIndex("grants", "grant", resource.Id, resource)
 	}
 }
 
@@ -433,7 +465,7 @@ func addFundingRoles() {
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		addToIndex("funding-roles", "funding-role", resource)
+		addToIndex("funding-roles", "funding-role", resource.Id, resource)
 	}
 }
 
@@ -444,7 +476,7 @@ func addPublications() {
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		addToIndex("publications", "publication", resource)
+		addToIndex("publications", "publication", resource.Id, resource)
 	}
 }
 
@@ -455,7 +487,7 @@ func addAuthorships() {
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		addToIndex("authorships", "authorship", resource)
+		addToIndex("authorships", "authorship", resource.Id, resource)
 	}
 }
 
