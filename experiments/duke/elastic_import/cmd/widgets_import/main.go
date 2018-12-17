@@ -488,8 +488,8 @@ func stashPublications(person WidgetsPerson) {
 		saveResource(rel, uri, "Authorship")
 
 		venue := widgets_import.PublicationVenue{
-			publication.Attributes.PublishedIn,
-			publication.Attributes.PublicationVenue}
+			publication.Attributes.PublicationVenue,
+			publication.Attributes.PublishedIn}
 
 		obj := widgets_import.Publication{publicationId,
 			publication.Uri,
