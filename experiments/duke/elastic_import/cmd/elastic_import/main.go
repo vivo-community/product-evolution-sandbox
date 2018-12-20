@@ -375,8 +375,23 @@ func addToIndex(index string, typeName string, id string, obj interface{}) {
 		Id(id).
 		Do(ctx)
 	if err != nil {
-		// Handle error
-		panic(err)
+		// NOTE: 404 is an err
+		fmt.Printf("%s of %s not found \n", typeName, id)
+
+		put1, err := client.Index().
+			Index(index).
+			Type(typeName).
+			Id(id).
+			BodyJson(obj).
+			Do(ctx)
+
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("ADDED %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
+		spew.Println(obj)
+		return
 	}
 
 	if get1.Found {
@@ -392,20 +407,7 @@ func addToIndex(index string, typeName string, id string, obj interface{}) {
 		}
 
 		fmt.Printf("UPDATED %s to index %s, type %s\n", update1.Id, update1.Index, update1.Type)
-	} else {
-		put1, err := client.Index().
-			Index(index).
-			Type(typeName).
-			Id(id).
-			BodyJson(obj).
-			Do(ctx)
-
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Printf("ADDED %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
-	}
+	} 
 
 	if err != nil {
 		// Handle error
@@ -459,7 +461,7 @@ func addGrants() {
 }
 
 func addFundingRoles() {
-	fundingRoles := retrieveType("Funding-Role")
+	fundingRoles := retrieveType("FundingRole")
 	for _, element := range fundingRoles {
 		resource := widgets_import.FundingRole{}
 		data := element.Data
