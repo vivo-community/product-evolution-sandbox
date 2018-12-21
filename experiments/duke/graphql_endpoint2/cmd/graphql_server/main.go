@@ -199,16 +199,28 @@ type Person struct {
 	KeywordList  []PersonKeyword  `json:"keywordList" elastic:"type:nested"`
 	Extensions   []Extension      `json:"extensions" elastic:"type:nested"`
 }
+
+https://github.com/graphql-go/graphql/blob/master/examples/concurrent-resolvers/main.go
+
 */
+
+var pageInfoType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "PageInfo",
+	Fields: graphql.Fields{
+		"perPage":    &graphql.Field{Type: graphql.Int},
+		"page":       &graphql.Field{Type: graphql.Int},
+		"totalPages": &graphql.Field{Type: graphql.Int},
+	},
+})
 
 var grantType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Grant",
 	Fields: graphql.Fields{
-		"id":    &graphql.Field{Type: graphql.String},
-		"label": &graphql.Field{Type: graphql.String},
-		"roleName": &graphql.Field{Type: graphql.String},
+		"id":        &graphql.Field{Type: graphql.String},
+		"label":     &graphql.Field{Type: graphql.String},
+		"roleName":  &graphql.Field{Type: graphql.String},
 		"startDate": &graphql.Field{Type: dateResolutionType},
-		"endDate": &graphql.Field{Type: dateResolutionType},
+		"endDate":   &graphql.Field{Type: dateResolutionType},
 	},
 })
 
@@ -338,12 +350,21 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 		"image":        &graphql.Field{Type: personImageType},
 		"type":         &graphql.Field{Type: personTypeType},
 		"overviewList": &graphql.Field{Type: graphql.NewList(overviewType)},
+		"keywordList":  &graphql.Field{Type: graphql.NewList(keywordType)},
+		"extensions":   &graphql.Field{Type: graphql.NewList(extensionType)},
 		"publicationList": &graphql.Field{
 			Type: graphql.NewList(publicationType),
+			Args: graphql.FieldConfigArgument{
+				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
+				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
+			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				person, _ := params.Source.(models.Person)
 				//var authorships []models.Authorship
 				var publications []models.Publication
+
+				size := params.Args["size"].(int)
+				from := params.Args["from"].(int)
 
 				ctx := context.Background()
 				client = GetClient()
@@ -353,8 +374,8 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 				searchResult, err := client.Search().
 					Index("authorships").
 					Query(q).
-					From(0).
-					Size(1000).
+					From(from).
+					Size(size).
 					Do(ctx)
 				if err != nil {
 					// Handle error
@@ -383,14 +404,25 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 					}
 					publications = append(publications, publication)
 				}
-				return publications, nil
+				return func() (interface{}, error) {
+					return &publications, nil
+				}, nil
+				//return publications, nil
 			},
 		},
 		"affiliationList": &graphql.Field{
 			Type: graphql.NewList(affiliationType),
+			Args: graphql.FieldConfigArgument{
+				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
+				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
+			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				person, _ := params.Source.(models.Person)
 				var affiliations []models.Affiliation
+
+				size := params.Args["size"].(int)
+				from := params.Args["from"].(int)
+
 				ctx := context.Background()
 				client = GetClient()
 
@@ -399,8 +431,8 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 				searchResult, err := client.Search().
 					Index("affiliations").
 					Query(q).
-					From(0).
-					Size(1000).
+					From(from).
+					Size(size).
 					Do(ctx)
 				if err != nil {
 					// Handle error
@@ -416,14 +448,25 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 					affiliations = append(affiliations, affiliation)
 
 				}
-				return affiliations, nil
+				return func() (interface{}, error) {
+					return &affiliations, nil
+				}, nil
+				//return affiliations, nil
 			},
 		},
 		"educationList": &graphql.Field{
 			Type: graphql.NewList(educationType),
+			Args: graphql.FieldConfigArgument{
+				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
+				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
+			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				person, _ := params.Source.(models.Person)
 				var educations []models.Education
+
+				size := params.Args["size"].(int)
+				from := params.Args["from"].(int)
+
 				ctx := context.Background()
 				client = GetClient()
 
@@ -432,8 +475,8 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 				searchResult, err := client.Search().
 					Index("educations").
 					Query(q).
-					From(0).
-					Size(1000).
+					From(from).
+					Size(size).
 					Do(ctx)
 				if err != nil {
 					// Handle error
@@ -447,16 +490,25 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 						panic(err)
 					}
 					educations = append(educations, education)
-
 				}
-				return educations, nil
+				return func() (interface{}, error) {
+					return &educations, nil
+				}, nil
+				//return educations, nil
 			},
 		},
 		"grantList": &graphql.Field{
 			Type: graphql.NewList(grantType),
+			Args: graphql.FieldConfigArgument{
+				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
+				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
+			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				person, _ := params.Source.(models.Person)
 				var grants []models.Grant
+
+				size := params.Args["size"].(int)
+				from := params.Args["from"].(int)
 
 				ctx := context.Background()
 				client = GetClient()
@@ -466,8 +518,8 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 				searchResult, err := client.Search().
 					Index("funding-roles").
 					Query(q).
-					From(0).
-					Size(1000).
+					From(from).
+					Size(size).
 					Do(ctx)
 				if err != nil {
 					// Handle error
@@ -496,7 +548,10 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 					}
 					grants = append(grants, grant)
 				}
-				return grants, nil
+				return func() (interface{}, error) {
+					return &grants, nil
+				}, nil
+				//return grants, nil
 			},
 		},
 	},
@@ -508,6 +563,14 @@ var RootQuery = graphql.NewObject(graphql.ObjectConfig{
 		"personList":      GetPeople,
 		"person":          GetPerson,
 		"publicationList": GetPublications,
+	},
+})
+
+var personListType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "PersonList",
+	Fields: graphql.Fields{
+		"results":  &graphql.Field{Type: graphql.NewList(personType)},
+		"pageInfo": &graphql.Field{Type: pageInfoType},
 	},
 })
 
@@ -536,19 +599,40 @@ var GetPerson = &graphql.Field{
 		if err != nil {
 			return person, err
 		}
-
-		return person, nil
+		return func() (interface{}, error) {
+			return &person, nil
+		}, nil
+		//return person, nil
 	},
 }
 
+type PageInfo struct {
+	PerPage    int `json:"perPage"`
+	Page       int `json:"page"`
+	TotalPages int `json":totalPages"`
+}
+
+type PersonList struct {
+	Results  []models.Person `json:"data"`
+	PageInfo PageInfo        `json:"pageInfo"`
+}
+
 var GetPeople = &graphql.Field{
-	Type:        graphql.NewList(personType),
+	Type: personListType,
+	//Type:        graphql.NewList(personType),
 	Description: "Get all people",
+	Args: graphql.FieldConfigArgument{
+		"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
+		"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
+	},
 	Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 		var people []models.Person
 		ctx := context.Background()
 		// should query elastic here
 		client = GetClient()
+
+		size := params.Args["size"].(int)
+		from := params.Args["from"].(int)
 
 		q := elastic.NewMatchAllQuery()
 
@@ -556,8 +640,8 @@ var GetPeople = &graphql.Field{
 			Index("people").
 			//Type().
 			Query(q).
-			From(0).
-			Size(1000).
+			From(from).
+			Size(size).
 			//Pretty(true).
 			// Timeout("1000ms"). or
 			// Timeout(1000).
@@ -569,6 +653,8 @@ var GetPeople = &graphql.Field{
 
 		//TotalHits()
 
+		// how to add extra stuff?
+		// like totalPages = TotalHits() / pageBy
 		for _, hit := range searchResult.Hits.Hits {
 			person := models.Person{}
 			err := json.Unmarshal(*hit.Source, &person)
@@ -577,6 +663,21 @@ var GetPeople = &graphql.Field{
 			}
 			people = append(people, person)
 		}
+
+		// size = 10, start = 0
+		// total = 164, size = 100, 
+		// pages = 2
+		// 
+		// total = 250, size = 100, start = 101, page = 2
+		// pages =2
+		pageInfo := PageInfo{PerPage: size,
+			Page:   (from / size) + 1,
+			TotalPages: (int(searchResult.TotalHits()) / size) + 1}
+		return PersonList{Results: people, PageInfo: pageInfo}, nil
+		// not sure this is faster
+		//return func() (interface{}, error) {
+		//	return &people, nil
+		//}, nil
 		return people, nil
 	},
 }
@@ -584,11 +685,18 @@ var GetPeople = &graphql.Field{
 var GetPublications = &graphql.Field{
 	Type:        graphql.NewList(publicationType),
 	Description: "Get all publications",
+	Args: graphql.FieldConfigArgument{
+		"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
+		"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
+	},
 	Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 		var publications []models.Publication
 		ctx := context.Background()
 		// should query elastic here
 		client = GetClient()
+
+		size := params.Args["size"].(int)
+		from := params.Args["from"].(int)
 
 		q := elastic.NewMatchAllQuery()
 
@@ -596,8 +704,8 @@ var GetPublications = &graphql.Field{
 			Index("publications").
 			//Type().
 			Query(q).
-			From(0).
-			Size(1000).
+			From(from).
+			Size(size).
 			//Pretty(true).
 			// Timeout("1000ms"). or
 			// Timeout(1000).

@@ -63,15 +63,23 @@ func findOne(id string) {
 		Index("people").
 		Id(id).
 		Do(ctx)
-	if err != nil {
-		// Handle error
+
+	switch {
+	case elastic.IsNotFound(err):
+		fmt.Println("404 not found")
+	case elastic.IsConnErr(err):
+		fmt.Println("connectino error")
+	case elastic.IsTimeout(err):
+		fmt.Println("timeout")
+	case err != nil:
 		panic(err)
-		//return get1, err
 	}
 
 	var person = models.Person{}
-	//spew.Println(get1)
 	err = json.Unmarshal(*get1.Source, &person)
+	if err != nil {
+		panic(err)
+	}
 
 	spew.Println(person)
 }
@@ -98,7 +106,8 @@ func main() {
 		panic(err)
 	}
 
-	listAll(*typeName)
+	fmt.Println(*typeName)
+	//listAll(*typeName)
 
 	findOne(*findId)
 	defer client.Stop()
