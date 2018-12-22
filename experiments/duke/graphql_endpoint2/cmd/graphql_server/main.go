@@ -362,6 +362,7 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 				person, _ := params.Source.(models.Person)
 				//var authorships []models.Authorship
 				var publications []models.Publication
+				var publicationIds []string
 
 				size := params.Args["size"].(int)
 				from := params.Args["from"].(int)
@@ -391,19 +392,29 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 					}
 
 					publicationId := authorship.PublicationId
-					get1, err := client.Get().
-						Index("publications").
-						Id(publicationId).
-						Do(ctx)
-
+					publicationIds = append(publicationIds, publicationId)
+				}
+	
+				pubQuery := elastic.NewIdsQuery("publication").
+				    Ids(publicationIds...)
+			
+				pubResults, err := client.Search().
+					Index("publications").
+					Query(pubQuery).
+					Do(ctx)
+				if err != nil {
+					// Handle error
+					panic(err)
+				}
+				for _, hit := range pubResults.Hits.Hits {
 					publication := models.Publication{}
-					err = json.Unmarshal(*get1.Source, &publication)
-
+					err := json.Unmarshal(*hit.Source, &publication)
 					if err != nil {
 						panic(err)
 					}
-					publications = append(publications, publication)
+                    publications = append(publications, publication)
 				}
+
 				return func() (interface{}, error) {
 					return &publications, nil
 				}, nil
@@ -506,6 +517,7 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				person, _ := params.Source.(models.Person)
 				var grants []models.Grant
+				var grantIds []string
 
 				size := params.Args["size"].(int)
 				from := params.Args["from"].(int)
@@ -535,6 +547,7 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 					}
 
 					grantId := fundingRole.GrantId
+					/*
 					get1, err := client.Get().
 						Index("grants").
 						Id(grantId).
@@ -546,8 +559,29 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 					if err != nil {
 						panic(err)
 					}
-					grants = append(grants, grant)
+					*/
+					grantIds = append(grantIds, grantId)
 				}
+				grantQuery := elastic.NewIdsQuery("grant").
+				    Ids(grantIds...)
+			
+				grantResults, err := client.Search().
+					Index("grants").
+					Query(grantQuery).
+					Do(ctx)
+				if err != nil {
+					// Handle error
+					panic(err)
+				}
+				for _, hit := range grantResults.Hits.Hits {
+					grant := models.Grant{}
+					err := json.Unmarshal(*hit.Source, &grant)
+					if err != nil {
+						panic(err)
+					}
+                    grants = append(grants, grant)
+				}
+
 				return func() (interface{}, error) {
 					return &grants, nil
 				}, nil

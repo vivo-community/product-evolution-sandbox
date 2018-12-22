@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"time"
-
 	"github.com/BurntSushi/toml"
 	"github.com/OIT-ads-web/graphql_endpoint"
 	"github.com/OIT-ads-web/graphql_endpoint/models"
@@ -54,6 +53,48 @@ func listAll(index string) {
 }
 
 var conf graphql_endpoint.Config
+
+func idQuery() {
+	q := elastic.NewIdsQuery("person").Ids("per4774112", "per8608642")//.QueryName("my_query")
+	/*
+	src, err := q.Source()
+	if err != nil {
+		log.Fatal(err)
+	}
+	data, err := json.Marshal(src)
+	if err != nil {
+		log.Fatalf("marshaling to JSON failed: %v", err)
+	}
+	got := string(data)
+	fmt.Println(got)
+    */
+	ctx := context.Background()
+	client = GetClient()
+
+	searchResult, err := client.Search().
+		Index("people").
+		//Type().
+		Query(q).
+		From(0).
+		Size(1000).
+		//Pretty(true).
+		// Timeout("1000ms"). or
+		// Timeout(1000).
+		Do(ctx)
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+
+	for _, hit := range searchResult.Hits.Hits {
+		person := models.Person{}
+		err := json.Unmarshal(*hit.Source, &person)
+		if err != nil {
+			panic(err)
+		}
+		spew.Println(person)
+	}
+}
 
 func findOne(id string) {
 	ctx := context.Background()
@@ -109,9 +150,12 @@ func main() {
 	fmt.Println(*typeName)
 	//listAll(*typeName)
 
+	fmt.Println("******************")
 	findOne(*findId)
 	defer client.Stop()
 
+	fmt.Println("*****************")
+	idQuery()
 	elapsed := time.Since(start)
 	fmt.Printf("%s\n", elapsed)
 }
