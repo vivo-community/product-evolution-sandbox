@@ -2,6 +2,7 @@ package widgets_import
 
 import (
 	"github.com/jmoiron/sqlx/types"
+	"time"
 )
 
 type PersonKeyword struct {
@@ -81,7 +82,7 @@ type Affiliation struct {
 
 type Education struct {
 	Id          string      `json:"id"`
-	Uri         string      `json:"Uri"`
+	Uri         string      `json:"uri"`
 	Label       string      `json:"label"`
 	PersonId    string      `json:"personId"`
 	Institution Institution `json:"org" elastic:"type:object"`
@@ -131,9 +132,19 @@ type Publication struct {
 // * 'data' can be used for change comparison with hash
 // * 'data_b' can be used for searches
 type Resource struct {
-	Uri   string         `db:"uri"`
-	Type  string         `db:"type"`
-	Hash  string         `db:"hash"`
-	Data  types.JSONText `db:"data"`
-	DataB types.JSONText `db:"data_b"`
+	Uri       string         `db:"uri"`
+	Type      string         `db:"type"`
+	Hash      string         `db:"hash"`
+	Data      types.JSONText `db:"data"`
+	DataB     types.JSONText `db:"data_b"`
+	CreateAt  time.Time      `db:"created_at"`
+	UpdatedAt time.Time      `db:"updated_at"`
+}
+
+type StagingResource struct {
+	Id       string         `db:"id"`
+	Type     string         `db:"type"`
+	Data     types.JSONText `db:"data"`
+	IsValid  bool           `db:"is_valid"`
+	ToDelete bool           `db:"to_delete"`
 }

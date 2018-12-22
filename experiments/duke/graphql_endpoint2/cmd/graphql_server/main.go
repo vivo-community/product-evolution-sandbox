@@ -664,21 +664,16 @@ var GetPeople = &graphql.Field{
 			people = append(people, person)
 		}
 
-		// size = 10, start = 0
-		// total = 164, size = 100, 
-		// pages = 2
-		// 
-		// total = 250, size = 100, start = 101, page = 2
-		// pages =2
 		pageInfo := PageInfo{PerPage: size,
 			Page:   (from / size) + 1,
 			TotalPages: (int(searchResult.TotalHits()) / size) + 1}
-		return PersonList{Results: people, PageInfo: pageInfo}, nil
+		
+		personList := PersonList{Results: people, PageInfo: pageInfo}
+		return personList, nil
 		// not sure this is faster
 		//return func() (interface{}, error) {
-		//	return &people, nil
+		//	return &personList, nil
 		//}, nil
-		return people, nil
 	},
 }
 

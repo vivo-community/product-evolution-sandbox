@@ -6,17 +6,17 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"log"
-	"os"
-	"text/template"
-	"time"
-
 	"github.com/BurntSushi/toml"
 	"github.com/OIT-ads-web/widgets_import"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/olivere/elastic"
+	"log"
+	"os"
+	"sync"
+	"text/template"
+	"time"
 )
 
 // for elastic mapping definitions template
@@ -374,10 +374,9 @@ func addToIndex(index string, typeName string, id string, obj interface{}) {
 		Type(typeName).
 		Id(id).
 		Do(ctx)
-	if err != nil {
-		// NOTE: 404 is an err
-		fmt.Printf("%s of %s not found \n", typeName, id)
 
+	switch {
+	case elastic.IsNotFound(err):
 		put1, err := client.Index().
 			Index(index).
 			Type(typeName).
@@ -392,8 +391,38 @@ func addToIndex(index string, typeName string, id string, obj interface{}) {
 		fmt.Printf("ADDED %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
 		spew.Println(obj)
 		return
+	case elastic.IsConnErr(err):
+		panic(err)
+	case elastic.IsTimeout(err):
+		panic(err)
+	case err != nil:
+		panic(err)
 	}
 
+	/*
+			if err != nil {
+				// NOTE: 404 is an err
+		        switch {
+		        case elastic.IsNotFound(err):
+				    put1, err := client.Index().
+					    Index(index).
+					    Type(typeName).
+					    Id(id).
+					    BodyJson(obj).
+					    Do(ctx)
+
+				    if err != nil {
+					    panic(err)
+				    }
+
+				    fmt.Printf("ADDED %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
+				    spew.Println(obj)
+				    return
+				case else:
+					panic(err)
+			}
+	
+    */
 	if get1.Found {
 		update1, err := client.Update().
 			Index(index).
@@ -407,7 +436,7 @@ func addToIndex(index string, typeName string, id string, obj interface{}) {
 		}
 
 		fmt.Printf("UPDATED %s to index %s, type %s\n", update1.Id, update1.Index, update1.Type)
-	} 
+	}
 
 	if err != nil {
 		// Handle error
@@ -535,30 +564,76 @@ func persistResources(dryRun bool, typeName string) {
 			makeAuthorshipsIndex()
 			addAuthorships()
 		case "all":
-			// people
 			makePeopleIndex()
+			makeAffiliationsIndex()
+			makeEducationsIndex()
+			makeGrantsIndex()
+			makeFundingRolesIndex()
+			makePublicationsIndex()
+			makeAuthorshipsIndex()
+	
+			// TODO: getting seqfault with this
+			// might need to mess with context ??
+			
+				wg.Add(7)
+				// 1.people
+				go func() {
+					defer wg.Done()
+					addPeople()
+				}()
+				// 2. affilations
+				go func() {
+					defer wg.Done()
+					addAffiliations()
+				}()
+				// 3. educations
+				go func() {
+					defer wg.Done()
+					addEducations()
+				}()
+				// 4. grants
+				go func() {
+					defer wg.Done()
+					addGrants()
+				}()
+				// 5. funding-roles
+				go func() {
+					defer wg.Done()
+					addFundingRoles()
+				}()
+				// 6. publications
+				go func() {
+					defer wg.Done()
+					addPublications()
+				}()
+				// 7. authorships
+				go func() {
+					defer wg.Done()
+					addAuthorships()
+				}()
+
+				wg.Wait()
+			
+			// people
+			/*
 			addPeople()
 			//affilations
-			makeAffiliationsIndex()
 			addAffiliations()
 			// educations
-			makeEducationsIndex()
 			addEducations()
 			// grants
-			makeGrantsIndex()
 			addGrants()
-			makeFundingRolesIndex()
 			addFundingRoles()
 			// publications
-			makePublicationsIndex()
 			addPublications()
-			makeAuthorshipsIndex()
 			addAuthorships()
+			*/
 		}
 	}
 }
 
 var conf widgets_import.Config
+var wg sync.WaitGroup
 
 func main() {
 	start := time.Now()
