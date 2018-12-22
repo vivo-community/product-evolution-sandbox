@@ -401,6 +401,7 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 				pubResults, err := client.Search().
 					Index("publications").
 					Query(pubQuery).
+					RequestCache(true).
 					Do(ctx)
 				if err != nil {
 					// Handle error
@@ -547,19 +548,6 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 					}
 
 					grantId := fundingRole.GrantId
-					/*
-					get1, err := client.Get().
-						Index("grants").
-						Id(grantId).
-						Do(ctx)
-
-					grant := models.Grant{}
-					err = json.Unmarshal(*get1.Source, &grant)
-
-					if err != nil {
-						panic(err)
-					}
-					*/
 					grantIds = append(grantIds, grantId)
 				}
 				grantQuery := elastic.NewIdsQuery("grant").
@@ -568,6 +556,7 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 				grantResults, err := client.Search().
 					Index("grants").
 					Query(grantQuery).
+					RequestCache(true).
 					Do(ctx)
 				if err != nil {
 					// Handle error
