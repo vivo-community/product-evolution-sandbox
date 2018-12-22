@@ -1,0 +1,14 @@
+{
+  "$id": "https://scholars.duke.edu/funding-role.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "name": "FundingRole",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "uri": { "type": "string" },
+    "label": { "type": "string" },
+    "personId": { "type": "string" },
+    "grantId": { "type": "string" }
+  },
+  "required": ["id", "uri", "label", "personId", "grantId"]
+}

@@ -1,0 +1,22 @@
+{
+  "$id": "https://scholars.duke.edu/publication.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "name": "Publication",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "uri": { "type": "string" },
+    "label": { "type": "string" },
+    "authorList": { "type": "string" },
+    "doi": { "type": "string"},
+    "venue": { 
+      "type": "object",
+      "properties": {
+         "uri": { "type": "string"},
+         "label": { "type": "string" }
+      },
+      "required": ["label"]
+    }
+  },
+  "required": ["id", "uri", "label"]
+}
