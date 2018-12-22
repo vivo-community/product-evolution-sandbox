@@ -389,7 +389,7 @@ func addAffiliations() {
 		fmt.Println(uri)
 		valid := validate(schema, string(data))
 		if valid {
-			err := saveResource(resource, uri, "Education")
+			err := saveResource(resource, uri, "Affiliation")
 			if err != nil {
 				fmt.Printf("- %s\n", err)
 			}
@@ -429,7 +429,7 @@ func addGrants() {
 		fmt.Println(uri)
 		valid := validate(schema, string(data))
 		if valid {
-			err := saveResource(resource, uri, "Education")
+			err := saveResource(resource, uri, "Grant")
 			if err != nil {
 				fmt.Printf("- %s\n", err)
 			}
@@ -450,7 +450,7 @@ func addFundingRoles() {
 		fmt.Println(uri)
 		valid := validate(schema, string(data))
 		if valid {
-			err := saveResource(resource, uri, "Education")
+			err := saveResource(resource, uri, "FundingRole")
 			if err != nil {
 				fmt.Printf("- %s\n", err)
 			}
@@ -472,7 +472,7 @@ func addPublications() {
 		fmt.Println(uri)
 		valid := validate(schema, string(data))
 		if valid {
-			err := saveResource(resource, uri, "Education")
+			err := saveResource(resource, uri, "Publication")
 			if err != nil {
 				fmt.Printf("- %s\n", err)
 			}
@@ -492,7 +492,7 @@ func addAuthorships() {
 		fmt.Println(uri)
 		valid := validate(schema, string(data))
 		if valid {
-			err := saveResource(resource, uri, "Education")
+			err := saveResource(resource, uri, "Authorship")
 			if err != nil {
 				fmt.Printf("- %s\n", err)
 			}
