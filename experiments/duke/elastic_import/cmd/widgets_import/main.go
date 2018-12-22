@@ -217,27 +217,26 @@ func examineParse(person WidgetsPerson) {
 func resourceExists(uri string, typeName string) bool {
 	var exists bool
 	db = GetConnection()
-	sqlExists := `SELECT EXISTS (SELECT uri FROM RESOURCES where (uri = $1 AND type =$2))`
+	sqlExists := `SELECT EXISTS (SELECT id FROM staging where (id = $1 AND type =$2))`
 	db.Get(&exists, sqlExists, uri, typeName)
 	return exists
 }
 
 // only add
-func addResource(obj interface{}, uri string, typeName string) {
-	fmt.Printf(">ADD:%v\n", uri)
+func addResource(obj interface{}, id string, typeName string) {
+	fmt.Printf(">ADD:%v\n", id)
 	db = GetConnection()
 
 	str, err := json.Marshal(obj)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	hash := makeHash(string(str))
 
-	res := &widgets_import.Resource{uri, typeName, hash, str, str}
+	res := &widgets_import.StagingResource{Id: id, Type: typeName, Data: str}
 
 	tx := db.MustBegin()
-	sql := `INSERT INTO resources (uri, type, hash, data, data_b) 
-	      VALUES (:uri, :type, :hash, :data, :data_b)`
+	sql := `INSERT INTO STAGING (id, type, data) 
+	      VALUES (:id, :type, :data)`
 	_, err = tx.NamedExec(sql, res)
 	if err != nil {
 		log.Fatalln(">ERROR(INSERT):%v", err)
@@ -245,42 +244,39 @@ func addResource(obj interface{}, uri string, typeName string) {
 	tx.Commit()
 }
 
-func saveResource(obj interface{}, uri string, typeName string) {
+func saveResource(obj interface{}, id string, typeName string) {
 	db = GetConnection()
 
 	str, err := json.Marshal(obj)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	hash := makeHash(string(str))
 
-	found := widgets_import.Resource{}
-	res := &widgets_import.Resource{uri, typeName, hash, str, str}
+	found := widgets_import.StagingResource{}
+	res := &widgets_import.StagingResource{Id: id, Type: typeName, Data: str}
 
-	findSql := `SELECT uri, type, hash, data, data_b  FROM resources 
-	  WHERE (uri = $1 AND type = $2)`
+	findSql := `SELECT id, type, data FROM staging
+	  WHERE (id = $1 AND type = $2)`
 
-	err = db.Get(&found, findSql, uri, typeName)
+	err = db.Get(&found, findSql, id, typeName)
 
 	tx := db.MustBegin()
 	if err != nil {
 		// NOTE: assuming the error means it doesn't exist
-		fmt.Printf(">ADD:%v\n", res.Uri)
-		sql := `INSERT INTO resources (uri, type, hash, data, data_b) 
-	      VALUES (:uri, :type, :hash, :data, :data_b)`
+		fmt.Printf(">ADD:%v\n", res.Id)
+		sql := `INSERT INTO staging (id, type, data) 
+	      VALUES (:id, :type, :data)`
 		_, err := tx.NamedExec(sql, res)
 		if err != nil {
 			log.Fatalln(">ERROR(INSERT):%v", err)
 		}
 	} else {
-		fmt.Printf(">UPDATE:%v\n", found.Uri)
-		sql := `UPDATE resources 
-	    set uri = :uri, 
+		fmt.Printf(">UPDATE:%v\n", found.Id)
+		sql := `UPDATE staging
+	    set id = id, 
 		type = :type, 
-		hash = :hash, 
-		data = :data, 
-		data_b = :data_b
-		WHERE uri = :uri and type = :type`
+		data = :data
+		WHERE id = :id and type = :type`
 		_, err := tx.NamedExec(sql, res)
 
 		if err != nil {
@@ -324,7 +320,8 @@ func stashPerson(person WidgetsPerson) {
 	// NOTE: just an array of one for now
 	extensions = append(extensions, extension)
 
-	obj := widgets_import.Person{makeIdFromUri(person.Uri),
+	personId := makeIdFromUri(person.Uri)
+	obj := widgets_import.Person{personId,
 		person.Uri,
 		person.Attributes.AlternateId,
 		person.Attributes.PreferredTitle,
@@ -335,7 +332,7 @@ func stashPerson(person WidgetsPerson) {
 		keywords,
 		extensions}
 
-	saveResource(obj, person.Uri, "Person")
+	saveResource(obj, personId, "Person")
 }
 
 func makePositionDate(position Position) widgets_import.DateResolution {
@@ -356,21 +353,21 @@ func stashPositions(person WidgetsPerson) {
 			position.Attributes.OrganizationUri,
 			position.Attributes.OrganizationLabel}
 
-		obj := widgets_import.Affiliation{makeIdFromUri(position.Uri),
+		positionId := makeIdFromUri(position.Uri)
+		obj := widgets_import.Affiliation{positionId,
 			position.Uri,
 			personId,
 			position.Label,
 			start,
 			org}
 
-		saveResource(obj, position.Uri, "Position")
+		saveResource(obj, positionId, "Position")
 
-		orgUri := position.Attributes.OrganizationUri
 		organization := widgets_import.Organization{organizationId,
 			position.Attributes.OrganizationUri,
 			position.Attributes.OrganizationLabel}
-		if !resourceExists(orgUri, "Organization") {
-			addResource(organization, orgUri, "Organization")
+		if !resourceExists(organizationId, "Organization") {
+			addResource(organization, organizationId, "Organization")
 		}
 	}
 }
@@ -391,16 +388,18 @@ func stashEducations(person WidgetsPerson) {
 		institution := widgets_import.Institution{institutionId,
 			education.Attributes.OrganizationUri,
 			institutionUri}
-		obj := widgets_import.Education{makeIdFromUri(education.Uri),
+
+		educationId := makeIdFromUri(education.Uri)
+		obj := widgets_import.Education{educationId,
 			education.Uri,
 			education.Label,
 			personId,
 			institution}
 
-		saveResource(obj, education.Uri, "Education")
+		saveResource(obj, educationId, "Education")
 
-		if !resourceExists(institutionUri, "Institution") {
-			addResource(institution, institutionUri, "Institution")
+		if !resourceExists(institutionId, "Institution") {
+			addResource(institution, institutionId, "Institution")
 		}
 	}
 }
@@ -441,7 +440,7 @@ func stashGrants(person WidgetsPerson) {
 			grantId,
 			personId,
 			grant.Attributes.RoleName}
-		saveResource(rel, uri, "FundingRole")
+		saveResource(rel, fundingRoleId, "FundingRole")
 
 		//pi := makeIdFromUri(grant.Attributes.PrincipalInvestigatorUri)
 		start, end := makeGrantDates(grant)
@@ -451,8 +450,8 @@ func stashGrants(person WidgetsPerson) {
 			/*pi ,*/
 			start,
 			end}
-		if !resourceExists(grant.Uri, "Grant") {
-			addResource(obj, grant.Uri, "Grant")
+		if !resourceExists(grantId, "Grant") {
+			addResource(obj, grantId, "Grant")
 		}
 	}
 }
@@ -485,7 +484,7 @@ func stashPublications(person WidgetsPerson) {
 			publicationId,
 			personId,
 			publication.Attributes.AuthorshipType}
-		saveResource(rel, uri, "Authorship")
+		saveResource(rel, authorshipId, "Authorship")
 
 		venue := widgets_import.PublicationVenue{
 			publication.Attributes.PublicationVenue,
@@ -497,8 +496,8 @@ func stashPublications(person WidgetsPerson) {
 			publication.Attributes.AuthorList,
 			publication.Attributes.Doi,
 			venue}
-		if !resourceExists(publication.Uri, "Publication") {
-			addResource(obj, publication.Uri, "Publication")
+		if !resourceExists(publicationId, "Publication") {
+			addResource(obj, publicationId, "Publication")
 		}
 	}
 }
@@ -538,11 +537,11 @@ func persistWidgets(cin <-chan WidgetsPerson, dryRun bool, typeName string) {
 				case "publications":
 					stashPublications(person)
 				case "all":
-					stashPerson(person)
-					stashPositions(person)
-					stashEducations(person)
-					stashGrants(person)
-					stashPublications(person)
+                    stashPerson(person)
+	                stashPositions(person)
+	                stashEducations(person)
+                    stashGrants(person)
+                    stashPublications(person)
 				default:
 					stashPerson(person)
 				}
@@ -553,7 +552,7 @@ func persistWidgets(cin <-chan WidgetsPerson, dryRun bool, typeName string) {
 	}()
 }
 
-func resourceTableExists() bool {
+func stagingTableExists() bool {
 	var exists bool
 	db = GetConnection()
 	// FIXME: not sure this is right
@@ -561,7 +560,7 @@ func resourceTableExists() bool {
         SELECT 1
         FROM   information_schema.tables 
         WHERE  table_catalog = 'vivo_data'
-        AND    table_name = 'resources'
+        AND    table_name = 'staging'
     )`
 	err := db.QueryRow(sqlExists).Scan(&exists)
 	if err != nil {
@@ -570,20 +569,15 @@ func resourceTableExists() bool {
 	return exists
 }
 
-func makeResourceSchema() {
-	// NOTE: using data AND data_b columns since binary json
-	// does NOT keep ordering, it would mess up
-	// any hash based comparison, but it could be still be
-	// useful for querying
-	sql := `create table resources (
-        uri text NOT NULL,
+// 'type' should match up to a schema
+func makeStagingSchema() {
+	sql := `create table staging (
+        id text NOT NULL,
         type text NOT NULL,
-        hash text NOT NULL,
         data json NOT NULL,
-        data_b jsonb NOT NULL,
-        created_at TIMESTAMP DEFAULT NOW(),
-        updated_at TIMESTAMP DEFAULT NOW(),
-        PRIMARY KEY(uri, type)
+		is_valid boolean DEFAULT FALSE,
+		to_delete boolean DEFAULT FALSE,
+        PRIMARY KEY(id, type)
     )`
 
 	db = GetConnection()
@@ -598,7 +592,7 @@ func makeResourceSchema() {
 
 func clearResources(typeName string) {
 	db = GetConnection()
-	sql := `DELETE from resources`
+	sql := `DELETE from staging`
 
 	switch typeName {
 	case "people":
@@ -699,8 +693,8 @@ func main() {
 		log.Println("m=GetPool,msg=connection has failed", err)
 	}
 
-	if !resourceTableExists() {
-		makeResourceSchema()
+	if !stagingTableExists() {
+		makeStagingSchema()
 	}
 
 	// NOTE: either remove OR add?
@@ -710,6 +704,7 @@ func main() {
 		wg.Add(3)
 		// could make orgUri a parameter maybe?
 		uris := produceUris(org)
+		// split this up into 10, 50, 100 processes?
 		widgets := processUris(uris)
 		persistWidgets(widgets, *dryRun, *typeName)
 
