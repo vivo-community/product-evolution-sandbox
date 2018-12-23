@@ -6,10 +6,12 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-
+    "io"
+	//"bytes"
 	"github.com/BurntSushi/toml"
 	"github.com/OIT-ads-web/widgets_import"
 
+	"github.com/knakk/rdf"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -17,7 +19,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
 	"github.com/davecgh/go-spew/spew"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -502,6 +503,38 @@ func stashPublications(person WidgetsPerson) {
 	}
 }
 
+func processUri(uri string) WidgetsPerson {
+	person := widgetsParse(uri)
+	return person
+}
+
+func persistPerson(person WidgetsPerson, dryRun bool, typeName string) {
+	if dryRun {
+		examineParse(person)
+	} else {
+		switch typeName {
+		case "people":
+			stashPerson(person)
+		case "positions":
+			stashPositions(person)
+		case "educations":
+			stashEducations(person)
+		case "grants":
+			stashGrants(person)
+		case "publications":
+			stashPublications(person)
+		case "all":
+			stashPerson(person)
+			stashPositions(person)
+			stashEducations(person)
+			stashGrants(person)
+			stashPublications(person)
+		default:
+			stashPerson(person)
+		}
+	}
+}
+
 /*** channels ***/
 func processUris(cin <-chan string) <-chan WidgetsPerson {
 	out := make(chan WidgetsPerson)
@@ -537,11 +570,11 @@ func persistWidgets(cin <-chan WidgetsPerson, dryRun bool, typeName string) {
 				case "publications":
 					stashPublications(person)
 				case "all":
-                    stashPerson(person)
-	                stashPositions(person)
-	                stashEducations(person)
-                    stashGrants(person)
-                    stashPublications(person)
+					stashPerson(person)
+					stashPositions(person)
+					stashEducations(person)
+					stashGrants(person)
+					stashPublications(person)
 				default:
 					stashPerson(person)
 				}
@@ -646,7 +679,36 @@ func parseOrganizationPage(orgUri string) WidgetsOrganization {
 	return results
 }
 
-func produceUris(org *string) <-chan string {
+// from Org
+func gatherUrisFromWidgetsOrg(org *string) []string {
+	var uris []string
+	orgs := parseOrganizationPage("https://scholars.duke.edu/individual/" + *org)
+	for _, doc := range orgs {
+		uri := doc.Uri
+		fmt.Println(uri)
+		uris = append(uris, uri)
+	}
+	return uris
+}
+
+// from Rdf file
+func gatherUrisFromRdfFile(fileName string) []string {
+	var uris []string
+	f, err := os.Open(fileName)
+	if err != nil {
+		// handle error
+	}
+	dec := rdf.NewTripleDecoder(f, rdf.RDFXML)
+	for triple, err := dec.Decode(); err != io.EOF; triple, err = dec.Decode() {
+		// do something with triple ..
+		fmt.Println(triple.Subj)
+		uris = append(uris, triple.Subj.String())
+	}
+	return uris
+}
+
+// 3 hrs for medicine
+func produceUrisFromWidgetsOrg(org *string) <-chan string {
 	c := make(chan string)
 	defer wg.Done()
 
@@ -654,6 +716,26 @@ func produceUris(org *string) <-chan string {
 		org := parseOrganizationPage("https://scholars.duke.edu/individual/" + *org)
 		for _, doc := range org {
 			uri := doc.Uri
+			c <- uri
+		}
+		close(c)
+	}()
+	return c
+}
+
+func produceUrisFromRdfFile(fileName string) <-chan string {
+	c := make(chan string)
+	defer wg.Done()
+	f, err := os.Open(fileName)
+	if err != nil {
+		// handle error
+	}
+	dec := rdf.NewTripleDecoder(f, rdf.RDFXML)
+	go func() {
+		//org := parseOrganizationPage("https://scholars.duke.edu/individual/" + *org)
+		//for _, doc := range org {
+        for triple, err := dec.Decode(); err != io.EOF; triple, err = dec.Decode() {
+			uri := triple.Subj.String()
 			c <- uri
 		}
 		close(c)
@@ -669,7 +751,10 @@ func main() {
 	start := time.Now()
 	var err error
 	var configFile string
+	var rdfFile string
+
 	flag.StringVar(&configFile, "config", "./config.toml", "a config filename")
+    flag.StringVar(&rdfFile, "rdf", "", "an rdf file (of person uris)")
 
 	dryRun := flag.Bool("dry-run", false, "just examine widgets parsing")
 	typeName := flag.String("type", "people", "type of thing to import")
@@ -701,14 +786,54 @@ func main() {
 	if *remove {
 		clearResources(*typeName)
 	} else {
+		// 1. this way
 		wg.Add(3)
-		// could make orgUri a parameter maybe?
-		uris := produceUris(org)
-		// split this up into 10, 50, 100 processes?
-		widgets := processUris(uris)
-		persistWidgets(widgets, *dryRun, *typeName)
+		var uris <-chan string
+		if len(rdfFile) > 0 {
+            uris = produceUrisFromRdfFile(rdfFile)
+		} else {
+            uris = produceUrisFromWidgetsOrg(org)
+		}
 
+        widgets := processUris(uris)
+		persistWidgets(widgets, *dryRun, *typeName)
+        wg.Wait()
+
+		/*
+		// 2. or this way
+		var uris []string
+		if len(rdfFile) > 0 {
+           uris = gatherUrisFromRdfFile(rdfFile)
+		} else {
+            uris = gatherUrisFromWidgetsOrg(org)
+		}
+
+		// 5000+ wait groups worthwhile?
+		wg.Add(len(uris))
+		//https://nathanleclaire.com/blog/2014/02/15/
+		//how-to-wait-for-all-goroutines-to-finish-executing-before-continuing/
+        responses := make(chan WidgetsPerson)
+        
+		for _, uri := range uris {
+		    go func(uri string) {
+                defer wg.Done()
+                for _, uri := range uris {
+				    person := processUri(uri)
+					responses <- person
+                }
+            }(uri)
+		}
+
+		go func() {
+            for person := range responses {
+			    if len(person.Uri) > 0 {
+				    persistPerson(person, *dryRun, *typeName)
+		  	    }
+            }
+        }()
+		    
 		wg.Wait()
+		*/
 	}
 
 	defer db.Close()

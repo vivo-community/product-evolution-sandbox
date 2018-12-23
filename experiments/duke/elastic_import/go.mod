@@ -4,6 +4,7 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/davecgh/go-spew v1.1.1
 	github.com/jmoiron/sqlx v1.2.0
+	github.com/knakk/rdf v0.0.0-20171130200148-b6ee24f8f40f
 	github.com/lib/pq v1.0.0
 	github.com/mailru/easyjson v0.0.0-20180823135443-60711f1a8329 // indirect
 	github.com/olivere/elastic v6.2.14+incompatible

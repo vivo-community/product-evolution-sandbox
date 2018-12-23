@@ -124,6 +124,8 @@ func resourceExists(uri string, typeName string) bool {
 	return exists
 }
 
+// never used?
+/*
 func addResource(obj interface{}, uri string, typeName string) {
 	fmt.Printf(">ADD:%v\n", uri)
 	db = GetConnection()
@@ -149,6 +151,7 @@ func addResource(obj interface{}, uri string, typeName string) {
 	}
 	tx.Commit()
 }
+*/
 
 // return err ??
 func saveResource(obj interface{}, uri string, typeName string) (err error) {
