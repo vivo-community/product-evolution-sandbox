@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"github.com/BurntSushi/toml"
 	"github.com/OIT-ads-web/graphql_endpoint/models"
 	"github.com/graphql-go/graphql"
@@ -360,7 +361,6 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				person, _ := params.Source.(models.Person)
-				//var authorships []models.Authorship
 				var publications []models.Publication
 				var publicationIds []string
 
@@ -609,6 +609,8 @@ var GetPerson = &graphql.Field{
 		client = GetClient()
 
 		id := params.Args["id"].(string)
+		log.Printf("looking for person %s\n", id)
+
 		get1, err := client.Get().
 			Index("people").
 			Id(id).
@@ -622,10 +624,13 @@ var GetPerson = &graphql.Field{
 		if err != nil {
 			return person, err
 		}
-		return func() (interface{}, error) {
-			return &person, nil
-		}, nil
-		//return person, nil
+		// NOTE: if this is ROOT object, doing this
+		// seems to make it not return any subobjects
+		// (like publications)
+		//return func() (interface{}, error) {
+		//	return &person, nil
+		//}, nil
+		return person, nil
 	},
 }
 
@@ -750,6 +755,9 @@ var GetPublications = &graphql.Field{
 func main() {
 	var err error
 	var configFile string
+
+	log.SetOutput(os.Stdout)
+
 	flag.StringVar(&configFile, "config", "./config.toml", "a config filename")
 
 	flag.Parse()
