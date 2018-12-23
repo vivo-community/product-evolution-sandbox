@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"log"
 	"github.com/BurntSushi/toml"
 	"github.com/OIT-ads-web/graphql_endpoint/models"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 	"github.com/olivere/elastic"
+	"log"
 	"net/http"
 	"os"
 )
@@ -29,181 +29,6 @@ var conf Config
 func GetClient() *elastic.Client {
 	return client
 }
-
-/*
-
-defmodule GraphqlEndpointWeb.Schema.Types do
-  use Absinthe.Schema.Notation
-  alias GraphqlEndpointWeb.Resolvers
-
-  @desc """
-  A person
-  """
-  object :person do
-    field(:id, :string)
-    field(:uri, :string)
-    field(:image, :image)
-    field(:name, :name)
-    field(:overview_list, list_of(:overview))
-
-    field(:affiliation_list, list_of(:affiliation)) do
-      resolve(&Resolvers.Affiliations.fetch/3)
-    end
-
-    field(:education_list, list_of(:education)) do
-      resolve(&Resolvers.Educations.fetch/3)
-    end
-
-    field(:grant_list, list_of(:grant)) do
-      resolve(&Resolvers.Grants.fetch/3)
-    end
-
-    field(:publication_list, list_of(:publication)) do
-      resolve(&Resolvers.Publications.fetch/3)
-    end
-  end
-
-  object :image do
-    field(:main, :string)
-    field(:thumbnail, :string)
-  end
-
-  object :name do
-    field(:first_name, :string)
-    field(:last_name, :string)
-    field(:middle_name, :string)
-  end
-
-  object :overview do
-    field(:overview, :string)
-    field(:type, :type)
-  end
-
-  object :type do
-    field(:code, :string)
-    field(:label, :string)
-  end
-
-  object :affiliation do
-    field(:id, :string)
-    field(:label, :string)
-    field(:start_date, :date_resolution)
-  end
-
-  object :education do
-    field(:label, :string)
-    field(:org, :organization)
-  end
-
-  object :organization do
-    field(:id, :string)
-    field(:label, :string)
-  end
-
-  object :date_resolution do
-    field(:date_time, :string)
-    field(:resolution, :string)
-  end
-
-  # object :funding_role do
-  # field(:date_time, :string)
-  # field(:label, :string)
-  # end
-
-  # object :authorship do
-  # field(:date_time, :string)
-  # field(:resolution, :string)
-  # end
-
-  object :grant do
-    field(:id, :string)
-    field(:label, :string)
-    field(:role_name, :string)
-    field(:start_date, :date_resolution)
-    field(:end_date, :date_resolution)
-  end
-
-  object :venue do
-    field(:uri, :string)
-    field(:label, :string)
-  end
-
-  object :publication do
-    field(:id, :string)
-    field(:author_list, :string)
-    field(:doi, :string)
-    field(:label, :string)
-    field(:role_name, :string)
-    field(:venue, :venue)
-  end
-
-  object :publication_list do
-    field(:results, list_of(:publication))
-    field(:page_info, :page_info)
-  end
-
-  object :page_info do
-    field(:per_page, :integer)
-    field(:page, :integer)
-    field(:total_pages, :integer)
-  end
-end
-
-*/
-
-/*
-type PersonKeyword struct {
-	Uri   string `json:"uri"`
-	Label string `json:"label"`
-}
-
-type PersonImage struct {
-	Main      string `json:"main"`
-	Thumbnail string `json:"thumbnail"`
-}
-
-type PersonName struct {
-	FirstName  string  `json:"firstName"`
-	LastName   string  `json:"lastName"`
-	MiddleName *string `json:"middleName"`
-}
-
-type PersonType struct {
-	Code  string `json:"code"`
-	Label string `json:"label"`
-}
-
-type OverviewType struct {
-	Code  string `json:"code"`
-	Label string `json:"label"`
-}
-
-type PersonOverview struct {
-	Label string       `json:"overview"`
-	Type  OverviewType `json:"type"`
-}
-
-type Extension struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
-type Person struct {
-	Id           string           `json:"id"`
-	Uri          string           `json:"uri"`
-	SourceId     string           `json:"sourceId"`
-	PrimaryTitle string           `json:"primaryTitle"`
-	Name         PersonName       `json:"name" elastic:"type:object"`
-	Image        PersonImage      `json:"image" elastic:"type:object"`
-	Type         PersonType       `json:"type" elastic:"type:object"`
-	OverviewList []PersonOverview `json:"overviewList" elastic:"type:nested"`
-	KeywordList  []PersonKeyword  `json:"keywordList" elastic:"type:nested"`
-	Extensions   []Extension      `json:"extensions" elastic:"type:nested"`
-}
-
-https://github.com/graphql-go/graphql/blob/master/examples/concurrent-resolvers/main.go
-
-*/
 
 var pageInfoType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "PageInfo",
@@ -338,8 +163,206 @@ var authorshipType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-// var personResolver = func(params graphql.ResolveParams) (interface{}, error) {
-// }
+func publicationResolver(params graphql.ResolveParams) (interface{}, error) {
+	person, _ := params.Source.(models.Person)
+	var publications []models.Publication
+	var publicationIds []string
+
+	size := params.Args["size"].(int)
+	from := params.Args["from"].(int)
+
+	ctx := context.Background()
+	client = GetClient()
+
+	q := elastic.NewMatchQuery("personId", person.Id)
+
+	searchResult, err := client.Search().
+		Index("authorships").
+		Query(q).
+		From(from).
+		Size(size).
+		Do(ctx)
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+
+	// FIXME: could optimize better - dataloader etc...
+	for _, hit := range searchResult.Hits.Hits {
+		authorship := models.Authorship{}
+		err := json.Unmarshal(*hit.Source, &authorship)
+		if err != nil {
+			panic(err)
+		}
+
+		publicationId := authorship.PublicationId
+		publicationIds = append(publicationIds, publicationId)
+	}
+
+	pubQuery := elastic.NewIdsQuery("publication").
+		Ids(publicationIds...)
+
+	pubResults, err := client.Search().
+		Index("publications").
+		Query(pubQuery).
+		RequestCache(true).
+		Do(ctx)
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+	for _, hit := range pubResults.Hits.Hits {
+		publication := models.Publication{}
+		err := json.Unmarshal(*hit.Source, &publication)
+		if err != nil {
+			panic(err)
+		}
+		publications = append(publications, publication)
+	}
+
+	return func() (interface{}, error) {
+		return &publications, nil
+	}, nil
+	//return publications, nil
+}
+
+func grantResolver(params graphql.ResolveParams) (interface{}, error) {
+	person, _ := params.Source.(models.Person)
+	var grants []models.Grant
+	var grantIds []string
+
+	size := params.Args["size"].(int)
+	from := params.Args["from"].(int)
+
+	ctx := context.Background()
+	client = GetClient()
+
+	q := elastic.NewMatchQuery("personId", person.Id)
+
+	searchResult, err := client.Search().
+		Index("funding-roles").
+		Query(q).
+		From(from).
+		Size(size).
+		Do(ctx)
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+
+	// FIXME: could optimize better - dataloader etc...
+	for _, hit := range searchResult.Hits.Hits {
+		fundingRole := models.FundingRole{}
+		err := json.Unmarshal(*hit.Source, &fundingRole)
+		if err != nil {
+			panic(err)
+		}
+
+		grantId := fundingRole.GrantId
+		grantIds = append(grantIds, grantId)
+	}
+	grantQuery := elastic.NewIdsQuery("grant").
+		Ids(grantIds...)
+
+	grantResults, err := client.Search().
+		Index("grants").
+		Query(grantQuery).
+		RequestCache(true).
+		Do(ctx)
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+	for _, hit := range grantResults.Hits.Hits {
+		grant := models.Grant{}
+		err := json.Unmarshal(*hit.Source, &grant)
+		if err != nil {
+			panic(err)
+		}
+		grants = append(grants, grant)
+	}
+
+	return func() (interface{}, error) {
+		return &grants, nil
+	}, nil
+	//return grants, nil
+}
+
+func affiliationResolver(params graphql.ResolveParams) (interface{}, error) {
+	person, _ := params.Source.(models.Person)
+	var affiliations []models.Affiliation
+
+	size := params.Args["size"].(int)
+	from := params.Args["from"].(int)
+
+	ctx := context.Background()
+	client = GetClient()
+
+	q := elastic.NewMatchQuery("personId", person.Id)
+
+	searchResult, err := client.Search().
+		Index("affiliations").
+		Query(q).
+		From(from).
+		Size(size).
+		Do(ctx)
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+
+	for _, hit := range searchResult.Hits.Hits {
+		affiliation := models.Affiliation{}
+		err := json.Unmarshal(*hit.Source, &affiliation)
+		if err != nil {
+			panic(err)
+		}
+		affiliations = append(affiliations, affiliation)
+
+	}
+	return func() (interface{}, error) {
+		return &affiliations, nil
+	}, nil
+	//return affiliations, nil
+}
+
+func educationResolver(params graphql.ResolveParams) (interface{}, error) {
+	person, _ := params.Source.(models.Person)
+	var educations []models.Education
+
+	size := params.Args["size"].(int)
+	from := params.Args["from"].(int)
+
+	ctx := context.Background()
+	client = GetClient()
+
+	q := elastic.NewMatchQuery("personId", person.Id)
+
+	searchResult, err := client.Search().
+		Index("educations").
+		Query(q).
+		From(from).
+		Size(size).
+		Do(ctx)
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+
+	for _, hit := range searchResult.Hits.Hits {
+		education := models.Education{}
+		err := json.Unmarshal(*hit.Source, &education)
+		if err != nil {
+			panic(err)
+		}
+		educations = append(educations, education)
+	}
+	return func() (interface{}, error) {
+		return &educations, nil
+	}, nil
+	//return educations, nil
+}
+
 var personType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Person",
 	Fields: graphql.Fields{
@@ -359,68 +382,7 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
 				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
 			},
-			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				person, _ := params.Source.(models.Person)
-				var publications []models.Publication
-				var publicationIds []string
-
-				size := params.Args["size"].(int)
-				from := params.Args["from"].(int)
-
-				ctx := context.Background()
-				client = GetClient()
-
-				q := elastic.NewMatchQuery("personId", person.Id)
-
-				searchResult, err := client.Search().
-					Index("authorships").
-					Query(q).
-					From(from).
-					Size(size).
-					Do(ctx)
-				if err != nil {
-					// Handle error
-					panic(err)
-				}
-
-				// FIXME: could optimize better - dataloader etc...
-				for _, hit := range searchResult.Hits.Hits {
-					authorship := models.Authorship{}
-					err := json.Unmarshal(*hit.Source, &authorship)
-					if err != nil {
-						panic(err)
-					}
-
-					publicationId := authorship.PublicationId
-					publicationIds = append(publicationIds, publicationId)
-				}
-	
-				pubQuery := elastic.NewIdsQuery("publication").
-				    Ids(publicationIds...)
-			
-				pubResults, err := client.Search().
-					Index("publications").
-					Query(pubQuery).
-					RequestCache(true).
-					Do(ctx)
-				if err != nil {
-					// Handle error
-					panic(err)
-				}
-				for _, hit := range pubResults.Hits.Hits {
-					publication := models.Publication{}
-					err := json.Unmarshal(*hit.Source, &publication)
-					if err != nil {
-						panic(err)
-					}
-                    publications = append(publications, publication)
-				}
-
-				return func() (interface{}, error) {
-					return &publications, nil
-				}, nil
-				//return publications, nil
-			},
+			Resolve: publicationResolver,
 		},
 		"affiliationList": &graphql.Field{
 			Type: graphql.NewList(affiliationType),
@@ -428,43 +390,7 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
 				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
 			},
-			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				person, _ := params.Source.(models.Person)
-				var affiliations []models.Affiliation
-
-				size := params.Args["size"].(int)
-				from := params.Args["from"].(int)
-
-				ctx := context.Background()
-				client = GetClient()
-
-				q := elastic.NewMatchQuery("personId", person.Id)
-
-				searchResult, err := client.Search().
-					Index("affiliations").
-					Query(q).
-					From(from).
-					Size(size).
-					Do(ctx)
-				if err != nil {
-					// Handle error
-					panic(err)
-				}
-
-				for _, hit := range searchResult.Hits.Hits {
-					affiliation := models.Affiliation{}
-					err := json.Unmarshal(*hit.Source, &affiliation)
-					if err != nil {
-						panic(err)
-					}
-					affiliations = append(affiliations, affiliation)
-
-				}
-				return func() (interface{}, error) {
-					return &affiliations, nil
-				}, nil
-				//return affiliations, nil
-			},
+			Resolve: affiliationResolver,
 		},
 		"educationList": &graphql.Field{
 			Type: graphql.NewList(educationType),
@@ -472,42 +398,7 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
 				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
 			},
-			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				person, _ := params.Source.(models.Person)
-				var educations []models.Education
-
-				size := params.Args["size"].(int)
-				from := params.Args["from"].(int)
-
-				ctx := context.Background()
-				client = GetClient()
-
-				q := elastic.NewMatchQuery("personId", person.Id)
-
-				searchResult, err := client.Search().
-					Index("educations").
-					Query(q).
-					From(from).
-					Size(size).
-					Do(ctx)
-				if err != nil {
-					// Handle error
-					panic(err)
-				}
-
-				for _, hit := range searchResult.Hits.Hits {
-					education := models.Education{}
-					err := json.Unmarshal(*hit.Source, &education)
-					if err != nil {
-						panic(err)
-					}
-					educations = append(educations, education)
-				}
-				return func() (interface{}, error) {
-					return &educations, nil
-				}, nil
-				//return educations, nil
-			},
+			Resolve: educationResolver,
 		},
 		"grantList": &graphql.Field{
 			Type: graphql.NewList(grantType),
@@ -515,67 +406,7 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
 				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
 			},
-			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				person, _ := params.Source.(models.Person)
-				var grants []models.Grant
-				var grantIds []string
-
-				size := params.Args["size"].(int)
-				from := params.Args["from"].(int)
-
-				ctx := context.Background()
-				client = GetClient()
-
-				q := elastic.NewMatchQuery("personId", person.Id)
-
-				searchResult, err := client.Search().
-					Index("funding-roles").
-					Query(q).
-					From(from).
-					Size(size).
-					Do(ctx)
-				if err != nil {
-					// Handle error
-					panic(err)
-				}
-
-				// FIXME: could optimize better - dataloader etc...
-				for _, hit := range searchResult.Hits.Hits {
-					fundingRole := models.FundingRole{}
-					err := json.Unmarshal(*hit.Source, &fundingRole)
-					if err != nil {
-						panic(err)
-					}
-
-					grantId := fundingRole.GrantId
-					grantIds = append(grantIds, grantId)
-				}
-				grantQuery := elastic.NewIdsQuery("grant").
-				    Ids(grantIds...)
-			
-				grantResults, err := client.Search().
-					Index("grants").
-					Query(grantQuery).
-					RequestCache(true).
-					Do(ctx)
-				if err != nil {
-					// Handle error
-					panic(err)
-				}
-				for _, hit := range grantResults.Hits.Hits {
-					grant := models.Grant{}
-					err := json.Unmarshal(*hit.Source, &grant)
-					if err != nil {
-						panic(err)
-					}
-                    grants = append(grants, grant)
-				}
-
-				return func() (interface{}, error) {
-					return &grants, nil
-				}, nil
-				//return grants, nil
-			},
+			Resolve: grantResolver,
 		},
 	},
 })
@@ -693,9 +524,9 @@ var GetPeople = &graphql.Field{
 		}
 
 		pageInfo := PageInfo{PerPage: size,
-			Page:   (from / size) + 1,
+			Page:       (from / size) + 1,
 			TotalPages: (int(searchResult.TotalHits()) / size) + 1}
-		
+
 		personList := PersonList{Results: people, PageInfo: pageInfo}
 		return personList, nil
 		// not sure this is faster
