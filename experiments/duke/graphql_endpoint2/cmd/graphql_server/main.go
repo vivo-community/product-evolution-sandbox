@@ -111,8 +111,8 @@ var personNameType = graphql.NewObject(graphql.ObjectConfig{
 var personImageType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "PersonImage",
 	Fields: graphql.Fields{
-		"id":  &graphql.Field{Type: graphql.String},
-		"uri": &graphql.Field{Type: graphql.String},
+		"main":  &graphql.Field{Type: graphql.String},
+		"thumbnail": &graphql.Field{Type: graphql.String},
 	},
 })
 
