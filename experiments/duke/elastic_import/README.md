@@ -1,6 +1,13 @@
+# Product Evolution
+
+Below is a diagram to capture the experiment data loading into an Elastic Search
+index for dissemination by a GraphQL endpoint. This covers the basic flow of data.
+
+![data load flow](docs/product_evolution_flow.png)
+
 Imports vivo_widgets data into an Elastic instance
 
-# Go 
+# Requirements
 
 This needs go >= 1.11.1 - because it uses the new 'mod' stuff
 
@@ -14,10 +21,10 @@ Requires a bit (now):
 ## postgresql
 Running instance of postgresql with credentials that are
 read from a './config.toml' file (see config.toml.example):
-	
+
 ## elastic
 Running instance of elasticsearch
-* localhost:9200 
+* localhost:9200
 
 NOTE: these can both be started via docker-compose
 
@@ -37,7 +44,7 @@ or if one or other is already install locally
 
 Example: run them in order
 
-#### 1 
+#### 1
 
 Import data from a specified duke widget organization URI into a `staging` table
 
@@ -79,7 +86,7 @@ It is possible that elastic_import may only work inside of the Docker instance. 
 > ./cmd/elastic_import/elastic_import -type all
 
 If localhost:9200 does not display the Elasticsearch instance in your browser, you may be running
-Mac or Windows, and have the docker ip mapped to an alias for convenience (such as `docker`). 
+Mac or Windows, and have the docker ip mapped to an alias for convenience (such as `docker`).
 So try docker:9200 instead (for instance).
 
 
@@ -108,7 +115,7 @@ run `-type all`, but the option is there to run (and remove) by type:
 > cmd/staging_import/staging_import -type=grants
 > cmd/elastic_import/elastic_import -type=grants
 
-#### Publications 
+#### Publications
 > cmd/widgets_import/widgets_import -type=publications
 > cmd/staging_import/staging_import -type=publications
 > cmd/elastic_import/elastic_import -type=publications
@@ -191,7 +198,7 @@ to bring in data however it is easiest for you in the following elastic mappings
 			}
 		},
 		"organizationId":    { "type": "text" },
-		"organizationLabel": { "type": "text" } 
+		"organizationLabel": { "type": "text" }
     }
 }
 ```
@@ -205,7 +212,7 @@ to bring in data however it is easiest for you in the following elastic mappings
 		"uri":       { "type": "text" },
 		"label":     { "type": "text" },
 		"personId":  { "type": "text" },
-		"org":     { 
+		"org":     {
 			"type": "object",
 			"properties": {
 				"id": { "type": "text" },
@@ -266,7 +273,7 @@ to bring in data however it is easiest for you in the following elastic mappings
 		"label":      { "type": "text" },
 		"authorList": { "type": "text" },
 		"doi":        { "type": "text" },
-        "venue":      { 
+        "venue":      {
 			"type": "object",
 			"properties": {
 				"uri":   { "type": "text" },
