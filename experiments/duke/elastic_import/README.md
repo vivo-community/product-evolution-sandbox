@@ -1,7 +1,8 @@
 # Product Evolution
 
-Below is a diagram to capture the experiment data loading into an Elastic Search
-index for dissemination by a GraphQL endpoint. This covers the basic flow of data.
+Here is a diagram to capture the flow of data loading into an Elastic Search
+index for dissemination by a GraphQL endpoint. This is an experiment and will
+change going forward in the future.
 
 ![data load flow](docs/product_evolution_flow.png)
 
