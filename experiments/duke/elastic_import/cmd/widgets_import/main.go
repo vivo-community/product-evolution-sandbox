@@ -732,8 +732,51 @@ func produceUrisFromRdfFile(fileName string) <-chan string {
 	}
 	dec := rdf.NewTripleDecoder(f, rdf.RDFXML)
 	go func() {
-		//org := parseOrganizationPage("https://scholars.duke.edu/individual/" + *org)
-		//for _, doc := range org {
+        for triple, err := dec.Decode(); err != io.EOF; triple, err = dec.Decode() {
+			uri := triple.Subj.String()
+			c <- uri
+		}
+		close(c)
+	}()
+	return c
+}
+
+func readPeopleList() (io.Reader, error)  {
+    //https://scholars.duke.edu/listrdf?vclass=http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FPerson
+    url := "https://scholars.duke.edu/listrdf?vclass=http://xmlns.com/foaf/0.1/Person" 
+	req, err := http.NewRequest("GET", url, nil)
+    req.Header.Set("Accept", "application/rdf+xml")
+
+	if err != nil {
+		fmt.Println("ERROR:", err)
+	}
+
+	res, err := client.Do(req)
+	body, err := ioutil.ReadAll(res.Body)
+
+	if err != nil {
+		fmt.Println("ERROR:", err)
+	}
+
+	defer res.Body.Close()
+
+    reader := strings.NewReader(string(body))
+    return reader, err
+	//var results WidgetsOrganization
+	//json.Unmarshal([]byte(body), &results)
+	//return results
+}
+
+func produceUrisFromVivo() <-chan string {
+	c := make(chan string)
+	defer wg.Done()
+	f, err := readPeopleList()
+
+	if err != nil {
+		// handle error
+	}
+	dec := rdf.NewTripleDecoder(f, rdf.RDFXML)
+	go func() {
         for triple, err := dec.Decode(); err != io.EOF; triple, err = dec.Decode() {
 			uri := triple.Subj.String()
 			c <- uri
@@ -758,6 +801,8 @@ func main() {
 
 	dryRun := flag.Bool("dry-run", false, "just examine widgets parsing")
 	typeName := flag.String("type", "people", "type of thing to import")
+	source := flag.String("source", "widgets", "source of data")
+
 	remove := flag.Bool("remove", false, "remove existing records")
 
 	org := flag.String("org", "org50000500", "which org id to import (defaults to CS)")
@@ -792,48 +837,20 @@ func main() {
 		if len(rdfFile) > 0 {
             uris = produceUrisFromRdfFile(rdfFile)
 		} else {
-            uris = produceUrisFromWidgetsOrg(org)
+			switch *source {
+			case "widgets":
+				uris = produceUrisFromWidgetsOrg(org)
+            case "vivo":
+				uris = produceUrisFromVivo()
+			default:
+				uris = produceUrisFromWidgetsOrg(org)
+			}
+            //uris = produceUrisFromWidgetsOrg(org)
 		}
 
         widgets := processUris(uris)
 		persistWidgets(widgets, *dryRun, *typeName)
         wg.Wait()
-
-		/*
-		// 2. or this way
-		var uris []string
-		if len(rdfFile) > 0 {
-           uris = gatherUrisFromRdfFile(rdfFile)
-		} else {
-            uris = gatherUrisFromWidgetsOrg(org)
-		}
-
-		// 5000+ wait groups worthwhile?
-		wg.Add(len(uris))
-		//https://nathanleclaire.com/blog/2014/02/15/
-		//how-to-wait-for-all-goroutines-to-finish-executing-before-continuing/
-        responses := make(chan WidgetsPerson)
-        
-		for _, uri := range uris {
-		    go func(uri string) {
-                defer wg.Done()
-                for _, uri := range uris {
-				    person := processUri(uri)
-					responses <- person
-                }
-            }(uri)
-		}
-
-		go func() {
-            for person := range responses {
-			    if len(person.Uri) > 0 {
-				    persistPerson(person, *dryRun, *typeName)
-		  	    }
-            }
-        }()
-		    
-		wg.Wait()
-		*/
 	}
 
 	defer db.Close()
