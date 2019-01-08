@@ -457,7 +457,7 @@ func addPeople() {
 }
 
 func addAffiliations() {
-	positions := retrieveType("Position")
+	positions := retrieveType("Affiliation")
 	for _, element := range positions {
 		resource := widgets_import.Affiliation{}
 		data := element.Data
