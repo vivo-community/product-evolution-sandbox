@@ -1,0 +1,21 @@
+{
+  "$id": "https://scholars.duke.edu/person.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "name": "Person",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        }
+      },
+      "required": ["firstName", "lastName"]
+    }
+  },
+  "required": ["name"]
+}

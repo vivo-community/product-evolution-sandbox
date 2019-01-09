@@ -1,0 +1,14 @@
+{
+  "$id": "https://scholars.duke.edu/authorship.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "name": "Authorship",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "uri": { "type": "string" },
+    "label": { "type": "string" },
+    "personId": { "type": "string" },
+    "publicationId": { "type": "string" }
+  },
+  "required": ["id", "uri", "label", "personId", "publicationId"]
+}

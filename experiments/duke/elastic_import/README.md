@@ -1,6 +1,14 @@
+# Product Evolution
+
+Here is a diagram to capture the flow of data loading into an Elastic Search
+index for dissemination by a GraphQL endpoint. This is an experiment and will
+change going forward in the future.
+
+![data load flow](docs/product_evolution_flow.png)
+
 Imports vivo_widgets data into an Elastic instance
 
-# Go 
+# Requirements
 
 This needs go >= 1.11.1 - because it uses the new 'mod' stuff
 
@@ -14,10 +22,10 @@ Requires a bit (now):
 ## postgresql
 Running instance of postgresql with credentials that are
 read from a './config.toml' file (see config.toml.example):
-	
+
 ## elastic
 Running instance of elasticsearch
-* localhost:9200 
+* localhost:9200
 
 NOTE: these can both be started via docker-compose
 
@@ -35,17 +43,35 @@ or if one or other is already install locally
 
 ### Running
 
-> cmd/widgets_import/widgets_import -config <config_file> -dry-run (true|false)
-> cmd/elastic_import/elastic_import -config <config_file> 
+Example: run them in order
 
-[NOTE: only run once, unless -remove=true]
+#### 1
+
+Import data from a specified duke widget organization URI into a `staging` table
+
+> cmd/widgets_import/widgets_import -config <config_file> -org org50000500 -type all
+
+#### 2
+
+Import data from staging table into `resources` table
+
+> cmd/staging_import/staging_import -config <config_file> -type all
+
+
+#### 3
+
+Import data from `resources` table into elastic index
+
+> cmd/elastic_import/elastic_import -config <config_file> -type all
+
+
+**NOTE**: to reset data, run the same commands with the `-remove` flag set e.g.:
+
+> cmd/elastic_import/elastic_import -remove=true -type all
+
 
 If you leave off the -config option it will default to ./config.toml
 
-To delete elastic index (people for instance):
-> curl -XDELETE localhost:9200/people
-
-or
 
 > cmd/elastic_import/elastic_import -type=people -remove=true
 
@@ -60,34 +86,46 @@ It is possible that elastic_import may only work inside of the Docker instance. 
 > ./build.sh
 > ./cmd/elastic_import/elastic_import -type all
 
-If localhost:9200 does not display the Elasticsearch instance in your browser, try docker:9200 instead.
+If localhost:9200 does not display the Elasticsearch instance in your browser, you may be running
+Mac or Windows, and have the docker ip mapped to an alias for convenience (such as `docker`).
+So try docker:9200 instead (for instance).
 
 
 ### Getting started
 
+You can run each `type` separately.  Typically, for demo purposes you would just
+run `-type all`, but the option is there to run (and remove) by type:
+
 #### People
 > cmd/widgets_import/widgets_import -type=people
+> cmd/staging_import/staging_import -type=people
 > cmd/elastic_import/elastic_import -type=people
 
-#### Affiliations
+#### Affiliations (**NOTE:*** 'positions' vs 'affiliations')
 > cmd/widgets_import/widgets_import -type=positions
+> cmd/staging_import/staging_import -type=affiliations
 > cmd/elastic_import/elastic_import -type=affiliations
 
 #### Educations
 > cmd/widgets_import/widgets_import -type=educations
+> cmd/staging_import/staging_import -type=educations
 > cmd/elastic_import/elastic_import -type=educations
 
 #### Grants
 > cmd/widgets_import/widgets_import -type=grants
+> cmd/staging_import/staging_import -type=grants
 > cmd/elastic_import/elastic_import -type=grants
 
-#### Publications 
+#### Publications
 > cmd/widgets_import/widgets_import -type=publications
+> cmd/staging_import/staging_import -type=publications
 > cmd/elastic_import/elastic_import -type=publications
 
 
 ## Exporting data from Elasticsearch
 > npm install elasticdump
+
+***NOTE:*** in these examples `docker` is whatever you have aliased the docker IP to:
 
 ### Backup index map to a file:
 > ./bin/elasticdump \
@@ -161,7 +199,7 @@ to bring in data however it is easiest for you in the following elastic mappings
 			}
 		},
 		"organizationId":    { "type": "text" },
-		"organizationLabel": { "type": "text" } 
+		"organizationLabel": { "type": "text" }
     }
 }
 ```
@@ -175,7 +213,7 @@ to bring in data however it is easiest for you in the following elastic mappings
 		"uri":       { "type": "text" },
 		"label":     { "type": "text" },
 		"personId":  { "type": "text" },
-		"org":     { 
+		"org":     {
 			"type": "object",
 			"properties": {
 				"id": { "type": "text" },
@@ -236,7 +274,7 @@ to bring in data however it is easiest for you in the following elastic mappings
 		"label":      { "type": "text" },
 		"authorList": { "type": "text" },
 		"doi":        { "type": "text" },
-        "venue":      { 
+        "venue":      {
 			"type": "object",
 			"properties": {
 				"uri":   { "type": "text" },
@@ -261,4 +299,5 @@ to bring in data however it is easiest for you in the following elastic mappings
 }
 ```
 
+You can also *only* bring in data to the staging table (see cmd/staging_import/main.go).
 

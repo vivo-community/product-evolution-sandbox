@@ -1,0 +1,28 @@
+{
+  "$id": "https://scholars.duke.edu/grant.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "name": "Grant",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "uri": { "type": "string" },
+    "label": { "type": "string" },
+    "startDate": {
+      "type": "object",
+      "properties": {
+        "dateTime": { "type": "string" },
+        "resolution": { "type": "string" }
+      },
+      "required": ["dateTime", "resolution"]
+    },
+    "endDate": {
+      "type": "object",
+      "properties": {
+        "dateTime": { "type": "string" },
+        "resolution": { "type": "string" }
+      },
+      "required": ["dateTime", "resolution"]
+    }
+  },
+  "required": ["id", "uri", "label"]
+}
