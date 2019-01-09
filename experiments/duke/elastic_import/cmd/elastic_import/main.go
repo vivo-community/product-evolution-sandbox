@@ -214,8 +214,8 @@ func listPeople() {
 	listType("Person")
 }
 
-func listPositions() {
-	listType("Position")
+func listAffiliations() {
+	listType("Affiliation")
 }
 
 func listEducations() {
@@ -421,8 +421,8 @@ func addToIndex(index string, typeName string, id string, obj interface{}) {
 				case else:
 					panic(err)
 			}
-	
-    */
+
+	*/
 	if get1.Found {
 		update1, err := client.Update().
 			Index(index).
@@ -528,7 +528,7 @@ func persistResources(dryRun bool, typeName string) {
 		case "people":
 			listPeople()
 		case "affiliations":
-			listPositions()
+			listAffiliations()
 		case "educations":
 			listEducations()
 		case "grants":
@@ -571,62 +571,62 @@ func persistResources(dryRun bool, typeName string) {
 			makeFundingRolesIndex()
 			makePublicationsIndex()
 			makeAuthorshipsIndex()
-	
+
 			// TODO: getting seqfault with this
 			// might need to mess with context ??
-			
-				wg.Add(7)
-				// 1.people
-				go func() {
-					defer wg.Done()
-					addPeople()
-				}()
-				// 2. affilations
-				go func() {
-					defer wg.Done()
-					addAffiliations()
-				}()
-				// 3. educations
-				go func() {
-					defer wg.Done()
-					addEducations()
-				}()
-				// 4. grants
-				go func() {
-					defer wg.Done()
-					addGrants()
-				}()
-				// 5. funding-roles
-				go func() {
-					defer wg.Done()
-					addFundingRoles()
-				}()
-				// 6. publications
-				go func() {
-					defer wg.Done()
-					addPublications()
-				}()
-				// 7. authorships
-				go func() {
-					defer wg.Done()
-					addAuthorships()
-				}()
 
-				wg.Wait()
-			
+			wg.Add(7)
+			// 1.people
+			go func() {
+				defer wg.Done()
+				addPeople()
+			}()
+			// 2. affilations
+			go func() {
+				defer wg.Done()
+				addAffiliations()
+			}()
+			// 3. educations
+			go func() {
+				defer wg.Done()
+				addEducations()
+			}()
+			// 4. grants
+			go func() {
+				defer wg.Done()
+				addGrants()
+			}()
+			// 5. funding-roles
+			go func() {
+				defer wg.Done()
+				addFundingRoles()
+			}()
+			// 6. publications
+			go func() {
+				defer wg.Done()
+				addPublications()
+			}()
+			// 7. authorships
+			go func() {
+				defer wg.Done()
+				addAuthorships()
+			}()
+
+			wg.Wait()
+
 			// people
 			/*
-			addPeople()
-			//affilations
-			addAffiliations()
-			// educations
-			addEducations()
-			// grants
-			addGrants()
-			addFundingRoles()
-			// publications
-			addPublications()
-			addAuthorships()
+				addPeople()
+				//affilations
+				addAffiliations()
+				// educations
+				addEducations()
+				// grants
+				addGrants()
+				addFundingRoles()
+				// publications
+				addPublications()
+				addAuthorships()
 			*/
 		}
 	}
@@ -665,7 +665,13 @@ func main() {
 
 	// NOTE: elastic client is supposed to be long-lived
 	// see https://github.com/olivere/elastic/blob/release-branch.v6/client.go
-	client, err = elastic.NewClient(elastic.SetURL(conf.Elastic.Url))
+	// also
+	// NOTE: https://github.com/olivere/elastic/issues/312
+	client, err = elastic.NewClient(elastic.SetURL(conf.Elastic.Url), elastic.SetSniff(false))
+
+	// SetSniff seemed to fix the error (connecting to openshift) simple client did too
+	//client, err = elastic.NewSimpleClient(elastic.SetURL(conf.Elastic.Url))
+	log.Println(fmt.Printf("trying to connect to %s\n", conf.Elastic.Url))
 	if err != nil {
 		panic(err)
 	}

@@ -6,23 +6,17 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-
 	"github.com/BurntSushi/toml"
 	"github.com/OIT-ads-web/widgets_import"
-
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
+	"github.com/xeipuuv/gojsonschema"
 	"io/ioutil"
 	"log"
-	//"net/http"
 	"os"
 	"strings"
 	"sync"
 	"time"
-
-	//"github.com/davecgh/go-spew/spew"
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
-	//"github.com/qri-io/jsonschema"
-	"github.com/xeipuuv/gojsonschema"
 )
 
 var conf widgets_import.Config
@@ -115,43 +109,6 @@ func makeHash(text string) string {
 	hasher.Write([]byte(text))
 	return hex.EncodeToString(hasher.Sum(nil))
 }
-
-func resourceExists(uri string, typeName string) bool {
-	var exists bool
-	db = GetConnection()
-	sqlExists := `SELECT EXISTS (SELECT uri FROM RESOURCES where (uri = $1 AND type =$2))`
-	db.Get(&exists, sqlExists, uri, typeName)
-	return exists
-}
-
-// never used?
-/*
-func addResource(obj interface{}, uri string, typeName string) {
-	fmt.Printf(">ADD:%v\n", uri)
-	db = GetConnection()
-
-	str, err := json.Marshal(obj)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	hash := makeHash(string(str))
-
-	res := &widgets_import.Resource{Uri: uri,
-		Type:  typeName,
-		Hash:  hash,
-		Data:  str,
-		DataB: str}
-
-	tx := db.MustBegin()
-	sql := `INSERT INTO resources (uri, type, hash, data, data_b) 
-	      VALUES (:uri, :type, :hash, :data, :data_b)`
-	_, err = tx.NamedExec(sql, res)
-	if err != nil {
-		log.Fatalln(">ERROR(INSERT):%v", err)
-	}
-	tx.Commit()
-}
-*/
 
 // return err ??
 func saveResource(obj interface{}, uri string, typeName string) (err error) {
