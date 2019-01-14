@@ -1,0 +1,47 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  creationTimestamp: 2019-01-04T15:38:24Z
+  labels:
+    parent: postgres-to-postgres-daily
+  name: postgres-to-postgres-daily
+  namespace: ads-graphql-elastic
+  resourceVersion: "22072410"
+  selfLink: /apis/batch/v1beta1/namespaces/ads-graphql-elastic/cronjobs/postgres-to-postgres-daily
+  uid: c5cb9ea3-1036-11e9-8dc9-005056a1db05
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            parent: postgres-to-postgres-daily
+        spec:
+          containers:
+          - command:
+            - /app/cmd/staging_import/staging_import
+            - -config
+            - /app/config.toml
+            - -type
+            - all
+            image: widgets-import
+            imagePullPolicy: Always
+            name: postgres-to-postgres-daily
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Never
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+  schedule: '0 9 * * *'
+  successfulJobsHistoryLimit: 3
+  suspend: false
+status: {}
+
