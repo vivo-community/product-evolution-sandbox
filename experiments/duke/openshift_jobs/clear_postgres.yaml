@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgres-clear
+spec:
+  parallelism: 1
+  completions: 1
+  template:
+    metadata:
+      name: postgres-clear
+    spec:
+      containers:
+      - name: postgres-clear
+        image: widgets-import
+        command: ["/app/cmd/staging_import/staging_import",  "-config", "/app/config.toml", "-remove", "-type", "all"]
+      restartPolicy: Never

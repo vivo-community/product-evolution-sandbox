@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: staging-export
+spec:
+  parallelism: 1
+  completions: 1
+  template:
+    metadata:
+      name: staging-export
+    spec:
+      containers:
+      - name: staging-export
+        image: widgets-import
+        command: ["/app/cmd/staging_import/staging_import",  "-config", "/app/config.toml", "-type", "all"]
+      restartPolicy: Never

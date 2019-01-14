@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: widgets-import
+spec:
+  parallelism: 1
+  completions: 1
+  template:
+    metadata:
+      name: widgets-import
+    spec:
+      containers:
+      - name: widgets-import
+        image: widgets-import
+        command: ["/app/cmd/widgets_import/widgets_import",  "-config", "/app/config.toml", "-type", "all"]
+      restartPolicy: Never

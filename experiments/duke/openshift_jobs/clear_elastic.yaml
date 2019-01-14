@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: elastic-clear
+spec:
+  parallelism: 1
+  completions: 1
+  template:
+    metadata:
+      name: elastic-clear
+    spec:
+      containers:
+      - name: elastic-clear
+        image: widgets-import
+        command: ["/app/cmd/elastic_import/elastic_import",  "-config", "/app/config.toml", "-remove", "-type", "all"]
+      restartPolicy: Never

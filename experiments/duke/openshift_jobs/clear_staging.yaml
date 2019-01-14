@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: staging-clear
+spec:
+  parallelism: 1
+  completions: 1
+  template:
+    metadata:
+      name: staging-clear
+    spec:
+      containers:
+      - name: staging-clear
+        image: widgets-import
+        command: ["/app/cmd/widgets_import/widgets_import",  "-config", "/app/config.toml", "-remove", "-type", "all"]
+      restartPolicy: Never
