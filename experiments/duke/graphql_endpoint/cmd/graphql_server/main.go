@@ -632,7 +632,6 @@ func main() {
 
 	var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
 		Query: RootQuery,
-		//Mutation: RootMutation,
 	})
 
 	c := cors.New(cors.Options{
@@ -646,7 +645,13 @@ func main() {
 	})
 
 	http.Handle("/graphql", c.Handler(h))
-	//http.ListenAndServe(":9001", c.Handler(handler))
 
-	http.ListenAndServe(fmt.Sprintf(":%d", conf.Graphql.Port), nil)
+	// NOTE: if not configured this would default to 0
+	var port = 9001
+	if conf.Graphql.Port > 0 {
+		port = conf.Graphql.Port
+	}
+
+	portConfig := fmt.Sprintf(":%d", port)
+	http.ListenAndServe(portConfig, nil)
 }
