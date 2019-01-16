@@ -10,6 +10,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 	"github.com/olivere/elastic"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 	"os"
@@ -111,7 +112,7 @@ var personNameType = graphql.NewObject(graphql.ObjectConfig{
 var personImageType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "PersonImage",
 	Fields: graphql.Fields{
-		"main":  &graphql.Field{Type: graphql.String},
+		"main":      &graphql.Field{Type: graphql.String},
 		"thumbnail": &graphql.Field{Type: graphql.String},
 	},
 })
@@ -583,6 +584,25 @@ var GetPublications = &graphql.Field{
 	},
 }
 
+/*
+https://flaviocopes.com/golang-enable-cors/
+
+func setupResponse(w *http.ResponseWriter, req *http.Request) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+    (*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+    (*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+}
+
+func indexHandler(w http.ResponseWriter, req *http.Request) {
+	setupResponse(&w, req)
+	if (*req).Method == "OPTIONS" {
+		return
+	}
+
+    // process the request...
+}
+*/
+
 func main() {
 	var err error
 	var configFile string
@@ -610,12 +630,18 @@ func main() {
 		//Mutation: RootMutation,
 	})
 
+	c := cors.New(cors.Options{
+		AllowCredentials: true,
+	})
+
 	h := handler.New(&handler.Config{
 		Schema:   &schema,
 		GraphiQL: true,
 		Pretty:   true,
 	})
 
-	http.Handle("/graphql", h)
+	http.Handle("/graphql", c.Handler(h))
+	//http.ListenAndServe(":9001", c.Handler(handler))
+
 	http.ListenAndServe(":9001", nil)
 }

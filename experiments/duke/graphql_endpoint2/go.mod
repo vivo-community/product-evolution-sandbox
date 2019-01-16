@@ -10,5 +10,6 @@ require (
 	github.com/mnmtanish/go-graphiql v0.0.0-20160921055525-cef5a61bd62b
 	github.com/olivere/elastic v6.2.14+incompatible
 	github.com/pkg/errors v0.8.0 // indirect
+	github.com/rs/cors v1.6.0
 	golang.org/x/net v0.0.0-20181217023233-e147a9138326 // indirect
 )
