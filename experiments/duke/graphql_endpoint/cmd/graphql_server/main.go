@@ -18,10 +18,15 @@ import (
 
 type Config struct {
 	Elastic elasticSearch `toml:"elastic"`
+	Graphql graphqlServer `toml:"graphql"`
 }
 
 type elasticSearch struct {
 	Url string
+}
+
+type graphqlServer struct {
+	Port int
 }
 
 var client *elastic.Client
@@ -643,5 +648,5 @@ func main() {
 	http.Handle("/graphql", c.Handler(h))
 	//http.ListenAndServe(":9001", c.Handler(handler))
 
-	http.ListenAndServe(":9001", nil)
+	http.ListenAndServe(fmt.Sprintf(":%d", conf.Graphql.Port), nil)
 }
