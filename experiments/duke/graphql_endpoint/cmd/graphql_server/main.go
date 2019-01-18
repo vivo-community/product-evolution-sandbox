@@ -217,6 +217,7 @@ func publicationResolver(params graphql.ResolveParams) (interface{}, error) {
 		// Handle error
 		panic(err)
 	}
+
 	for _, hit := range pubResults.Hits.Hits {
 		publication := models.Publication{}
 		err := json.Unmarshal(*hit.Source, &publication)
@@ -226,12 +227,54 @@ func publicationResolver(params graphql.ResolveParams) (interface{}, error) {
 		publications = append(publications, publication)
 	}
 
+	pageInfo := PageInfo{PerPage: size,
+		Page:       (from / size) + 1,
+		TotalPages: (int(pubResults.TotalHits()) / size) + 1}
+
+	publicationList := PublicationList{Results: publications, PageInfo: pageInfo}
+	//return personList, nil
 	return func() (interface{}, error) {
-		return &publications, nil
+		return &publicationList, nil
 	}, nil
-	//return publications, nil
+
+	/*
+
+		for _, hit := range pubResults.Hits.Hits {
+			publication := models.Publication{}
+			err := json.Unmarshal(*hit.Source, &publication)
+			if err != nil {
+				panic(err)
+			}
+			publications = append(publications, publication)
+		}
+
+		return func() (interface{}, error) {
+			return &publications, nil
+		}, nil
+		//return publications, nil
+	*/
 }
 
+/*
+	    for _, hit := range pubResults.Hits.Hits {
+		    publication := models.Publication{}
+		    err := json.Unmarshal(*hit.Source, &publication)
+		    if err != nil {
+			    panic(err)
+		    }
+		    publications = append(publications, publication)
+	    }
+
+		pageInfo := PageInfo{PerPage: size,
+			Page:       (from / size) + 1,
+			TotalPages: (int(pubResults.TotalHits()) / size) + 1}
+
+		publicationList := PublicationList{Results: publications, PageInfo: pageInfo}
+		//return personList, nil
+	    return func() (interface{}, error) {
+		    return &publicationList, nil
+	    }, nil
+*/
 func grantResolver(params graphql.ResolveParams) (interface{}, error) {
 	person, _ := params.Source.(models.Person)
 	var grants []models.Grant
@@ -369,6 +412,42 @@ func educationResolver(params graphql.ResolveParams) (interface{}, error) {
 	//return educations, nil
 }
 
+func extensionResolver(params graphql.ResolveParams) (interface{}, error) {
+	person, _ := params.Source.(models.Person)
+
+	size := params.Args["size"].(int)
+	from := params.Args["from"].(int)
+
+	extensionCount := len(person.Extensions)
+	// FIXME: trying to work out how to slice up an array
+	// given values (which can exceed length etc...)
+	// size - extensionCount
+	// exampes:
+	// from:100 - count:1
+	// from:100 - count:0
+	// from:100 - count:125
+	//
+	// if (count < size) {
+	//
+	//}
+	// if (from > count) {
+	//
+	// }
+	// FIXME: how to figure out slice
+	//extensions := person.Extensions[from - 1: extensionCount - 1]
+	extensions := person.Extensions
+
+	pageInfo := PageInfo{PerPage: size,
+		Page:       (from / size) + 1,
+		TotalPages: (extensionCount / size) + 1}
+
+	extensionList := ExtensionList{Results: extensions, PageInfo: pageInfo}
+
+	return func() (interface{}, error) {
+		return &extensionList, nil
+	}, nil
+}
+
 var personType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Person",
 	Fields: graphql.Fields{
@@ -379,11 +458,21 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 		"name":         &graphql.Field{Type: personNameType},
 		"image":        &graphql.Field{Type: personImageType},
 		"type":         &graphql.Field{Type: personTypeType},
+		// NOTE: these are 'fake' paging - all data is still parsed in json parse
 		"overviewList": &graphql.Field{Type: graphql.NewList(overviewType)},
 		"keywordList":  &graphql.Field{Type: graphql.NewList(keywordType)},
-		"extensions":   &graphql.Field{Type: graphql.NewList(extensionType)},
+		"extensionList": &graphql.Field{
+			//Type: graphql.NewList(extensionType),
+			Type: extensionListType,
+			Args: graphql.FieldConfigArgument{
+				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
+				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
+			},
+			Resolve: extensionResolver,
+		},
+		// these can actually be paged, since they involve further queries
 		"publicationList": &graphql.Field{
-			Type: graphql.NewList(publicationType),
+			Type: publicationListType,
 			Args: graphql.FieldConfigArgument{
 				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
 				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
@@ -434,6 +523,27 @@ var personListType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+type ExtensionList struct {
+	Results  []models.Extension `json:"data"`
+	PageInfo PageInfo           `json:"pageInfo"`
+}
+
+var extensionListType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "extensionList",
+	Fields: graphql.Fields{
+		"results":  &graphql.Field{Type: graphql.NewList(extensionType)},
+		"pageInfo": &graphql.Field{Type: pageInfoType},
+	},
+})
+
+var publicationListType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "publicationList",
+	Fields: graphql.Fields{
+		"results":  &graphql.Field{Type: graphql.NewList(publicationType)},
+		"pageInfo": &graphql.Field{Type: pageInfoType},
+	},
+})
+
 var GetPerson = &graphql.Field{
 	Type:        personType,
 	Description: "Get Person",
@@ -456,17 +566,13 @@ var GetPerson = &graphql.Field{
 			return person, err
 		}
 
+		// FIXME: in order to page something (like extensionList) that is part of 'Person'
+		// would need to change this - otherwise it's fake paging
 		err = json.Unmarshal(*get1.Source, &person)
 
 		if err != nil {
 			return person, err
 		}
-		// NOTE: if this is ROOT object, doing this
-		// seems to make it not return any subobjects
-		// (like publications)
-		//return func() (interface{}, error) {
-		//	return &person, nil
-		//}, nil
 		return person, nil
 	},
 }
@@ -482,6 +588,11 @@ type PersonList struct {
 	PageInfo PageInfo        `json:"pageInfo"`
 }
 
+type PublicationList struct {
+	Results  []models.Publication `json:"data"`
+	PageInfo PageInfo             `json:"pageInfo"`
+}
+
 var GetPeople = &graphql.Field{
 	Type: personListType,
 	//Type:        graphql.NewList(personType),
@@ -493,7 +604,6 @@ var GetPeople = &graphql.Field{
 	Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 		var people []models.Person
 		ctx := context.Background()
-		// should query elastic here
 		client = GetClient()
 
 		size := params.Args["size"].(int)
@@ -516,10 +626,6 @@ var GetPeople = &graphql.Field{
 			panic(err)
 		}
 
-		//TotalHits()
-
-		// how to add extra stuff?
-		// like totalPages = TotalHits() / pageBy
 		for _, hit := range searchResult.Hits.Hits {
 			person := models.Person{}
 			err := json.Unmarshal(*hit.Source, &person)
@@ -535,10 +641,6 @@ var GetPeople = &graphql.Field{
 
 		personList := PersonList{Results: people, PageInfo: pageInfo}
 		return personList, nil
-		// not sure this is faster
-		//return func() (interface{}, error) {
-		//	return &personList, nil
-		//}, nil
 	},
 }
 
@@ -575,8 +677,6 @@ var GetPublications = &graphql.Field{
 			panic(err)
 		}
 
-		//TotalHits()
-
 		for _, hit := range searchResult.Hits.Hits {
 			publication := models.Publication{}
 			err := json.Unmarshal(*hit.Source, &publication)
@@ -588,25 +688,6 @@ var GetPublications = &graphql.Field{
 		return publications, nil
 	},
 }
-
-/*
-https://flaviocopes.com/golang-enable-cors/
-
-func setupResponse(w *http.ResponseWriter, req *http.Request) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-    (*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-    (*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-}
-
-func indexHandler(w http.ResponseWriter, req *http.Request) {
-	setupResponse(&w, req)
-	if (*req).Method == "OPTIONS" {
-		return
-	}
-
-    // process the request...
-}
-*/
 
 func main() {
 	var err error
@@ -625,7 +706,7 @@ func main() {
 
 	// NOTE: elastic client is supposed to be long-lived
 	// see https://github.com/olivere/elastic/blob/release-branch.v6/client.go
-	client, err = elastic.NewClient(elastic.SetURL(conf.Elastic.Url))
+	client, err = elastic.NewClient(elastic.SetURL(conf.Elastic.Url), elastic.SetSniff(false))
 	if err != nil {
 		panic(err)
 	}
