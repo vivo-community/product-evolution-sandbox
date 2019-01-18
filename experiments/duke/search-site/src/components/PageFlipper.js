@@ -12,7 +12,7 @@ export default class PageFlipper extends Component {
   flip(pages, direction) {
     console.log(`trying to make prev/next ${pages}:${direction}`)
      if(pages[0] == '+') {
-        let pageNumber = x[1]
+        let pageNumber = pages[1]
 
         let desc = (<span><span aria-hidden="true">&laquo;</span> Previous</span>)
         if (direction == 'forward') {
@@ -21,7 +21,9 @@ export default class PageFlipper extends Component {
         let key = `pageLinkTo_${pageNumber}`
         return (
           <li key={key} className="page-info">
-            <a href="#" className="page-link" onClick={(e) => this.onClick(e, pageNumber)}>{desc}</a>
+            <a href="#" className="page-link" onClick={(e) => this.onClick(e, pageNumber)}>
+              {desc}
+            </a>
           </li>
         ) 
       } else {

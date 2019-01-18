@@ -8,6 +8,6 @@ export const SEARCH_FAILED = 'SEARCH_FAILED'
 export const SEARCH_CANCELLED = 'SEARCH_CANCELLED'
 
 export const PAGE_ROWS = 50
-export const PAGE_BY = 50
+export const PAGE_BY = 15
 
 

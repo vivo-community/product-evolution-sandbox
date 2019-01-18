@@ -96,27 +96,18 @@ export class PagingPanel extends Component {
 
       console.debug("trying to make page link")
       return (
-          <PagingLink key={key} pageNumber={x} active={active} onClick={(e) => this.handlePage(e, x)}/>
+          <PagingLink key={key} pageNumber={x} active={active} onClick={this.handlePage}/>
       )
     })
 
     console.debug(`previous=${previous} from ${pageMap}`)
 
-    //let backward = flip(previous, 'backward') 
-    //let forward = flip(next, 'forward') 
-          /*
-          <ul className="pagination">
-            <PageFlipper pages={previous} direction="backward" onClick={(e) => this.handlePage(e, pageNumber)} />
-            {pages}
-            <PageFlipper pages={next} direction="forward" onClick={(e) => this.handlePage(e, pageNumber)} />
-          </ul>
-          */
     return (
         <nav>
           <ul className="pagination">
-            <PageFlipper pages={previous} direction="backward" onClick={(e) => this.handlePage(e, pageNumber)} />
+            <PageFlipper pages={previous} direction="backward" onClick={this.handlePage} />
             {pages}
-            <PageFlipper pages={next} direction="forward" onClick={(e) => this.handlePage(e, pageNumber)} />
+            <PageFlipper pages={next} direction="forward" onClick={this.handlePage} />
           </ul>
         </nav>
       )
