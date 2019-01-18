@@ -418,28 +418,42 @@ func extensionResolver(params graphql.ResolveParams) (interface{}, error) {
 	size := params.Args["size"].(int)
 	from := params.Args["from"].(int)
 
-	extensionCount := len(person.Extensions)
-	// FIXME: trying to work out how to slice up an array
-	// given values (which can exceed length etc...)
-	// size - extensionCount
-	// exampes:
-	// from:100 - count:1
-	// from:100 - count:0
-	// from:100 - count:125
-	//
-	// if (count < size) {
-	//
-	//}
-	// if (from > count) {
-	//
-	// }
-	// FIXME: how to figure out slice
-	//extensions := person.Extensions[from - 1: extensionCount - 1]
-	extensions := person.Extensions
+	count := len(person.Extensions)
+	extensions := make([]models.Extension, count)
+
+	if count < size {
+		//just get all
+		copy(extensions, person.Extensions)
+	}
+	if from > count {
+		// do nothing, return empty array
+	}
+
+	if from < count && size < count {
+		copy(extensions, person.Extensions[from-1:size])
+	}
+	if from < count && size > count {
+		copy(extensions, person.Extensions[from-1:count])
+	}
+
+	var totalPages int
+    var page int
+
+	if count > 0 {
+		totalPages = (count / size) + 1
+	} else {
+		totalPages = 0
+	}
+
+	if count > 0 {
+		page = (from / size ) + 1
+	} else {
+		page = 0
+	}
 
 	pageInfo := PageInfo{PerPage: size,
-		Page:       (from / size) + 1,
-		TotalPages: (extensionCount / size) + 1}
+		Page:       page,
+		TotalPages: totalPages}
 
 	extensionList := ExtensionList{Results: extensions, PageInfo: pageInfo}
 
