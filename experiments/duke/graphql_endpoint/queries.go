@@ -1,11 +1,7 @@
 package graphql_endpoint
 
 import (
-	//"context"
-	//"encoding/json"
 	"github.com/graphql-go/graphql"
-	//"github.com/olivere/elastic"
-	//"log"
 )
 
 var RootQuery = graphql.NewObject(graphql.ObjectConfig{

@@ -15,22 +15,21 @@ func FigurePaging(from int, size int, totalHits int) PageInfo {
 
 	if (offset / size) > 0 {
 		if (offset % size) > 0 {
-			currentPage = (offset / size)  + 1
+			currentPage = (offset / size) + 1
 		} else {
 			currentPage = (offset / size) - 1
 		}
-
-    }
+	}
 	var totalPages = totalHits / size
-    var remainder = totalHits % size
-	if (remainder > 0) {
+	var remainder = totalHits % size
+	if remainder > 0 {
 		totalPages += 1
 	}
 	pageInfo := PageInfo{PerPage: size,
 		CurrentPage: currentPage,
 		TotalPages:  totalPages,
 		Count:       totalHits}
-   return pageInfo
+	return pageInfo
 }
 
 func personResolver(params graphql.ResolveParams) (interface{}, error) {
