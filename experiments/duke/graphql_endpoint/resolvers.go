@@ -8,21 +8,24 @@ import (
 	"log"
 )
 
-func figurePaging(from int, size int, totalHits int) PageInfo {
-	// has to at least be page 1
+func FigurePaging(from int, size int, totalHits int) PageInfo {
+	// has to at least be page 1, maybe even if totalHits = 0
 	var currentPage = 1
-	if (from / size) > 0 {
-		// e.g. 20 -1 / 10 = 1, 21 - 1 /10 = 2
-		currentPage = (from - 1) / size
+	var offset = from
+
+	if (offset / size) > 0 {
+		if (offset % size) > 0 {
+			currentPage = (offset / size)  + 1
+		} else {
+			currentPage = (offset / size) - 1
+		}
+
     }
-	// if no mod - number, else number + 1
 	var totalPages = totalHits / size
     var remainder = totalHits % size
 	if (remainder > 0) {
 		totalPages += 1
 	}
-	// e.g. 44 / 10 = 5, 40 / 10 = 4, 38 / 10 = 3
-	// 44 / 30 = 2
 	pageInfo := PageInfo{PerPage: size,
 		CurrentPage: currentPage,
 		TotalPages:  totalPages,
@@ -91,7 +94,7 @@ func peopleResolver(params graphql.ResolveParams) (interface{}, error) {
 	totalHits := int(searchResult.TotalHits())
 	log.Printf("total hits: %d\n", totalHits)
 
-	pageInfo := figurePaging(from, size, totalHits)
+	pageInfo := FigurePaging(from, size, totalHits)
 	personList := PersonList{Results: people, PageInfo: pageInfo}
 	return personList, nil
 }
@@ -197,7 +200,7 @@ func personPublicationResolver(params graphql.ResolveParams) (interface{}, error
 		publications = append(publications, publication)
 	}
 
-	pageInfo := figurePaging(from, size, totalHits)
+	pageInfo := FigurePaging(from, size, totalHits)
 	publicationList := PublicationList{Results: publications, PageInfo: pageInfo}
 	return func() (interface{}, error) {
 		return &publicationList, nil
