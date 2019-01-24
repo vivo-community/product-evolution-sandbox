@@ -1,5 +1,6 @@
-package models
+package graphql_endpoint
 
+// there are elastic json models 
 type PersonKeyword struct {
 	Uri   string `json:"uri"`
 	Label string `json:"label"`

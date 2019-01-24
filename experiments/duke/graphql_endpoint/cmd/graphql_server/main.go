@@ -1,12 +1,10 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/BurntSushi/toml"
-	"github.com/OIT-ads-web/graphql_endpoint/models"
+	"github.com/OIT-ads-web/graphql_endpoint"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 	"github.com/olivere/elastic"
@@ -16,6 +14,7 @@ import (
 	"os"
 )
 
+/*
 type Config struct {
 	Elastic elasticSearch `toml:"elastic"`
 	Graphql graphqlServer `toml:"graphql"`
@@ -35,7 +34,9 @@ var conf Config
 func GetClient() *elastic.Client {
 	return client
 }
+*/
 
+/*
 var pageInfoType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "PageInfo",
 	Fields: graphql.Fields{
@@ -168,7 +169,9 @@ var authorshipType = graphql.NewObject(graphql.ObjectConfig{
 		"label":         &graphql.Field{Type: graphql.String},
 	},
 })
+*/
 
+/*
 func publicationResolver(params graphql.ResolveParams) (interface{}, error) {
 	person, _ := params.Source.(models.Person)
 	var publications []models.Publication
@@ -236,7 +239,7 @@ func publicationResolver(params graphql.ResolveParams) (interface{}, error) {
 	return func() (interface{}, error) {
 		return &publicationList, nil
 	}, nil
-
+*/
 	/*
 
 		for _, hit := range pubResults.Hits.Hits {
@@ -253,7 +256,10 @@ func publicationResolver(params graphql.ResolveParams) (interface{}, error) {
 		}, nil
 		//return publications, nil
 	*/
+/*
 }
+*/
+
 
 /*
 	    for _, hit := range pubResults.Hits.Hits {
@@ -275,6 +281,7 @@ func publicationResolver(params graphql.ResolveParams) (interface{}, error) {
 		    return &publicationList, nil
 	    }, nil
 */
+/*
 func grantResolver(params graphql.ResolveParams) (interface{}, error) {
 	person, _ := params.Source.(models.Person)
 	var grants []models.Grant
@@ -461,7 +468,9 @@ func extensionResolver(params graphql.ResolveParams) (interface{}, error) {
 		return &extensionList, nil
 	}, nil
 }
+*/
 
+/*
 var personType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Person",
 	Fields: graphql.Fields{
@@ -520,6 +529,9 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+*/
+
+/*
 var RootQuery = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootQuery",
 	Fields: graphql.Fields{
@@ -528,7 +540,9 @@ var RootQuery = graphql.NewObject(graphql.ObjectConfig{
 		"publicationList": GetPublications,
 	},
 })
+*/
 
+/*
 var personListType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "PersonList",
 	Fields: graphql.Fields{
@@ -537,11 +551,14 @@ var personListType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+
 type ExtensionList struct {
 	Results  []models.Extension `json:"data"`
 	PageInfo PageInfo           `json:"pageInfo"`
 }
+*/
 
+/*
 var extensionListType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "extensionList",
 	Fields: graphql.Fields{
@@ -557,7 +574,8 @@ var publicationListType = graphql.NewObject(graphql.ObjectConfig{
 		"pageInfo": &graphql.Field{Type: pageInfoType},
 	},
 })
-
+*/
+/*
 var GetPerson = &graphql.Field{
 	Type:        personType,
 	Description: "Get Person",
@@ -591,6 +609,14 @@ var GetPerson = &graphql.Field{
 	},
 }
 
+*/
+
+/*
+type ExtensionList struct {
+	Results  []models.Extension `json:"data"`
+	PageInfo PageInfo           `json:"pageInfo"`
+}
+
 type PageInfo struct {
 	PerPage    int `json:"perPage"`
 	Page       int `json:"page"`
@@ -606,7 +632,9 @@ type PublicationList struct {
 	Results  []models.Publication `json:"data"`
 	PageInfo PageInfo             `json:"pageInfo"`
 }
+*/
 
+/*
 var GetPeople = &graphql.Field{
 	Type: personListType,
 	//Type:        graphql.NewList(personType),
@@ -702,6 +730,29 @@ var GetPublications = &graphql.Field{
 		return publications, nil
 	},
 }
+*/
+type Config struct {
+	Elastic elasticSearch `toml:"elastic"`
+	Graphql graphqlServer `toml:"graphql"`
+}
+
+type elasticSearch struct {
+	Url string
+}
+
+type graphqlServer struct {
+	Port int
+}
+
+var conf Config
+
+/*
+var client *elastic.Client
+
+func GetClient() *elastic.Client {
+	return client
+}
+*/
 
 func main() {
 	var err error
@@ -720,13 +771,15 @@ func main() {
 
 	// NOTE: elastic client is supposed to be long-lived
 	// see https://github.com/olivere/elastic/blob/release-branch.v6/client.go
-	client, err = elastic.NewClient(elastic.SetURL(conf.Elastic.Url), elastic.SetSniff(false))
+	//client, err = elastic.NewClient(elastic.SetURL(conf.Elastic.Url), elastic.SetSniff(false))
+	graphql_endpoint.Client, err = elastic.NewClient(elastic.SetURL(conf.Elastic.Url), elastic.SetSniff(false))
+
 	if err != nil {
 		panic(err)
 	}
 
 	var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
-		Query: RootQuery,
+		Query: graphql_endpoint.RootQuery,
 	})
 
 	c := cors.New(cors.Options{
