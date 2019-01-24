@@ -38,13 +38,6 @@ func TestPagingStart(t *testing.T) {
 	if (pageInfo1.CurrentPage != 1) {
 		t.Error(fmt.Printf("should be page 1 if start = %d and perPage = %d", start, perPage))
 	}
-	if (pageInfo1.PerPage != 10) {
-		t.Error(fmt.Printf("should be page 10 per page if perPage = %d\n", perPage))
-	}
-	if (pageInfo1.TotalPages != 5) {
-		t.Error(fmt.Printf("should be page 5 pages with size=%d and count=%d\n", perPage, total))
-	}
-
 }
 
 func TestPagingSecond(t *testing.T) {
