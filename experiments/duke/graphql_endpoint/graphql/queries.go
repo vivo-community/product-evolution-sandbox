@@ -10,7 +10,7 @@ var RootQuery = graphql.NewObject(graphql.ObjectConfig{
 		"personList":      GetPeople,
 		"person":          GetPerson,
 		"publicationList": GetPublications,
-		//"grantList":       GetGrants,
+		"grantList":       GetGrants,
 	},
 })
 
@@ -34,11 +34,21 @@ var GetPeople = &graphql.Field{
 }
 
 var GetPublications = &graphql.Field{
-	Type:        graphql.NewList(publicationType),
+	Type:        publicationListType,
 	Description: "Get all publications",
 	Args: graphql.FieldConfigArgument{
 		"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
 		"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
 	},
 	Resolve: publicationResolver,
+}
+
+var GetGrants = &graphql.Field{
+	Type:        grantListType,
+	Description: "Get all grants",
+	Args: graphql.FieldConfigArgument{
+		"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
+		"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
+	},
+	Resolve: grantResolver,
 }

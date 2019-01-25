@@ -45,12 +45,20 @@ func personPublicationResolver(params graphql.ResolveParams) (interface{}, error
 }
 
 func grantResolver(params graphql.ResolveParams) (interface{}, error) {
+	size := params.Args["size"].(int)
+	from := params.Args["from"].(int)
+
+	grants, err := elastic.FindGrants(size, from)
+	return grants, err
+}
+
+func personGrantResolver(params graphql.ResolveParams) (interface{}, error) {
 	person, _ := params.Source.(ge.Person)
 
 	size := params.Args["size"].(int)
 	from := params.Args["from"].(int)
 
-	grants, err := elastic.FindGrants(person.Id, from, size)
+	grants, err := elastic.FindPersonGrants(person.Id, size, from)
 
 	return func() (interface{}, error) {
 		return &grants, err

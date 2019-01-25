@@ -1,6 +1,6 @@
 package graphql_endpoint
 
-func FigurePaging(from int, size int, totalHits int) PageInfo {
+func FigurePaging(size int, from int, totalHits int) PageInfo {
 	// has to at least be page 1, maybe even if totalHits = 0
 	var currentPage = 1
 	var offset = from

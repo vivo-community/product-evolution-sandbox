@@ -1,6 +1,6 @@
 package graphql_endpoint
 
-// there are elastic json models
+// these are elastic json models
 type PersonKeyword struct {
 	Uri   string `json:"uri"`
 	Label string `json:"label"`
@@ -123,7 +123,7 @@ type Publication struct {
 	Venue      PublicationVenue `json:"venue"`
 }
 
-// graphql only data types
+// these are graphql only json models
 type ExtensionList struct {
 	Results  []Extension `json:"data"`
 	PageInfo PageInfo    `json:"pageInfo"`
@@ -144,4 +144,9 @@ type PersonList struct {
 type PublicationList struct {
 	Results  []Publication `json:"data"`
 	PageInfo PageInfo      `json:"pageInfo"`
+}
+
+type GrantList struct {
+	Results  []Grant  `json:"data"`
+	PageInfo PageInfo `json:"pageInfo"`
 }

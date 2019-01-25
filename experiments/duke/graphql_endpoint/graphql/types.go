@@ -177,12 +177,12 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 			Resolve: educationResolver,
 		},
 		"grantList": &graphql.Field{
-			Type: graphql.NewList(grantType),
+			Type: grantListType,
 			Args: graphql.FieldConfigArgument{
 				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
 				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
 			},
-			Resolve: grantResolver,
+			Resolve: personGrantResolver,
 		},
 	},
 })
@@ -195,10 +195,10 @@ var personListType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-var extensionListType = graphql.NewObject(graphql.ObjectConfig{
-	Name: "extensionList",
+var grantListType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "GrantList",
 	Fields: graphql.Fields{
-		"results":  &graphql.Field{Type: graphql.NewList(extensionType)},
+		"results":  &graphql.Field{Type: graphql.NewList(grantType)},
 		"pageInfo": &graphql.Field{Type: pageInfoType},
 	},
 })

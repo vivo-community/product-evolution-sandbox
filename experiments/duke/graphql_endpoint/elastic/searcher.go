@@ -32,7 +32,7 @@ func FindPerson(personId string) (ge.Person, error) {
 	return person, err
 }
 
-func FindPeople(from int, size int) (ge.PersonList, error) {
+func FindPeople(size int, from int) (ge.PersonList, error) {
 	var people []ge.Person
 	ctx := context.Background()
 	client := GetClient()
@@ -66,12 +66,12 @@ func FindPeople(from int, size int) (ge.PersonList, error) {
 	totalHits := int(searchResult.TotalHits())
 	log.Printf("total hits: %d\n", totalHits)
 
-	pageInfo := ge.FigurePaging(from, size, totalHits)
+	pageInfo := ge.FigurePaging(size, from, totalHits)
 	personList := ge.PersonList{Results: people, PageInfo: pageInfo}
 	return personList, err
 }
 
-func FindPublications(from int, size int) ([]ge.Publication, error) {
+func FindPublications(size int, from int) (ge.PublicationList, error) {
 	var publications []ge.Publication
 	ctx := context.Background()
 	// should query elastic here
@@ -101,10 +101,17 @@ func FindPublications(from int, size int) ([]ge.Publication, error) {
 		}
 		publications = append(publications, publication)
 	}
-	return publications, err
+
+	totalHits := int(searchResult.TotalHits())
+	log.Printf("total hits: %d\n", totalHits)
+
+	pageInfo := ge.FigurePaging(size, from, totalHits)
+	publicationList := ge.PublicationList{Results: publications, PageInfo: pageInfo}
+	return publicationList, err
+	//return publications, err
 }
 
-func FindPersonPublications(personId string, from int, size int) (ge.PublicationList, error) {
+func FindPersonPublications(personId string, size int, from int) (ge.PublicationList, error) {
 	var publications []ge.Publication
 	var publicationIds []string
 
@@ -165,13 +172,51 @@ func FindPersonPublications(personId string, from int, size int) (ge.Publication
 		publications = append(publications, publication)
 	}
 
-	pageInfo := ge.FigurePaging(from, size, totalHits)
+	pageInfo := ge.FigurePaging(size, from, totalHits)
 	publicationList := ge.PublicationList{Results: publications, PageInfo: pageInfo}
 
 	return publicationList, err
 }
 
-func FindGrants(personId string, from int, size int) ([]ge.Grant, error) {
+func FindGrants(size int, from int) (ge.GrantList, error) {
+	var grants []ge.Grant
+	ctx := context.Background()
+	client := GetClient()
+
+	q := elastic.NewMatchAllQuery()
+
+	searchResult, err := client.Search().
+		Index("grants").
+		Query(q).
+		From(from).
+		Size(size).
+		//Pretty(true).
+		// Timeout("1000ms"). or
+		// Timeout(1000).
+		Do(ctx)
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+
+	for _, hit := range searchResult.Hits.Hits {
+		grant := ge.Grant{}
+		err := json.Unmarshal(*hit.Source, &grant)
+		if err != nil {
+			panic(err)
+		}
+		grants = append(grants, grant)
+	}
+
+	totalHits := int(searchResult.TotalHits())
+	log.Printf("total hits: %d\n", totalHits)
+
+	pageInfo := ge.FigurePaging(size, from, totalHits)
+	grantList := ge.GrantList{Results: grants, PageInfo: pageInfo}
+	return grantList, err
+}
+
+func FindPersonGrants(personId string, size int, from int) (ge.GrantList, error) {
 	var grants []ge.Grant
 	var grantIds []string
 
@@ -190,6 +235,9 @@ func FindGrants(personId string, from int, size int) ([]ge.Grant, error) {
 		// handle error
 		panic(err)
 	}
+
+	totalHits := int(searchResult.TotalHits())
+	log.Printf("total funding-roles: %d\n", totalHits)
 
 	// fixme: could optimize better - dataloader etc...
 	for _, hit := range searchResult.Hits.Hits {
@@ -224,10 +272,12 @@ func FindGrants(personId string, from int, size int) ([]ge.Grant, error) {
 		grants = append(grants, grant)
 	}
 
-	return grants, err
+	pageInfo := ge.FigurePaging(size, from, totalHits)
+	grantList := ge.GrantList{Results: grants, PageInfo: pageInfo}
+	return grantList, err
 }
 
-func FindAffiliations(personId string, from int, size int) ([]ge.Affiliation, error) {
+func FindAffiliations(personId string, size int, from int) ([]ge.Affiliation, error) {
 	var affiliations []ge.Affiliation
 
 	ctx := context.Background()
@@ -258,7 +308,7 @@ func FindAffiliations(personId string, from int, size int) ([]ge.Affiliation, er
 	return affiliations, err
 }
 
-func FindEducations(personId string, from int, size int) ([]ge.Education, error) {
+func FindEducations(personId string, size int, from int) ([]ge.Education, error) {
 	var educations []ge.Education
 
 	ctx := context.Background()
@@ -288,6 +338,7 @@ func FindEducations(personId string, from int, size int) ([]ge.Education, error)
 	return educations, err
 }
 
+// remaining are just debug/util functions
 func ListAll(index string) {
 	ctx := context.Background()
 	client := GetClient()
@@ -307,7 +358,7 @@ func ListAll(index string) {
 		// Handle error
 		panic(err)
 	}
-		
+
 	fmt.Println("********* BEGIN **********")
 	for _, hit := range searchResult.Hits.Hits {
 		var obj interface{}
@@ -350,7 +401,7 @@ func IdQuery(index string, ids []string) {
 		}
 		spew.Println(obj)
 	}
-    fmt.Println("************** END **********")
+	fmt.Println("************** END **********")
 }
 
 func FindOne(index string, personId string) {
@@ -373,8 +424,8 @@ func FindOne(index string, personId string) {
 		panic(err)
 	}
 
-    var obj interface{}
-    err = json.Unmarshal(*get1.Source, &obj)
+	var obj interface{}
+	err = json.Unmarshal(*get1.Source, &obj)
 	if err != nil {
 		panic(err)
 	}
