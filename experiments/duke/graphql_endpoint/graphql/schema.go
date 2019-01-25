@@ -12,4 +12,3 @@ func MakeSchema() graphql.Schema {
     return schema
 }
 
-

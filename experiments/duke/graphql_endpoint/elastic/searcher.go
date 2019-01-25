@@ -307,12 +307,22 @@ func ListAll(index string) {
 		// Handle error
 		panic(err)
 	}
-
-	spew.Println(searchResult.TotalHits())
+		
+	fmt.Println("********* BEGIN **********")
+	for _, hit := range searchResult.Hits.Hits {
+		var obj interface{}
+		err := json.Unmarshal(*hit.Source, &obj)
+		if err != nil {
+			panic(err)
+		}
+		spew.Println(obj)
+	}
+	fmt.Printf("********* END (%d) **********\n", searchResult.TotalHits())
 }
 
 func IdQuery(index string, ids []string) {
-	q := elastic.NewIdsQuery("person").Ids(ids...) //.QueryName("my_query")
+	// NOTE: can send 'type' into NewIdsQuery
+	q := elastic.NewIdsQuery().Ids(ids...) //.QueryName("my_query")
 	ctx := context.Background()
 	client := GetClient()
 
@@ -331,15 +341,24 @@ func IdQuery(index string, ids []string) {
 		panic(err)
 	}
 
-	spew.Println(searchResult.Hits.Hits)
+	fmt.Println("********* BEGIN **********")
+	for _, hit := range searchResult.Hits.Hits {
+		var obj interface{}
+		err := json.Unmarshal(*hit.Source, &obj)
+		if err != nil {
+			panic(err)
+		}
+		spew.Println(obj)
+	}
+    fmt.Println("************** END **********")
 }
 
-func FindOne(personId string) {
+func FindOne(index string, personId string) {
 	ctx := context.Background()
 	client := GetClient()
 
 	get1, err := client.Get().
-		Index("people").
+		Index(index).
 		Id(personId).
 		Do(ctx)
 
@@ -354,11 +373,10 @@ func FindOne(personId string) {
 		panic(err)
 	}
 
-	var person = ge.Person{}
-	err = json.Unmarshal(*get1.Source, &person)
+    var obj interface{}
+    err = json.Unmarshal(*get1.Source, &obj)
 	if err != nil {
 		panic(err)
 	}
-
-	spew.Println(person)
+	spew.Println(obj)
 }

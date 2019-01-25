@@ -15,15 +15,16 @@ func listAll(index string) {
 }
 
 func idQuery() {
-	elastic.IdQuery("person", []string{"per4774112", "per8608642"})
+	elastic.IdQuery("people", []string{"per4774112", "per8608642"})
 }
 
-func findOne(id string) {
-	elastic.FindOne(id)
+func findOne(index string, id string) {
+	elastic.FindOne(index, id)
 }
 
 var conf ge.Config
 
+// just a few simple functions to print out data
 func main() {
 	start := time.Now()
 	var configFile string
@@ -38,16 +39,16 @@ func main() {
 		os.Exit(1)
 	}
 
-	if _, err := elastic.MakeClient(conf.Elastic.Url); err != nil {
+	if err := elastic.MakeClient(conf.Elastic.Url); err != nil {
 		fmt.Printf("could not establish elastic client %s\n", err)
 		os.Exit(1)
 	}
-
+	
 	fmt.Println(*typeName)
 	listAll(*typeName)
 
 	fmt.Println("******************")
-	findOne(*findId)
+	findOne(*typeName, *findId)
 	defer elastic.Client.Stop()
 
 	fmt.Println("*****************")

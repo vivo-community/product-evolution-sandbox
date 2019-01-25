@@ -2,8 +2,6 @@ package graphql
 
 //https://medium.com/@benbjohnson/standard-package-layout-7cdbc8391fc1
 import (
-	//"context"
-	//"encoding/json"
 	ge "github.com/OIT-ads-web/graphql_endpoint"
 	"github.com/OIT-ads-web/graphql_endpoint/elastic"
 	"github.com/graphql-go/graphql"
@@ -46,7 +44,6 @@ func personPublicationResolver(params graphql.ResolveParams) (interface{}, error
 	}, nil
 }
 
-//
 func grantResolver(params graphql.ResolveParams) (interface{}, error) {
 	person, _ := params.Source.(ge.Person)
 

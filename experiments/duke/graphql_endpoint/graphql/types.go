@@ -4,7 +4,6 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-// schema ...
 var pageInfoType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "PageInfo",
 	Fields: graphql.Fields{
@@ -212,26 +211,3 @@ var publicationListType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-/*
-type ExtensionList struct {
-	Results  []Extension `json:"data"`
-	PageInfo PageInfo    `json:"pageInfo"`
-}
-
-type PageInfo struct {
-	PerPage     int `json:"perPage"`
-	CurrentPage int `json:"page"`
-	TotalPages  int `json":totalPages"`
-	Count       int `json:"count"`
-}
-
-type PersonList struct {
-	Results  []Person `json:"data"`
-	PageInfo PageInfo `json:"pageInfo"`
-}
-
-type PublicationList struct {
-	Results  []Publication `json:"data"`
-	PageInfo PageInfo      `json:"pageInfo"`
-}
-*/

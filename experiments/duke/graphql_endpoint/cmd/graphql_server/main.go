@@ -29,7 +29,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if _, err := elastic.MakeClient(conf.Elastic.Url); err != nil {
+	if err := elastic.MakeClient(conf.Elastic.Url); err != nil {
 		fmt.Printf("could not establish elastic client %s\n", err)
 		os.Exit(1)
 	}
