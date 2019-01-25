@@ -1,68 +1,41 @@
-package graphql_endpoint
+package elastic
 
+//https://medium.com/@benbjohnson/standard-package-layout-7cdbc8391fc1
 import (
 	"context"
 	"encoding/json"
-	"github.com/graphql-go/graphql"
+	"fmt"
+	ge "github.com/OIT-ads-web/graphql_endpoint"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/olivere/elastic"
 	"log"
 )
 
-func FigurePaging(from int, size int, totalHits int) PageInfo {
-	// has to at least be page 1, maybe even if totalHits = 0
-	var currentPage = 1
-	var offset = from
+// NOTE: these should all take a 'context' parameter
+func FindPerson(personId string) (ge.Person, error) {
+	var person = ge.Person{}
 
-	if (offset / size) > 0 {
-		if (offset % size) > 0 {
-			currentPage = (offset / size) + 1
-		} else {
-			currentPage = (offset / size) - 1
-		}
-	}
-	var totalPages = totalHits / size
-	var remainder = totalHits % size
-	if remainder > 0 {
-		totalPages += 1
-	}
-	pageInfo := PageInfo{PerPage: size,
-		CurrentPage: currentPage,
-		TotalPages:  totalPages,
-		Count:       totalHits}
-	return pageInfo
-}
-
-func personResolver(params graphql.ResolveParams) (interface{}, error) {
-	var person = Person{}
 	ctx := context.Background()
 	client := GetClient()
 
-	id := params.Args["id"].(string)
-	log.Printf("looking for person %s\n", id)
+	log.Printf("looking for person %s\n", personId)
 
 	get1, err := client.Get().
 		Index("people").
-		Id(id).
+		Id(personId).
 		Do(ctx)
 	if err != nil {
 		return person, err
 	}
 
 	err = json.Unmarshal(*get1.Source, &person)
-
-	if err != nil {
-		return person, err
-	}
-	return person, nil
+	return person, err
 }
 
-func peopleResolver(params graphql.ResolveParams) (interface{}, error) {
-	var people []Person
+func FindPeople(from int, size int) (ge.PersonList, error) {
+	var people []ge.Person
 	ctx := context.Background()
 	client := GetClient()
-
-	size := params.Args["size"].(int)
-	from := params.Args["from"].(int)
 
 	q := elastic.NewMatchAllQuery()
 
@@ -82,7 +55,7 @@ func peopleResolver(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	for _, hit := range searchResult.Hits.Hits {
-		person := Person{}
+		person := ge.Person{}
 		err := json.Unmarshal(*hit.Source, &person)
 		if err != nil {
 			panic(err)
@@ -93,19 +66,16 @@ func peopleResolver(params graphql.ResolveParams) (interface{}, error) {
 	totalHits := int(searchResult.TotalHits())
 	log.Printf("total hits: %d\n", totalHits)
 
-	pageInfo := FigurePaging(from, size, totalHits)
-	personList := PersonList{Results: people, PageInfo: pageInfo}
-	return personList, nil
+	pageInfo := ge.FigurePaging(from, size, totalHits)
+	personList := ge.PersonList{Results: people, PageInfo: pageInfo}
+	return personList, err
 }
 
-func publicationResolver(params graphql.ResolveParams) (interface{}, error) {
-	var publications []Publication
+func FindPublications(from int, size int) ([]ge.Publication, error) {
+	var publications []ge.Publication
 	ctx := context.Background()
 	// should query elastic here
 	client := GetClient()
-
-	size := params.Args["size"].(int)
-	from := params.Args["from"].(int)
 
 	q := elastic.NewMatchAllQuery()
 
@@ -124,28 +94,24 @@ func publicationResolver(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	for _, hit := range searchResult.Hits.Hits {
-		publication := Publication{}
+		publication := ge.Publication{}
 		err := json.Unmarshal(*hit.Source, &publication)
 		if err != nil {
 			panic(err)
 		}
 		publications = append(publications, publication)
 	}
-	return publications, nil
+	return publications, err
 }
 
-func personPublicationResolver(params graphql.ResolveParams) (interface{}, error) {
-	person, _ := params.Source.(Person)
-	var publications []Publication
+func FindPersonPublications(personId string, from int, size int) (ge.PublicationList, error) {
+	var publications []ge.Publication
 	var publicationIds []string
-
-	size := params.Args["size"].(int)
-	from := params.Args["from"].(int)
 
 	ctx := context.Background()
 	client := GetClient()
 
-	q := elastic.NewMatchQuery("personId", person.Id)
+	q := elastic.NewMatchQuery("personId", personId)
 
 	searchResult, err := client.Search().
 		Index("authorships").
@@ -160,7 +126,7 @@ func personPublicationResolver(params graphql.ResolveParams) (interface{}, error
 
 	// FIXME: could optimize better - dataloader etc...
 	for _, hit := range searchResult.Hits.Hits {
-		authorship := Authorship{}
+		authorship := ge.Authorship{}
 		err := json.Unmarshal(*hit.Source, &authorship)
 		if err != nil {
 			panic(err)
@@ -191,7 +157,7 @@ func personPublicationResolver(params graphql.ResolveParams) (interface{}, error
 	}
 
 	for _, hit := range pubResults.Hits.Hits {
-		publication := Publication{}
+		publication := ge.Publication{}
 		err := json.Unmarshal(*hit.Source, &publication)
 		if err != nil {
 			panic(err)
@@ -199,26 +165,20 @@ func personPublicationResolver(params graphql.ResolveParams) (interface{}, error
 		publications = append(publications, publication)
 	}
 
-	pageInfo := FigurePaging(from, size, totalHits)
-	publicationList := PublicationList{Results: publications, PageInfo: pageInfo}
-	return func() (interface{}, error) {
-		return &publicationList, nil
-	}, nil
+	pageInfo := ge.FigurePaging(from, size, totalHits)
+	publicationList := ge.PublicationList{Results: publications, PageInfo: pageInfo}
+
+	return publicationList, err
 }
 
-//
-func grantResolver(params graphql.ResolveParams) (interface{}, error) {
-	person, _ := params.Source.(Person)
-	var grants []Grant
+func FindGrants(personId string, from int, size int) ([]ge.Grant, error) {
+	var grants []ge.Grant
 	var grantIds []string
-
-	size := params.Args["size"].(int)
-	from := params.Args["from"].(int)
 
 	ctx := context.Background()
 	client := GetClient()
 
-	q := elastic.NewMatchQuery("personId", person.Id)
+	q := elastic.NewMatchQuery("personId", personId)
 
 	searchResult, err := client.Search().
 		Index("funding-roles").
@@ -227,13 +187,13 @@ func grantResolver(params graphql.ResolveParams) (interface{}, error) {
 		Size(size).
 		Do(ctx)
 	if err != nil {
-		// Handle error
+		// handle error
 		panic(err)
 	}
 
-	// FIXME: could optimize better - dataloader etc...
+	// fixme: could optimize better - dataloader etc...
 	for _, hit := range searchResult.Hits.Hits {
-		fundingRole := FundingRole{}
+		fundingRole := ge.FundingRole{}
 		err := json.Unmarshal(*hit.Source, &fundingRole)
 		if err != nil {
 			panic(err)
@@ -242,6 +202,7 @@ func grantResolver(params graphql.ResolveParams) (interface{}, error) {
 		grantId := fundingRole.GrantId
 		grantIds = append(grantIds, grantId)
 	}
+
 	grantQuery := elastic.NewIdsQuery("grant").
 		Ids(grantIds...)
 
@@ -251,11 +212,11 @@ func grantResolver(params graphql.ResolveParams) (interface{}, error) {
 		RequestCache(true).
 		Do(ctx)
 	if err != nil {
-		// Handle error
+		// handle error
 		panic(err)
 	}
 	for _, hit := range grantResults.Hits.Hits {
-		grant := Grant{}
+		grant := ge.Grant{}
 		err := json.Unmarshal(*hit.Source, &grant)
 		if err != nil {
 			panic(err)
@@ -263,23 +224,16 @@ func grantResolver(params graphql.ResolveParams) (interface{}, error) {
 		grants = append(grants, grant)
 	}
 
-	return func() (interface{}, error) {
-		return &grants, nil
-	}, nil
-	//return grants, nil
+	return grants, err
 }
 
-func affiliationResolver(params graphql.ResolveParams) (interface{}, error) {
-	person, _ := params.Source.(Person)
-	var affiliations []Affiliation
-
-	size := params.Args["size"].(int)
-	from := params.Args["from"].(int)
+func FindAffiliations(personId string, from int, size int) ([]ge.Affiliation, error) {
+	var affiliations []ge.Affiliation
 
 	ctx := context.Background()
 	client := GetClient()
 
-	q := elastic.NewMatchQuery("personId", person.Id)
+	q := elastic.NewMatchQuery("personId", personId)
 
 	searchResult, err := client.Search().
 		Index("affiliations").
@@ -293,7 +247,7 @@ func affiliationResolver(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	for _, hit := range searchResult.Hits.Hits {
-		affiliation := Affiliation{}
+		affiliation := ge.Affiliation{}
 		err := json.Unmarshal(*hit.Source, &affiliation)
 		if err != nil {
 			panic(err)
@@ -301,23 +255,16 @@ func affiliationResolver(params graphql.ResolveParams) (interface{}, error) {
 		affiliations = append(affiliations, affiliation)
 
 	}
-	return func() (interface{}, error) {
-		return &affiliations, nil
-	}, nil
-	//return affiliations, nil
+	return affiliations, err
 }
 
-func educationResolver(params graphql.ResolveParams) (interface{}, error) {
-	person, _ := params.Source.(Person)
-	var educations []Education
-
-	size := params.Args["size"].(int)
-	from := params.Args["from"].(int)
+func FindEducations(personId string, from int, size int) ([]ge.Education, error) {
+	var educations []ge.Education
 
 	ctx := context.Background()
 	client := GetClient()
 
-	q := elastic.NewMatchQuery("personId", person.Id)
+	q := elastic.NewMatchQuery("personId", personId)
 
 	searchResult, err := client.Search().
 		Index("educations").
@@ -331,15 +278,87 @@ func educationResolver(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	for _, hit := range searchResult.Hits.Hits {
-		education := Education{}
+		education := ge.Education{}
 		err := json.Unmarshal(*hit.Source, &education)
 		if err != nil {
 			panic(err)
 		}
 		educations = append(educations, education)
 	}
-	return func() (interface{}, error) {
-		return &educations, nil
-	}, nil
-	//return educations, nil
+	return educations, err
+}
+
+func ListAll(index string) {
+	ctx := context.Background()
+	client := GetClient()
+	q := elastic.NewMatchAllQuery()
+
+	searchResult, err := client.Search().
+		Index(index).
+		//Type().
+		Query(q).
+		From(100).
+		Size(100).
+		Pretty(true).
+		// Timeout("1000ms"). or
+		// Timeout(1000).
+		Do(ctx)
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+
+	spew.Println(searchResult.TotalHits())
+}
+
+func IdQuery(index string, ids []string) {
+	q := elastic.NewIdsQuery("person").Ids(ids...) //.QueryName("my_query")
+	ctx := context.Background()
+	client := GetClient()
+
+	searchResult, err := client.Search().
+		Index(index).
+		//Type().
+		Query(q).
+		From(0).
+		Size(1000).
+		Pretty(true).
+		// Timeout("1000ms"). or
+		// Timeout(1000).
+		Do(ctx)
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+
+	spew.Println(searchResult.Hits.Hits)
+}
+
+func FindOne(personId string) {
+	ctx := context.Background()
+	client := GetClient()
+
+	get1, err := client.Get().
+		Index("people").
+		Id(personId).
+		Do(ctx)
+
+	switch {
+	case elastic.IsNotFound(err):
+		fmt.Println("404 not found")
+	case elastic.IsConnErr(err):
+		fmt.Println("connectino error")
+	case elastic.IsTimeout(err):
+		fmt.Println("timeout")
+	case err != nil:
+		panic(err)
+	}
+
+	var person = ge.Person{}
+	err = json.Unmarshal(*get1.Source, &person)
+	if err != nil {
+		panic(err)
+	}
+
+	spew.Println(person)
 }

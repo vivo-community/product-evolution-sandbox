@@ -1,4 +1,4 @@
-package graphql_endpoint
+package graphql
 
 import (
 	"github.com/graphql-go/graphql"
@@ -212,6 +212,7 @@ var publicationListType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+/*
 type ExtensionList struct {
 	Results  []Extension `json:"data"`
 	PageInfo PageInfo    `json:"pageInfo"`
@@ -233,3 +234,4 @@ type PublicationList struct {
 	Results  []Publication `json:"data"`
 	PageInfo PageInfo      `json:"pageInfo"`
 }
+*/

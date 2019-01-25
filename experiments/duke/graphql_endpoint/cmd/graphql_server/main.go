@@ -4,35 +4,18 @@ import (
 	"flag"
 	"fmt"
 	"github.com/BurntSushi/toml"
-	"github.com/OIT-ads-web/graphql_endpoint"
-	"github.com/graphql-go/graphql"
-	"github.com/graphql-go/handler"
-	"github.com/olivere/elastic"
+	ge "github.com/OIT-ads-web/graphql_endpoint"
+	"github.com/OIT-ads-web/graphql_endpoint/elastic"
+	"github.com/OIT-ads-web/graphql_endpoint/graphql"
 	"github.com/rs/cors"
 	"log"
 	"net/http"
 	"os"
 )
 
-/*
-type Config struct {
-	Elastic elasticSearch `toml:"elastic"`
-	Graphql graphqlServer `toml:"graphql"`
-}
-
-type elasticSearch struct {
-	Url string
-}
-
-type graphqlServer struct {
-	Port int
-}
-*/
-
-var conf graphql_endpoint.Config
+var conf ge.Config
 
 func main() {
-	var err error
 	var configFile string
 
 	log.SetOutput(os.Stdout)
@@ -46,30 +29,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	// NOTE: elastic client is supposed to be long-lived
-	// see https://github.com/olivere/elastic/blob/release-branch.v6/client.go
-	//client, err = elastic.NewClient(elastic.SetURL(conf.Elastic.Url), elastic.SetSniff(false))
-	graphql_endpoint.Client, err = elastic.NewClient(elastic.SetURL(conf.Elastic.Url), elastic.SetSniff(false))
-
-	if err != nil {
-		panic(err)
+	if _, err := elastic.MakeClient(conf.Elastic.Url); err != nil {
+		fmt.Printf("could not establish elastic client %s\n", err)
+		os.Exit(1)
 	}
-
-	var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
-		Query: graphql_endpoint.RootQuery,
-	})
 
 	c := cors.New(cors.Options{
 		AllowCredentials: true,
 	})
 
-	h := handler.New(&handler.Config{
-		Schema:   &schema,
-		GraphiQL: true,
-		Pretty:   true,
-	})
-
-	http.Handle("/graphql", c.Handler(h))
+	handler := graphql.MakeHandler()
+	http.Handle("/graphql", c.Handler(handler))
 
 	// NOTE: if not configured this would default to 0
 	var port = 9001
