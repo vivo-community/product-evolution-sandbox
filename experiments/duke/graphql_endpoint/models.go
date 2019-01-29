@@ -150,3 +150,13 @@ type GrantList struct {
 	Results  []Grant  `json:"data"`
 	PageInfo PageInfo `json:"pageInfo"`
 }
+
+type AffiliationList struct {
+	Results  []Affiliation `json:"data"`
+	PageInfo PageInfo      `json:"pageInfo"`
+}
+
+type EducationList struct {
+	Results  []Education `json:"data"`
+	PageInfo PageInfo    `json:"pageInfo"`
+}

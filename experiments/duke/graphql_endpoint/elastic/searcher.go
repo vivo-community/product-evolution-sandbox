@@ -63,6 +63,7 @@ func FindPeople(size int, from int) (ge.PersonList, error) {
 		people = append(people, person)
 	}
 
+	// TODO: might be one off
 	totalHits := int(searchResult.TotalHits())
 	log.Printf("total hits: %d\n", totalHits)
 
@@ -102,6 +103,7 @@ func FindPublications(size int, from int) (ge.PublicationList, error) {
 		publications = append(publications, publication)
 	}
 
+	// might be one off
 	totalHits := int(searchResult.TotalHits())
 	log.Printf("total hits: %d\n", totalHits)
 
@@ -146,6 +148,8 @@ func FindPersonPublications(personId string, size int, from int) (ge.Publication
 	// NOTE: need to have the count be authorship search
 	// not publication search - since pub search is just
 	// an id search derived from authorship search
+
+	// NOTE: not sure this is actually correct, might be one off
 	totalHits := int(searchResult.TotalHits())
 	log.Printf("total authorships: %d\n", totalHits)
 
@@ -156,6 +160,8 @@ func FindPersonPublications(personId string, size int, from int) (ge.Publication
 	pubResults, err := client.Search().
 		Index("publications").
 		Query(pubQuery).
+		From(1).
+		Size(totalHits).
 		RequestCache(true).
 		Do(ctx)
 	if err != nil {
@@ -171,6 +177,8 @@ func FindPersonPublications(personId string, size int, from int) (ge.Publication
 		}
 		publications = append(publications, publication)
 	}
+
+	log.Printf("size: %d, from:%d\n", size, from)
 
 	pageInfo := ge.FigurePaging(size, from, totalHits)
 	publicationList := ge.PublicationList{Results: publications, PageInfo: pageInfo}
@@ -208,6 +216,7 @@ func FindGrants(size int, from int) (ge.GrantList, error) {
 		grants = append(grants, grant)
 	}
 
+	// is this the correct number?
 	totalHits := int(searchResult.TotalHits())
 	log.Printf("total hits: %d\n", totalHits)
 
@@ -236,6 +245,7 @@ func FindPersonGrants(personId string, size int, from int) (ge.GrantList, error)
 		panic(err)
 	}
 
+	// is this the correct number?
 	totalHits := int(searchResult.TotalHits())
 	log.Printf("total funding-roles: %d\n", totalHits)
 
@@ -257,6 +267,8 @@ func FindPersonGrants(personId string, size int, from int) (ge.GrantList, error)
 	grantResults, err := client.Search().
 		Index("grants").
 		Query(grantQuery).
+		From(1).
+		Size(totalHits).
 		RequestCache(true).
 		Do(ctx)
 	if err != nil {
@@ -277,7 +289,7 @@ func FindPersonGrants(personId string, size int, from int) (ge.GrantList, error)
 	return grantList, err
 }
 
-func FindAffiliations(personId string, size int, from int) ([]ge.Affiliation, error) {
+func FindAffiliations(personId string, size int, from int) (ge.AffiliationList, error) {
 	var affiliations []ge.Affiliation
 
 	ctx := context.Background()
@@ -296,6 +308,7 @@ func FindAffiliations(personId string, size int, from int) ([]ge.Affiliation, er
 		panic(err)
 	}
 
+	var totalHits = 0
 	for _, hit := range searchResult.Hits.Hits {
 		affiliation := ge.Affiliation{}
 		err := json.Unmarshal(*hit.Source, &affiliation)
@@ -303,12 +316,17 @@ func FindAffiliations(personId string, size int, from int) ([]ge.Affiliation, er
 			panic(err)
 		}
 		affiliations = append(affiliations, affiliation)
-
+        totalHits += 1
 	}
-	return affiliations, err
+	//totalHits := int(searchResult.TotalHits())
+	log.Printf("total affiliation hits: %d\n", totalHits)
+
+	pageInfo := ge.FigurePaging(size, from, totalHits)
+	affiliationList := ge.AffiliationList{Results: affiliations, PageInfo: pageInfo}
+	return affiliationList, err
 }
 
-func FindEducations(personId string, size int, from int) ([]ge.Education, error) {
+func FindEducations(personId string, size int, from int) (ge.EducationList, error) {
 	var educations []ge.Education
 
 	ctx := context.Background()
@@ -327,15 +345,23 @@ func FindEducations(personId string, size int, from int) ([]ge.Education, error)
 		panic(err)
 	}
 
+	var totalHits = 0
 	for _, hit := range searchResult.Hits.Hits {
 		education := ge.Education{}
 		err := json.Unmarshal(*hit.Source, &education)
 		if err != nil {
 			panic(err)
 		}
+		fmt.Printf("adding education %s\n", education.Label)
 		educations = append(educations, education)
+		totalHits += 1
 	}
-	return educations, err
+	//totalHits := int(searchResult.TotalHits())
+	log.Printf("total education hits: %d\n", totalHits)
+
+	pageInfo := ge.FigurePaging(size, from, totalHits)
+	educationList := ge.EducationList{Results: educations, PageInfo: pageInfo}
+	return educationList, err
 }
 
 // remaining are just debug/util functions
