@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"flag"
 	"fmt"
-	"github.com/BurntSushi/toml"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 	"github.com/OIT-ads-web/widgets_import"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/jmoiron/sqlx"
@@ -17,6 +17,8 @@ import (
 	"sync"
 	"text/template"
 	"time"
+	"strings"
+	"flag"
 )
 
 // for elastic mapping definitions template
@@ -421,8 +423,8 @@ func addToIndex(index string, typeName string, id string, obj interface{}) {
 				case else:
 					panic(err)
 			}
-	
-    */
+
+	*/
 	if get1.Found {
 		update1, err := client.Update().
 			Index(index).
@@ -571,62 +573,62 @@ func persistResources(dryRun bool, typeName string) {
 			makeFundingRolesIndex()
 			makePublicationsIndex()
 			makeAuthorshipsIndex()
-	
+
 			// TODO: getting seqfault with this
 			// might need to mess with context ??
-			
-				wg.Add(7)
-				// 1.people
-				go func() {
-					defer wg.Done()
-					addPeople()
-				}()
-				// 2. affilations
-				go func() {
-					defer wg.Done()
-					addAffiliations()
-				}()
-				// 3. educations
-				go func() {
-					defer wg.Done()
-					addEducations()
-				}()
-				// 4. grants
-				go func() {
-					defer wg.Done()
-					addGrants()
-				}()
-				// 5. funding-roles
-				go func() {
-					defer wg.Done()
-					addFundingRoles()
-				}()
-				// 6. publications
-				go func() {
-					defer wg.Done()
-					addPublications()
-				}()
-				// 7. authorships
-				go func() {
-					defer wg.Done()
-					addAuthorships()
-				}()
 
-				wg.Wait()
-			
+			wg.Add(7)
+			// 1.people
+			go func() {
+				defer wg.Done()
+				addPeople()
+			}()
+			// 2. affilations
+			go func() {
+				defer wg.Done()
+				addAffiliations()
+			}()
+			// 3. educations
+			go func() {
+				defer wg.Done()
+				addEducations()
+			}()
+			// 4. grants
+			go func() {
+				defer wg.Done()
+				addGrants()
+			}()
+			// 5. funding-roles
+			go func() {
+				defer wg.Done()
+				addFundingRoles()
+			}()
+			// 6. publications
+			go func() {
+				defer wg.Done()
+				addPublications()
+			}()
+			// 7. authorships
+			go func() {
+				defer wg.Done()
+				addAuthorships()
+			}()
+
+			wg.Wait()
+
 			// people
 			/*
-			addPeople()
-			//affilations
-			addAffiliations()
-			// educations
-			addEducations()
-			// grants
-			addGrants()
-			addFundingRoles()
-			// publications
-			addPublications()
-			addAuthorships()
+				addPeople()
+				//affilations
+				addAffiliations()
+				// educations
+				addEducations()
+				// grants
+				addGrants()
+				addFundingRoles()
+				// publications
+				addPublications()
+				addAuthorships()
 			*/
 		}
 	}
@@ -635,20 +637,64 @@ func persistResources(dryRun bool, typeName string) {
 var conf widgets_import.Config
 var wg sync.WaitGroup
 
+/*
+	if os.Getenv("ENVIRONMENT") == "development" {
+		viper.SetConfigName("config")
+		viper.SetConfigType("toml")
+		viper.AddConfigPath(".")
+		viper.ReadInConfig()
+	} else {
+		replacer := strings.NewReplacer(".", "_")
+		viper.SetEnvKeyReplacer(replacer)
+		viper.BindEnv("database.server")
+		viper.BindEnv("database.port")
+		viper.BindEnv("database.database")
+		viper.BindEnv("database.user")
+		viper.BindEnv("database.password")
+		viper.BindEnv("elastic.url")
+	}
+
+	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
+	pflag.Parse()
+	viper.BindPFlags(pflag.CommandLine)
+
+	if err := viper.Unmarshal(&conf); err != nil {
+		fmt.Printf("could not establish read into conf structure %s\n", err)
+		os.Exit(1)
+	}
+
+*/
+
 func main() {
 	start := time.Now()
 	var err error
-	var configFile string
-	flag.StringVar(&configFile, "config", "./config.toml", "a config filename")
+
+	if os.Getenv("ENVIRONMENT") == "development" {
+		viper.SetConfigName("config")
+		viper.SetConfigType("toml")
+		viper.AddConfigPath(".")
+		viper.ReadInConfig()
+	} else {
+		replacer := strings.NewReplacer(".", "_")
+		viper.SetEnvKeyReplacer(replacer)
+		viper.BindEnv("database.server")
+		viper.BindEnv("database.port")
+		viper.BindEnv("database.database")
+		viper.BindEnv("database.user")
+		viper.BindEnv("database.password")
+		viper.BindEnv("elastic.url")
+	}
 
 	dryRun := flag.Bool("dry-run", false, "just examine resources to be saved")
 	remove := flag.Bool("remove", false, "remove existing records")
 	typeName := flag.String("type", "people", "type of records to import")
 
-	flag.Parse()
+	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
+	pflag.Parse()
+	viper.BindPFlags(pflag.CommandLine)
 
-	if _, err := toml.DecodeFile(configFile, &conf); err != nil {
-		fmt.Println("could not find config file, use -c option")
+	if err := viper.Unmarshal(&conf); err != nil {
+		fmt.Printf("could not establish read into conf structure %s\n", err)
 		os.Exit(1)
 	}
 

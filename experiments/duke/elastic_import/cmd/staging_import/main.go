@@ -6,23 +6,18 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-
-	"github.com/BurntSushi/toml"
 	"github.com/OIT-ads-web/widgets_import"
-
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
+	"github.com/xeipuuv/gojsonschema"
 	"io/ioutil"
 	"log"
-	//"net/http"
 	"os"
 	"strings"
 	"sync"
 	"time"
-
-	//"github.com/davecgh/go-spew/spew"
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
-	//"github.com/qri-io/jsonschema"
-	"github.com/xeipuuv/gojsonschema"
 )
 
 var conf widgets_import.Config
@@ -143,7 +138,7 @@ func addResource(obj interface{}, uri string, typeName string) {
 		DataB: str}
 
 	tx := db.MustBegin()
-	sql := `INSERT INTO resources (uri, type, hash, data, data_b) 
+	sql := `INSERT INTO resources (uri, type, hash, data, data_b)
 	      VALUES (:uri, :type, :hash, :data, :data_b)`
 	_, err = tx.NamedExec(sql, res)
 	if err != nil {
@@ -612,22 +607,68 @@ func persistResources(dryRun bool, typeName string) {
 
 var wg sync.WaitGroup
 
+/*
+	if os.Getenv("ENVIRONMENT") == "development" {
+		viper.SetConfigName("config")
+		viper.SetConfigType("toml")
+		viper.AddConfigPath(".")
+		viper.ReadInConfig()
+	} else {
+		replacer := strings.NewReplacer(".", "_")
+		viper.SetEnvKeyReplacer(replacer)
+		viper.BindEnv("database.server")
+		viper.BindEnv("database.port")
+		viper.BindEnv("database.database")
+		viper.BindEnv("database.user")
+		viper.BindEnv("database.password")
+		viper.BindEnv("elastic.url")
+	}
+
+	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
+	pflag.Parse()
+	viper.BindPFlags(pflag.CommandLine)
+
+	if err := viper.Unmarshal(&conf); err != nil {
+		fmt.Printf("could not establish read into conf structure %s\n", err)
+		os.Exit(1)
+	}
+
+
+*/
 // import from staging table -> resources table
 // go through jsonschema validate
 func main() {
 	start := time.Now()
 	var err error
-	var configFile string
-	flag.StringVar(&configFile, "config", "./config.toml", "a config filename")
+	//var configFile string
+	//flag.StringVar(&configFile, "config", "./config.toml", "a config filename")
+
+	if os.Getenv("ENVIRONMENT") == "development" {
+		viper.SetConfigName("config")
+		viper.SetConfigType("toml")
+		viper.AddConfigPath(".")
+		viper.ReadInConfig()
+	} else {
+		replacer := strings.NewReplacer(".", "_")
+		viper.SetEnvKeyReplacer(replacer)
+		viper.BindEnv("database.server")
+		viper.BindEnv("database.port")
+		viper.BindEnv("database.database")
+		viper.BindEnv("database.user")
+		viper.BindEnv("database.password")
+		viper.BindEnv("elastic.url")
+	}
 
 	dryRun := flag.Bool("dry-run", false, "just examine resources to be saved")
 	remove := flag.Bool("remove", false, "remove existing records")
 	typeName := flag.String("type", "people", "type of records to import")
 
-	flag.Parse()
+	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
+	pflag.Parse()
+	viper.BindPFlags(pflag.CommandLine)
 
-	if _, err := toml.DecodeFile(configFile, &conf); err != nil {
-		fmt.Println("could not find config file, use -c option")
+	if err := viper.Unmarshal(&conf); err != nil {
+		fmt.Printf("could not establish read into conf structure %s\n", err)
 		os.Exit(1)
 	}
 

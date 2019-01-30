@@ -6,12 +6,14 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-    "io"
-	//"bytes"
-	"github.com/BurntSushi/toml"
+	"io"
 	"github.com/OIT-ads-web/widgets_import"
-
+	"github.com/davecgh/go-spew/spew"
+	"github.com/jmoiron/sqlx"
 	"github.com/knakk/rdf"
+	_ "github.com/lib/pq"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -19,9 +21,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"github.com/davecgh/go-spew/spew"
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
 )
 
 var client *http.Client
@@ -732,7 +731,7 @@ func produceUrisFromRdfFile(fileName string) <-chan string {
 	}
 	dec := rdf.NewTripleDecoder(f, rdf.RDFXML)
 	go func() {
-        for triple, err := dec.Decode(); err != io.EOF; triple, err = dec.Decode() {
+		for triple, err := dec.Decode(); err != io.EOF; triple, err = dec.Decode() {
 			uri := triple.Subj.String()
 			c <- uri
 		}
@@ -741,11 +740,11 @@ func produceUrisFromRdfFile(fileName string) <-chan string {
 	return c
 }
 
-func readPeopleList() (io.Reader, error)  {
-    //https://scholars.duke.edu/listrdf?vclass=http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FPerson
-    url := "https://scholars.duke.edu/listrdf?vclass=http://xmlns.com/foaf/0.1/Person" 
+func readPeopleList() (io.Reader, error) {
+	//https://scholars.duke.edu/listrdf?vclass=http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FPerson
+	url := "https://scholars.duke.edu/listrdf?vclass=http://xmlns.com/foaf/0.1/Person"
 	req, err := http.NewRequest("GET", url, nil)
-    req.Header.Set("Accept", "application/rdf+xml")
+	req.Header.Set("Accept", "application/rdf+xml")
 
 	if err != nil {
 		fmt.Println("ERROR:", err)
@@ -760,8 +759,8 @@ func readPeopleList() (io.Reader, error)  {
 
 	defer res.Body.Close()
 
-    reader := strings.NewReader(string(body))
-    return reader, err
+	reader := strings.NewReader(string(body))
+	return reader, err
 	//var results WidgetsOrganization
 	//json.Unmarshal([]byte(body), &results)
 	//return results
@@ -777,7 +776,7 @@ func produceUrisFromVivo() <-chan string {
 	}
 	dec := rdf.NewTripleDecoder(f, rdf.RDFXML)
 	go func() {
-        for triple, err := dec.Decode(); err != io.EOF; triple, err = dec.Decode() {
+		for triple, err := dec.Decode(); err != io.EOF; triple, err = dec.Decode() {
 			uri := triple.Subj.String()
 			c <- uri
 		}
@@ -793,25 +792,44 @@ var conf widgets_import.Config
 func main() {
 	start := time.Now()
 	var err error
-	var configFile string
 	var rdfFile string
 
-	flag.StringVar(&configFile, "config", "./config.toml", "a config filename")
-    flag.StringVar(&rdfFile, "rdf", "", "an rdf file (of person uris)")
+	flag.StringVar(&rdfFile, "rdf", "", "an rdf file (of person uris)")
+
+	if os.Getenv("ENVIRONMENT") == "development" {
+		viper.SetConfigName("config")
+		viper.SetConfigType("toml")
+		viper.AddConfigPath(".")
+		viper.ReadInConfig()
+	} else {
+		replacer := strings.NewReplacer(".", "_")
+		viper.SetEnvKeyReplacer(replacer)
+		viper.BindEnv("database.server")
+		viper.BindEnv("database.port")
+		viper.BindEnv("database.database")
+		viper.BindEnv("database.user")
+		viper.BindEnv("database.password")
+		viper.BindEnv("elastic.url")
+	}
 
 	dryRun := flag.Bool("dry-run", false, "just examine widgets parsing")
 	typeName := flag.String("type", "people", "type of thing to import")
 	source := flag.String("source", "widgets", "source of data")
-
 	remove := flag.Bool("remove", false, "remove existing records")
-
 	org := flag.String("org", "org50000500", "which org id to import (defaults to CS)")
-	flag.Parse()
 
-	if _, err := toml.DecodeFile(configFile, &conf); err != nil {
-		fmt.Println("could not find config file, use -c option")
+	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
+	pflag.Parse()
+	viper.BindPFlags(pflag.CommandLine)
+
+	if err := viper.Unmarshal(&conf); err != nil {
+		fmt.Printf("could not establish read into conf structure %s\n", err)
 		os.Exit(1)
 	}
+
+	//viper.SetDefault("elastic.url", "http://localhost:9200")
+
+	fmt.Printf("trying to connect to %s\n", conf.Database.Server)
 	psqlInfo = fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		conf.Database.Server, conf.Database.Port,
@@ -835,22 +853,22 @@ func main() {
 		wg.Add(3)
 		var uris <-chan string
 		if len(rdfFile) > 0 {
-            uris = produceUrisFromRdfFile(rdfFile)
+			uris = produceUrisFromRdfFile(rdfFile)
 		} else {
 			switch *source {
 			case "widgets":
 				uris = produceUrisFromWidgetsOrg(org)
-            case "vivo":
+			case "vivo":
 				uris = produceUrisFromVivo()
 			default:
 				uris = produceUrisFromWidgetsOrg(org)
 			}
-            //uris = produceUrisFromWidgetsOrg(org)
+			//uris = produceUrisFromWidgetsOrg(org)
 		}
 
-        widgets := processUris(uris)
+		widgets := processUris(uris)
 		persistWidgets(widgets, *dryRun, *typeName)
-        wg.Wait()
+		wg.Wait()
 	}
 
 	defer db.Close()
