@@ -4,21 +4,21 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
 	"github.com/OIT-ads-web/widgets_import"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/olivere/elastic"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 	"log"
 	"os"
+	"strings"
 	"sync"
 	"text/template"
 	"time"
-	"strings"
-	"flag"
 )
 
 // for elastic mapping definitions template
@@ -64,6 +64,39 @@ const personMapping = `
 		      "label": { "type": "text" }
 	      }
 		},
+		"affiliationList": {
+			"type": "nested",
+		    "properties":{
+		        "id":        { "type": "text" },
+		        "uri":       { "type": "text" },
+		        "label":     { "type": "text" },
+		        "startDate": {
+			      "type": "object",
+			      "properties": {
+				    "dateTime":   { "type": "text" },
+				    "resolution": { "type": "text" }
+			      }
+		        },
+		        "organizationId":    { "type": "text" },
+		        "organizationLabel": { "type": "text" } 
+             }
+		},
+		"educationList": {
+			"type": "nested",
+	        "properties":{
+		        "id":        { "type": "text" },
+		        "uri":       { "type": "text" },
+		        "label":     { "type": "text" },
+		        "personId":  { "type": "text" },
+		        "org":     { 
+			        "type": "object",
+			        "properties": {
+				      "id": { "type": "text" },
+				      "label": { "type": "text" }
+			        }
+		        }
+	        }
+		},
 		"extensions": {
 			"type": "nested",
 			"properties": {
@@ -74,39 +107,37 @@ const personMapping = `
     }
 }`
 
+// TODO: could probably include these snippets
+// in personMapping - so it's not so big
 // NOTE: dateTime is 'text' because it *can be* nil
 const affiliationMapping = `
-"affiliation":{
-	"properties":{
-		"id":        { "type": "text" },
-		"uri":       { "type": "text" },
-		"personId":  { "type": "text" },
-		"label":     { "type": "text" },
-		"startDate": {
-			"type": "object",
-			"properties": {
-				"dateTime":   { "type": "text" },
-				"resolution": { "type": "text" }
-			}
-		},
-		"organizationId":    { "type": "text" },
-		"organizationLabel": { "type": "text" } 
-    }
+"properties":{
+	"id":        { "type": "text" },
+	"uri":       { "type": "text" },
+	"personId":  { "type": "text" },
+	"label":     { "type": "text" },
+	"startDate": {
+		"type": "object",
+		"properties": {
+			"dateTime":   { "type": "text" },
+			"resolution": { "type": "text" }
+		}
+	},
+	"organizationId":    { "type": "text" },
+	"organizationLabel": { "type": "text" } 
 }`
 
 const educationMapping = `
-"education":{
-	"properties":{
-		"id":        { "type": "text" },
-		"uri":       { "type": "text" },
-		"label":     { "type": "text" },
-		"personId":  { "type": "text" },
-		"org":     { 
-			"type": "object",
-			"properties": {
-				"id": { "type": "text" },
-				"label": { "type": "text" }
-			}
+"properties":{
+	"id":        { "type": "text" },
+	"uri":       { "type": "text" },
+	"label":     { "type": "text" },
+	"personId":  { "type": "text" },
+	"org":     { 
+		"type": "object",
+		"properties": {
+			"id": { "type": "text" },
+			"label": { "type": "text" }
 		}
 	}
 }`
@@ -341,6 +372,7 @@ func makePeopleIndex() {
 	makeIndex("people", personMapping)
 }
 
+/*
 func makeAffiliationsIndex() {
 	makeIndex("affiliations", affiliationMapping)
 }
@@ -348,6 +380,7 @@ func makeAffiliationsIndex() {
 func makeEducationsIndex() {
 	makeIndex("educations", educationMapping)
 }
+*/
 
 func makeGrantsIndex() {
 	makeIndex("grants", grantMapping)
@@ -401,36 +434,61 @@ func addToIndex(index string, typeName string, id string, obj interface{}) {
 		panic(err)
 	}
 
-	/*
-			if err != nil {
-				// NOTE: 404 is an err
-		        switch {
-		        case elastic.IsNotFound(err):
-				    put1, err := client.Index().
-					    Index(index).
-					    Type(typeName).
-					    Id(id).
-					    BodyJson(obj).
-					    Do(ctx)
-
-				    if err != nil {
-					    panic(err)
-				    }
-
-				    fmt.Printf("ADDED %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
-				    spew.Println(obj)
-				    return
-				case else:
-					panic(err)
-			}
-
-	*/
 	if get1.Found {
 		update1, err := client.Update().
 			Index(index).
 			Type(typeName).
 			Id(id).
 			Doc(obj).
+			Do(ctx)
+
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("UPDATED %s to index %s, type %s\n", update1.Id, update1.Index, update1.Type)
+	}
+
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+	spew.Println(obj)
+}
+
+func partialUpdate(index string, typeName string, id string, prop string, obj interface{}) {
+	ctx := context.Background()
+	client = GetClient()
+
+	get1, err := client.Get().
+		Index(index).
+		Type(typeName).
+		Id(id).
+		Do(ctx)
+
+	switch {
+	case elastic.IsNotFound(err):
+		// NOTE: in theory we could add without source doc
+		fmt.Printf("no doc id=%s found to append to\n", id)
+		//fmt.Printf("ADDED %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
+		return
+	case elastic.IsConnErr(err):
+		panic(err)
+	case elastic.IsTimeout(err):
+		panic(err)
+	case err != nil:
+		panic(err)
+	}
+
+	if get1.Found {
+		update1, err := client.Update().
+			Index(index).
+			Type(typeName).
+			Id(id).
+			//Doc(obj).
+			// replace all of prop ??...
+			Doc(map[string]interface{}{prop: obj}).
+			DetectNoop(true).
 			Do(ctx)
 
 		if err != nil {
@@ -458,25 +516,25 @@ func addPeople() {
 	}
 }
 
-func addAffiliations() {
+func addAffiliationsToPeople() {
 	positions := retrieveType("Affiliation")
 	for _, element := range positions {
 		resource := widgets_import.Affiliation{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		addToIndex("affiliations", "affiliation", resource.Id, resource)
+		partialUpdate("people", "person", resource.PersonId, "affiliationList", resource)
 	}
 }
 
-func addEducations() {
+func addEducationsToPeople() {
 	educations := retrieveType("Education")
 	for _, element := range educations {
 		resource := widgets_import.Education{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		addToIndex("educations", "education", resource.Id, resource)
+		partialUpdate("people", "person", resource.PersonId, "educationList", resource)
 	}
 }
 
@@ -541,14 +599,12 @@ func persistResources(dryRun bool, typeName string) {
 	} else {
 		switch typeName {
 		case "people":
-			makePeopleIndex() /* won't make if already exists */
+			makePeopleIndex() /* NOTE: won't make if already exists */
 			addPeople()
 		case "affiliations":
-			makeAffiliationsIndex()
-			addAffiliations()
+			addAffiliationsToPeople()
 		case "educations":
-			makeEducationsIndex()
-			addEducations()
+			addEducationsToPeople()
 		case "grants":
 			makeGrantsIndex()
 			addGrants()
@@ -567,15 +623,10 @@ func persistResources(dryRun bool, typeName string) {
 			addAuthorships()
 		case "all":
 			makePeopleIndex()
-			makeAffiliationsIndex()
-			makeEducationsIndex()
 			makeGrantsIndex()
 			makeFundingRolesIndex()
 			makePublicationsIndex()
 			makeAuthorshipsIndex()
-
-			// TODO: getting seqfault with this
-			// might need to mess with context ??
 
 			wg.Add(7)
 			// 1.people
@@ -586,12 +637,12 @@ func persistResources(dryRun bool, typeName string) {
 			// 2. affilations
 			go func() {
 				defer wg.Done()
-				addAffiliations()
+				addAffiliationsToPeople()
 			}()
 			// 3. educations
 			go func() {
 				defer wg.Done()
-				addEducations()
+				addEducationsToPeople()
 			}()
 			// 4. grants
 			go func() {
@@ -615,55 +666,12 @@ func persistResources(dryRun bool, typeName string) {
 			}()
 
 			wg.Wait()
-
-			// people
-			/*
-				addPeople()
-				//affilations
-				addAffiliations()
-				// educations
-				addEducations()
-				// grants
-				addGrants()
-				addFundingRoles()
-				// publications
-				addPublications()
-				addAuthorships()
-			*/
 		}
 	}
 }
 
 var conf widgets_import.Config
 var wg sync.WaitGroup
-
-/*
-	if os.Getenv("ENVIRONMENT") == "development" {
-		viper.SetConfigName("config")
-		viper.SetConfigType("toml")
-		viper.AddConfigPath(".")
-		viper.ReadInConfig()
-	} else {
-		replacer := strings.NewReplacer(".", "_")
-		viper.SetEnvKeyReplacer(replacer)
-		viper.BindEnv("database.server")
-		viper.BindEnv("database.port")
-		viper.BindEnv("database.database")
-		viper.BindEnv("database.user")
-		viper.BindEnv("database.password")
-		viper.BindEnv("elastic.url")
-	}
-
-	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
-	pflag.Parse()
-	viper.BindPFlags(pflag.CommandLine)
-
-	if err := viper.Unmarshal(&conf); err != nil {
-		fmt.Printf("could not establish read into conf structure %s\n", err)
-		os.Exit(1)
-	}
-
-*/
 
 func main() {
 	start := time.Now()

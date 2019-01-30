@@ -119,36 +119,6 @@ func resourceExists(uri string, typeName string) bool {
 	return exists
 }
 
-// never used?
-/*
-func addResource(obj interface{}, uri string, typeName string) {
-	fmt.Printf(">ADD:%v\n", uri)
-	db = GetConnection()
-
-	str, err := json.Marshal(obj)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	hash := makeHash(string(str))
-
-	res := &widgets_import.Resource{Uri: uri,
-		Type:  typeName,
-		Hash:  hash,
-		Data:  str,
-		DataB: str}
-
-	tx := db.MustBegin()
-	sql := `INSERT INTO resources (uri, type, hash, data, data_b)
-	      VALUES (:uri, :type, :hash, :data, :data_b)`
-	_, err = tx.NamedExec(sql, res)
-	if err != nil {
-		log.Fatalln(">ERROR(INSERT):%v", err)
-	}
-	tx.Commit()
-}
-*/
-
-// return err ??
 func saveResource(obj interface{}, uri string, typeName string) (err error) {
 	str, err := json.Marshal(obj)
 	if err != nil {
@@ -538,31 +508,9 @@ func persistResources(dryRun bool, typeName string) {
 		case "authorships":
 			addAuthorships()
 		case "all":
-			//25.860895353s
-			/*
-				addPeople()
-				addAffiliations()
-				addEducations()
-				addGrants()
-				addFundingRoles()
-				addPublications()
-				addAuthorships()
-			*/
 			// trying to let it do things
 			// in goroutines
 			wg.Add(7)
-			/// this doesn't stop itself
-			/*
-							defer wg.Done()
-
-							go addPeople()
-							go addAffiliations()
-							go addEducations()
-				            go addGrants()
-							go addFundingRoles()
-				            go addPublications()
-							go addAuthorships()
-			*/
 			//17.970656632s
 			// 1.people
 			go func() {
@@ -599,7 +547,6 @@ func persistResources(dryRun bool, typeName string) {
 				defer wg.Done()
 				addAuthorships()
 			}()
-
 			wg.Wait()
 		}
 	}
@@ -607,41 +554,11 @@ func persistResources(dryRun bool, typeName string) {
 
 var wg sync.WaitGroup
 
-/*
-	if os.Getenv("ENVIRONMENT") == "development" {
-		viper.SetConfigName("config")
-		viper.SetConfigType("toml")
-		viper.AddConfigPath(".")
-		viper.ReadInConfig()
-	} else {
-		replacer := strings.NewReplacer(".", "_")
-		viper.SetEnvKeyReplacer(replacer)
-		viper.BindEnv("database.server")
-		viper.BindEnv("database.port")
-		viper.BindEnv("database.database")
-		viper.BindEnv("database.user")
-		viper.BindEnv("database.password")
-		viper.BindEnv("elastic.url")
-	}
-
-	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
-	pflag.Parse()
-	viper.BindPFlags(pflag.CommandLine)
-
-	if err := viper.Unmarshal(&conf); err != nil {
-		fmt.Printf("could not establish read into conf structure %s\n", err)
-		os.Exit(1)
-	}
-
-
-*/
 // import from staging table -> resources table
 // go through jsonschema validate
 func main() {
 	start := time.Now()
 	var err error
-	//var configFile string
-	//flag.StringVar(&configFile, "config", "./config.toml", "a config filename")
 
 	if os.Getenv("ENVIRONMENT") == "development" {
 		viper.SetConfigName("config")
