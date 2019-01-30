@@ -518,23 +518,36 @@ func addPeople() {
 
 func addAffiliationsToPeople() {
 	positions := retrieveType("Affiliation")
+	// need to group by personId
+	collections := make(map[string][]widgets_import.Affiliation)
+
 	for _, element := range positions {
 		resource := widgets_import.Affiliation{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		partialUpdate("people", "person", resource.PersonId, "affiliationList", resource)
+		collections[resource.PersonId] = append(collections[resource.PersonId], resource)
+	}
+
+	for key, value := range collections {
+		partialUpdate("people", "person", key, "affiliationList", value)
 	}
 }
 
 func addEducationsToPeople() {
 	educations := retrieveType("Education")
+	// need to group by personId
+	collections := make(map[string][]widgets_import.Education)
+
 	for _, element := range educations {
 		resource := widgets_import.Education{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
 
-		partialUpdate("people", "person", resource.PersonId, "educationList", resource)
+		collections[resource.PersonId] = append(collections[resource.PersonId], resource)
+	}
+	for key, value := range collections {
+		partialUpdate("people", "person", key, "educationList", value)
 	}
 }
 
