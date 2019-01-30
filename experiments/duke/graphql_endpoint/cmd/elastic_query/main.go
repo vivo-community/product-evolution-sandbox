@@ -40,7 +40,7 @@ func main() {
 	} else {
 		replacer := strings.NewReplacer(".", "_")
 		viper.SetEnvKeyReplacer(replacer)
-		viper.AutomaticEnv()
+	    viper.BindEnv("elastic.url")
 	}
 
 	if err := viper.Unmarshal(&conf); err != nil {

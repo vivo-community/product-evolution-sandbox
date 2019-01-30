@@ -29,7 +29,8 @@ func main() {
 	} else {
 		replacer := strings.NewReplacer(".", "_")
 		viper.SetEnvKeyReplacer(replacer)
-		viper.AutomaticEnv()
+		viper.BindEnv("elastic.url")
+        viper.BindEnv("graphql.port")
 	}
 
 	if err := viper.Unmarshal(&conf); err != nil {
