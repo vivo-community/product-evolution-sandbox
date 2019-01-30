@@ -43,9 +43,14 @@ func main() {
 		viper.AutomaticEnv()
 	}
 
-	fmt.Printf("trying to connect to elastic at %s\n", viper.GetString("elastic.url"))
+	if err := viper.Unmarshal(&conf); err != nil {
+		fmt.Printf("could not establish read into conf structure %s\n", err)
+		os.Exit(1)
+	}
 
-	if err := elastic.MakeClient(viper.GetString("elastic.url")); err != nil {
+	fmt.Printf("trying to connect to elastic at %s\n", conf.Elastic.Url)
+
+	if err := elastic.MakeClient(conf.Elastic.Url); err != nil {
 		fmt.Printf("could not establish elastic client %s\n", err)
 		os.Exit(1)
 	}

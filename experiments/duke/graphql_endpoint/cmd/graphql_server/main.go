@@ -32,7 +32,12 @@ func main() {
 		viper.AutomaticEnv()
 	}
 
-	if err := elastic.MakeClient(viper.GetString("elastic.url")); err != nil {
+	if err := viper.Unmarshal(&conf); err != nil {
+		fmt.Printf("could not establish read into conf structure %s\n", err)
+		os.Exit(1)
+	}
+
+	if err := elastic.MakeClient(conf.Elastic.Url); err != nil {
 		fmt.Printf("could not establish elastic client %s\n", err)
 		os.Exit(1)
 	}
@@ -44,7 +49,7 @@ func main() {
 	handler := graphql.MakeHandler()
 	http.Handle("/graphql", c.Handler(handler))
 
-	port := viper.GetInt("graphql.port")
+	port := conf.Graphql.Port
 	portConfig := fmt.Sprintf(":%d", port)
 	http.ListenAndServe(portConfig, nil)
 }
