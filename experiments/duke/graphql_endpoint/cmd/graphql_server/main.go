@@ -1,35 +1,38 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"github.com/BurntSushi/toml"
 	ge "github.com/OIT-ads-web/graphql_endpoint"
 	"github.com/OIT-ads-web/graphql_endpoint/elastic"
 	"github.com/OIT-ads-web/graphql_endpoint/graphql"
 	"github.com/rs/cors"
+	"github.com/spf13/viper"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 var conf ge.Config
 
 func main() {
-	var configFile string
-
 	log.SetOutput(os.Stdout)
 
-	flag.StringVar(&configFile, "config", "./config.toml", "a config filename")
+	viper.SetDefault("elastic.url", "http://localhost:9200")
+	viper.SetDefault("graphql.port", "9001")
 
-	flag.Parse()
-
-	if _, err := toml.DecodeFile(configFile, &conf); err != nil {
-		fmt.Println("could not find config file, use -c option")
-		os.Exit(1)
+	if os.Getenv("ENVIRONMENT") == "development" {
+		viper.SetConfigName("config")
+		viper.SetConfigType("toml")
+		viper.AddConfigPath(".")
+		viper.ReadInConfig()
+	} else {
+		replacer := strings.NewReplacer(".", "_")
+		viper.SetEnvKeyReplacer(replacer)
+		viper.AutomaticEnv()
 	}
 
-	if err := elastic.MakeClient(conf.Elastic.Url); err != nil {
+	if err := elastic.MakeClient(viper.GetString("elastic.url")); err != nil {
 		fmt.Printf("could not establish elastic client %s\n", err)
 		os.Exit(1)
 	}
@@ -41,12 +44,7 @@ func main() {
 	handler := graphql.MakeHandler()
 	http.Handle("/graphql", c.Handler(handler))
 
-	// NOTE: if not configured this would default to 0
-	var port = 9001
-	if conf.Graphql.Port > 0 {
-		port = conf.Graphql.Port
-	}
-
+	port := viper.GetInt("graphql.port")
 	portConfig := fmt.Sprintf(":%d", port)
 	http.ListenAndServe(portConfig, nil)
 }

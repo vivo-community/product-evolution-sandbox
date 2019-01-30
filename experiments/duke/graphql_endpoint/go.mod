@@ -11,5 +11,7 @@ require (
 	github.com/olivere/elastic v6.2.14+incompatible
 	github.com/pkg/errors v0.8.0 // indirect
 	github.com/rs/cors v1.6.0
+	github.com/spf13/pflag v1.0.3
+	github.com/spf13/viper v1.3.1
 	golang.org/x/net v0.0.0-20181217023233-e147a9138326 // indirect
 )

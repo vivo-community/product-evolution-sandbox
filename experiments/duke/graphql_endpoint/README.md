@@ -2,16 +2,16 @@
 
 ## config 
 
-* see config.toml.example
+can either set environmental variables, 
+
+> `export ELASTIC_URL="http://localhost:9200"`
+> `export GRAPHQL_PORT="9001"`
+
+or if `set ENVIRONMENT=development` looks for config.toml file
+in current directory (see config.toml.example)
 
 ## server 
 
-* endpoint on :9001 (not configurable at this point)
-* see localhost:9001/graphql
+* endpoint on `GRAPHQL_PORT`
+* see localhost:<GRAPHQL_PORT>/graphql
 
-
-## cors - (test)
-curl -H "Origin: http://example.com" \
-                       -H "Access-Control-Request-Method: POST" \
-                       -H "Access-Control-Request-Headers: X-Requested-With" \
-                       -X OPTIONS --verbose http://localhost:9001/graphql
