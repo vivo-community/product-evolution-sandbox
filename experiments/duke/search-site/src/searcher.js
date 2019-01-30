@@ -20,7 +20,7 @@ class ElasticQuery {
     // also, would probably build this with a 'querybuilder' type
     // of thing
     return this.client.search({
-      index: 'people, publications, grants, educations, affiliations',
+      index: 'people, publications, grants',
       body: {
        "from" : `${this.start}`, "size" : PAGE_ROWS,
         query: {
