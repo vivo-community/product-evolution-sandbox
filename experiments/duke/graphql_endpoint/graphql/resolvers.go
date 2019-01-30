@@ -65,26 +65,3 @@ func personGrantResolver(params graphql.ResolveParams) (interface{}, error) {
 	}, nil
 }
 
-func affiliationResolver(params graphql.ResolveParams) (interface{}, error) {
-	person, _ := params.Source.(ge.Person)
-
-	size := params.Args["size"].(int)
-	from := params.Args["from"].(int)
-
-	affiliationList, err := elastic.FindAffiliations(person.Id, size, from)
-	return func() (interface{}, error) {
-		return &affiliationList, err
-	}, nil
-}
-
-func educationResolver(params graphql.ResolveParams) (interface{}, error) {
-	person, _ := params.Source.(ge.Person)
-
-	size := params.Args["size"].(int)
-	from := params.Args["from"].(int)
-
-	educationList, err := elastic.FindEducations(person.Id, size, from)
-	return func() (interface{}, error) {
-		return &educationList, err
-	}, nil
-}

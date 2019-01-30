@@ -38,16 +38,18 @@ type Extension struct {
 }
 
 type Person struct {
-	Id           string           `json:"id"`
-	Uri          string           `json:"uri"`
-	SourceId     string           `json:"sourceId"`
-	PrimaryTitle string           `json:"primaryTitle"`
-	Name         PersonName       `json:"name" elastic:"type:object"`
-	Image        PersonImage      `json:"image" elastic:"type:object"`
-	Type         PersonType       `json:"type" elastic:"type:object"`
-	OverviewList []PersonOverview `json:"overviewList" elastic:"type:nested"`
-	KeywordList  []PersonKeyword  `json:"keywordList" elastic:"type:nested"`
-	Extensions   []Extension      `json:"extensions" elastic:"type:nested"`
+	Id             string           `json:"id"`
+	Uri            string           `json:"uri"`
+	SourceId       string           `json:"sourceId"`
+	PrimaryTitle   string           `json:"primaryTitle"`
+	Name           PersonName       `json:"name" elastic:"type:object"`
+	Image          PersonImage      `json:"image" elastic:"type:object"`
+	Type           PersonType       `json:"type" elastic:"type:object"`
+	OverviewList   []PersonOverview `json:"overviewList" elastic:"type:nested"`
+	KeywordList    []PersonKeyword  `json:"keywordList" elastic:"type:nested"`
+	Extensions     []Extension      `json:"extensions" elastic:"type:nested"`
+	EducationList  []Education      `json:"educationList" elastic:"type:nested"`
+	AffliationList []Affiliation    `json:"affiliationList" elastic:"type:nested"`
 }
 
 type DateResolution struct {
@@ -124,11 +126,6 @@ type Publication struct {
 }
 
 // these are graphql only json models
-type ExtensionList struct {
-	Results  []Extension `json:"data"`
-	PageInfo PageInfo    `json:"pageInfo"`
-}
-
 type PageInfo struct {
 	PerPage     int `json:"perPage"`
 	CurrentPage int `json:"page"`
@@ -151,12 +148,3 @@ type GrantList struct {
 	PageInfo PageInfo `json:"pageInfo"`
 }
 
-type AffiliationList struct {
-	Results  []Affiliation `json:"data"`
-	PageInfo PageInfo      `json:"pageInfo"`
-}
-
-type EducationList struct {
-	Results  []Education `json:"data"`
-	PageInfo PageInfo    `json:"pageInfo"`
-}

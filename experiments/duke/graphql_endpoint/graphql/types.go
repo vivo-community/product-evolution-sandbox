@@ -160,22 +160,8 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 			},
 			Resolve: personPublicationResolver,
 		},
-		"affiliationList": &graphql.Field{
-			Type: affiliationListType,
-			Args: graphql.FieldConfigArgument{
-				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
-				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
-			},
-			Resolve: affiliationResolver,
-		},
-		"educationList": &graphql.Field{
-			Type: educationListType,
-			Args: graphql.FieldConfigArgument{
-				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
-				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
-			},
-			Resolve: educationResolver,
-		},
+		"affliationList": &graphql.Field{Type: graphql.NewList(affiliationType)},
+		"educationList": &graphql.Field{Type: graphql.NewList(educationType)},
 		"grantList": &graphql.Field{
 			Type: grantListType,
 			Args: graphql.FieldConfigArgument{
@@ -207,22 +193,6 @@ var publicationListType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "publicationList",
 	Fields: graphql.Fields{
 		"results":  &graphql.Field{Type: graphql.NewList(publicationType)},
-		"pageInfo": &graphql.Field{Type: pageInfoType},
-	},
-})
-
-var affiliationListType = graphql.NewObject(graphql.ObjectConfig{
-	Name: "AffiliationList",
-	Fields: graphql.Fields{
-		"results":  &graphql.Field{Type: graphql.NewList(grantType)},
-		"pageInfo": &graphql.Field{Type: pageInfoType},
-	},
-})
-
-var educationListType = graphql.NewObject(graphql.ObjectConfig{
-	Name: "EducationList",
-	Fields: graphql.Fields{
-		"results":  &graphql.Field{Type: graphql.NewList(grantType)},
 		"pageInfo": &graphql.Field{Type: pageInfoType},
 	},
 })
