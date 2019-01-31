@@ -694,6 +694,12 @@ func main() {
 		viper.SetConfigName("config")
 		viper.SetConfigType("toml")
 		viper.AddConfigPath(".")
+
+		value, exists := os.LookupEnv("CONFIG_PATH")
+		if exists {
+			viper.AddConfigPath(value)
+		}
+
 		viper.ReadInConfig()
 	} else {
 		replacer := strings.NewReplacer(".", "_")

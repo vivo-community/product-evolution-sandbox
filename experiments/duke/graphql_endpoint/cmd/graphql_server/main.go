@@ -21,11 +21,18 @@ func main() {
 	viper.SetDefault("elastic.url", "http://localhost:9200")
 	viper.SetDefault("graphql.port", "9001")
 
+	// way to add more paths ??
 	if os.Getenv("ENVIRONMENT") == "development" {
 		viper.SetConfigName("config")
 		viper.SetConfigType("toml")
 		viper.AddConfigPath(".")
+        
+		value, exists := os.LookupEnv("CONFIG_PATH")
+		if (exists) {
+			viper.AddConfigPath(value)
+		}
 		viper.ReadInConfig()
+
 	} else {
 		replacer := strings.NewReplacer(".", "_")
 		viper.SetEnvKeyReplacer(replacer)

@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io"
 	"github.com/OIT-ads-web/widgets_import"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/jmoiron/sqlx"
@@ -14,6 +13,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -800,6 +800,12 @@ func main() {
 		viper.SetConfigName("config")
 		viper.SetConfigType("toml")
 		viper.AddConfigPath(".")
+
+		value, exists := os.LookupEnv("CONFIG_PATH")
+		if exists {
+			viper.AddConfigPath(value)
+		}
+
 		viper.ReadInConfig()
 	} else {
 		replacer := strings.NewReplacer(".", "_")

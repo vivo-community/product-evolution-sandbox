@@ -151,6 +151,8 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 		"overviewList":  &graphql.Field{Type: graphql.NewList(overviewType)},
 		"keywordList":   &graphql.Field{Type: graphql.NewList(keywordType)},
 		"extensionList": &graphql.Field{Type: graphql.NewList(extensionType)},
+		"affliationList": &graphql.Field{Type: graphql.NewList(affiliationType)},
+		"educationList": &graphql.Field{Type: graphql.NewList(educationType)},
 		// these can be paged, since they involve further queries
 		"publicationList": &graphql.Field{
 			Type: publicationListType,
@@ -160,8 +162,6 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 			},
 			Resolve: personPublicationResolver,
 		},
-		"affliationList": &graphql.Field{Type: graphql.NewList(affiliationType)},
-		"educationList": &graphql.Field{Type: graphql.NewList(educationType)},
 		"grantList": &graphql.Field{
 			Type: grantListType,
 			Args: graphql.FieldConfigArgument{

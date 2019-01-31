@@ -68,13 +68,27 @@ Import data from `resources` table into elastic index
 **NOTE**: to reset data, run the same commands with the `-remove` flag set e.g.:
 
 > cmd/elastic_import/elastic_import -remove=true -type all
-
-
-If you leave off the -config option it will default to ./config.toml
-
-
 > cmd/elastic_import/elastic_import -type=people -remove=true
 
+
+### Config
+
+If you have `export ENVIRONMENT=development` it will look for a config.toml file
+in the current directory.  You can also set another path to find the file 
+with `export CONFIG_PATH=<some_dir>`
+
+If not development, it will look for ENVIRONMENT variables e.g.:
+
+```bash
+
+export DATABASE_SERVER="localhost"
+export DATABASE_PORT="5432"
+export DATABASE_DATABASE="vivo_data"
+export DATABASE_USER="vivo_data"
+export DATABASE_PASSWORD="vivo_data"
+export ELASTIC_URL="http://localhost:9200"
+
+```
 
 ### Elastic caveats
 
@@ -171,56 +185,54 @@ to bring in data however it is easiest for you in the following elastic mappings
 				"thumbnail": { "type": "text" }
 			}
 		},
-	    "keywordList": {
-	      "type": "nested",
-	      "properties": {
+	        "keywordList": {
+	          "type": "nested",
+	          "properties": {
 		      "uri":   { "type": "text" },
 		      "label": { "type": "text" }
-	      }
-	    }
-    }
-}
-```
-
-### affiliations (positions)
-
-```json
-"affiliation":{
-	"properties":{
-		"id":        { "type": "text" },
-		"uri":       { "type": "text" },
-		"personId":  { "type": "text" },
-		"label":     { "type": "text" },
-		"startDate": {
-			"type": "object",
-			"properties": {
-				"dateTime":   { "type": "text" },
-				"resolution": { "type": "text" }
-			}
+	          }
 		},
-		"organizationId":    { "type": "text" },
-		"organizationLabel": { "type": "text" }
-    }
-}
-```
-
-### educations
-
-```json
-"education":{
-	"properties":{
-		"id":        { "type": "text" },
-		"uri":       { "type": "text" },
-		"label":     { "type": "text" },
-		"personId":  { "type": "text" },
-		"org":     {
-			"type": "object",
+		"affiliationList": {
+			"type": "nested",
+		        "properties":{
+		          "id":        { "type": "text" },
+		          "uri":       { "type": "text" },
+		          "label":     { "type": "text" },
+		          "startDate": {
+			      "type": "object",
+			      "properties": {
+				    "dateTime":   { "type": "text" },
+				    "resolution": { "type": "text" }
+			      }
+		          },
+		          "organizationId":    { "type": "text" },
+		          "organizationLabel": { "type": "text" } 
+                     }
+		},
+		"educationList": {
+			"type": "nested",
+	                "properties":{
+		          "id":        { "type": "text" },
+		          "uri":       { "type": "text" },
+		          "label":     { "type": "text" },
+		          "personId":  { "type": "text" },
+		          "org":     { 
+			        "type": "object",
+			        "properties": {
+				      "id": { "type": "text" },
+				      "label": { "type": "text" }
+			        }
+		        }
+	            }
+		},
+		"extensions": {
+			"type": "nested",
 			"properties": {
-				"id": { "type": "text" },
-				"label": { "type": "text" }
-			}
+				"key":   { "type": "text" },
+				"value": { "type": "text" }
+			}			
 		}
-	}
+    }
 }
 ```
 
