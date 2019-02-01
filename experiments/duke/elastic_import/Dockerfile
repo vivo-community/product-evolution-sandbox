@@ -6,7 +6,7 @@ RUN mkdir /app
 
 ADD . /app/
 
-WORKDIR /app/
+WORKDIR /app/experiments/duke/elastic_import
 
 RUN ./build.sh
 
