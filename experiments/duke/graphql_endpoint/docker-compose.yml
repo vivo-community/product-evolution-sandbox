@@ -1,26 +1,25 @@
-# version: "3"
+# FIXME: this starst elastic and postgres - but does not
+# deal with running the go importer code
 version: "2"
 services:
-  graphql:
-    build: .
+  gographql:
+    image: golang:1.11.1
     working_dir: /app
-    container_name: pe_graphql
     ports:
-      - "4000:4000"
-    command: >
-        bash -c "mix do deps.get, phx.server"
+      - "9001:9001"
     volumes:
       - .:/app
-      - appbuild:/app/_build
-      - appdeps:/app/deps
+      - $GOPATH/pkg/mod:/go/pkg/mod
+    environment:
+      - GOPATH=/go
     networks:
       - elasticsearch_network
-
-volumes:
-  appbuild: {}
-  appdeps: {}
+    command: >
+        bash -c "./build.sh
+        && ./cmd/graphql_server/graphql_server"
 
 networks:
   elasticsearch_network:
     external:
       name: elastic_import_es_network
+

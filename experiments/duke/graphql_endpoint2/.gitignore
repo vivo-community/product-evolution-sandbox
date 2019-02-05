@@ -1,5 +1,0 @@
-.tool-versions
-.envrc
-*.toml
-cmd/elastic_query/elastic_query
-cmd/graphql_server/graphql_server

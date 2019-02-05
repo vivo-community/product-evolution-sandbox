@@ -7,6 +7,11 @@ services:
     container_name: pe_elasticsearch
     environment:
       - discovery.type=single-node
+      - xpack.security.enabled=false
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - http.cors.allow-headers=Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With
+      - http.cors.allow-credentials=true
     volumes:
       - esdata:/usr/share/elasticsearch/data
     ports:

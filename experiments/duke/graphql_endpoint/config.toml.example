@@ -1,0 +1,5 @@
+[elastic]
+url = "http://localhost:9200"
+
+[graphql]
+port = 9001
