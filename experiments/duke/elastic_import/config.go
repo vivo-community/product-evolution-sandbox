@@ -1,8 +1,9 @@
 package widgets_import
 
 type Config struct {
-	Database database      `toml:"database"`
-	Elastic  elasticSearch `toml:"elastic"`
+	Database  database      `toml:"database"`
+	Elastic   elasticSearch `toml:"elastic"`
+	Templates templatePaths `toml:"template"`
 }
 
 type elasticSearch struct {
@@ -15,4 +16,9 @@ type database struct {
 	Database string `toml:"database"`
 	User     string `toml:"user"`
 	Password string `toml:"password"`
+}
+
+type templatePaths struct {
+	Layout  string `toml:"layout"`
+	Include string `toml:"include"`
 }

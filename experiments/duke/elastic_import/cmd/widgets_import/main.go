@@ -80,7 +80,15 @@ type Publication struct {
 		PublishedIn      string `json:"publishedIn"`
 		AuthorshipType   string `json:"authorshipType"`
 		AuthorList       string `json:"authorList"`
+		Volume           string `json:"volume"`
+		Issue            string `json:"issue"`
+		StartPage        string `json:"startPage"`
+		Year             string `json:"year"`
+		Source           string `json:"publicationSource"`
+		Pmid             string `json:"pmid"`
 		Doi              string `json:"doi"`
+		Abstract         string `json:"abstract"`
+		Datetime         string `json:"datetime"`
 	} `json:"attributes"`
 }
 
@@ -132,21 +140,21 @@ type WidgetsPerson struct {
 	Uri        string `json:"uri"`
 	VivoType   string `json:"vivoType"`
 	Attributes struct {
-		FirstName              string  `json:"firstName"`
-		LastName               string  `json:"lastName"`
-		MiddleName             *string `json:"middleName"`
-		PreferredTitle         string  `json:"preferredTitle"`
-		PhoneNumber            string  `json:"phoneNumber"`
-		PrimaryEmail           string  `json:"primaryEmail"`
-		ProfileUrl             string  `json:"profileUrl"`
-		ImageUri               string  `json:"imageUri"`
-		ImageDownload          string  `json:"imageDownload"`
-		ImageThumbnailDownload string  `json:"imageThumbnailDownload"`
-		PrefixName             string  `json:"prefixName"`
-		ImageThumbnailUri      string  `json:"imageThumbnailUri"`
-		NetId                  string  `json:"netid"`
-		AlternateId            string  `json:"alternateId"`
-		Overview               string  `json:"overview"`
+		FirstName              string `json:"firstName"`
+		LastName               string `json:"lastName"`
+		MiddleName             string `json:"middleName"`
+		PreferredTitle         string `json:"preferredTitle"`
+		PhoneNumber            string `json:"phoneNumber"`
+		PrimaryEmail           string `json:"primaryEmail"`
+		ProfileUrl             string `json:"profileUrl"`
+		ImageUri               string `json:"imageUri"`
+		ImageDownload          string `json:"imageDownload"`
+		ImageThumbnailDownload string `json:"imageThumbnailDownload"`
+		PrefixName             string `json:"prefixName"`
+		ImageThumbnailUri      string `json:"imageThumbnailUri"`
+		NetId                  string `json:"netid"`
+		AlternateId            string `json:"alternateId"`
+		Overview               string `json:"overview"`
 	} `json:"attributes"`
 	Positions     []Position     `json:"positions"`
 	Educations    []Education    `json:"educations"`
@@ -294,7 +302,7 @@ func stashPerson(person WidgetsPerson) {
 	researchAreas := person.ResearchAreas
 	var keywords []widgets_import.PersonKeyword
 	for _, area := range researchAreas {
-		keyword := widgets_import.PersonKeyword{area.Uri, area.Label}
+		keyword := widgets_import.PersonKeyword{Uri: area.Uri, Label: area.Label}
 		keywords = append(keywords, keyword)
 	}
 
@@ -302,13 +310,13 @@ func stashPerson(person WidgetsPerson) {
 		person.Attributes.ImageThumbnailDownload}
 
 	// NOTE: this is kind of bogus
-	personType := widgets_import.PersonType{person.VivoType, person.VivoType}
-	personName := widgets_import.PersonName{person.Attributes.FirstName,
-		person.Attributes.LastName,
-		person.Attributes.MiddleName}
+	personType := widgets_import.Type{person.VivoType, person.VivoType}
+	personName := widgets_import.PersonName{FirstName: person.Attributes.FirstName,
+		LastName:   person.Attributes.LastName,
+		MiddleName: person.Attributes.MiddleName}
 
 	var overviews []widgets_import.PersonOverview
-	overviewType := widgets_import.OverviewType{"overview", "Overview"}
+	overviewType := widgets_import.Type{"overview", "Overview"}
 	overview := widgets_import.PersonOverview{person.Attributes.Overview,
 		overviewType}
 	// NOTE: just an array of one for now
@@ -321,16 +329,36 @@ func stashPerson(person WidgetsPerson) {
 	extensions = append(extensions, extension)
 
 	personId := makeIdFromUri(person.Uri)
-	obj := widgets_import.Person{personId,
-		person.Uri,
-		person.Attributes.AlternateId,
-		person.Attributes.PreferredTitle,
-		personName,
-		personImage,
-		personType,
-		overviews,
-		keywords,
-		extensions}
+
+	// this is kind of ridiculous as is, just to import phone, email and address(es)
+	phoneType := widgets_import.Type{Code: "Phone", Label: "Phone"}
+	emailType := widgets_import.Type{Code: "Email", Label: "Email"}
+	locationType := widgets_import.Type{Code: "Location", Label: "Location"}
+
+	var contacts []widgets_import.Contact
+	phone := widgets_import.Phone{Label: person.Attributes.PhoneNumber, Type: phoneType}
+	email := widgets_import.Email{Label: person.Attributes.PrimaryEmail, Type: emailType}
+	contacts = append(contacts, widgets_import.Contact{Phone: phone})
+	contacts = append(contacts, widgets_import.Contact{Email: email})
+	
+	for _, address := range person.Addresses {
+		// NOTE: this is very incomplete, supposed to have id
+		// also not sure why 'Location' model does not have street, zip etc...
+		location := widgets_import.Location{Label: address.Label, Type: locationType}
+		contacts = append(contacts, widgets_import.Contact{Location: location})  
+	}
+	
+	obj := widgets_import.Person{Id: personId,
+		Uri:          person.Uri,
+		SourceId:     person.Attributes.AlternateId,
+		PrimaryTitle: person.Attributes.PreferredTitle,
+		Name:         personName,
+		Image:        personImage,
+		Type:         personType,
+		OverviewList: overviews,
+		KeywordList:  keywords,
+		ContactList:  contacts,
+		Extensions:   extensions}
 
 	saveResource(obj, personId, "Person")
 }
@@ -349,23 +377,23 @@ func stashPositions(person WidgetsPerson) {
 		personId := makeIdFromUri(position.Attributes.PersonUri)
 		organizationId := makeIdFromUri(position.Attributes.OrganizationUri)
 
-		org := widgets_import.Organization{organizationId,
-			position.Attributes.OrganizationUri,
-			position.Attributes.OrganizationLabel}
+		org := widgets_import.Organization{Id: organizationId,
+			Uri:   position.Attributes.OrganizationUri,
+			Label: position.Attributes.OrganizationLabel}
 
 		positionId := makeIdFromUri(position.Uri)
-		obj := widgets_import.Affiliation{positionId,
-			position.Uri,
-			personId,
-			position.Label,
-			start,
-			org}
+		obj := widgets_import.Affiliation{Id: positionId,
+			Uri:          position.Uri,
+			PersonId:     personId,
+			Label:        position.Label,
+			StartDate:    start,
+			Organization: org}
 
 		saveResource(obj, positionId, "Position")
 
-		organization := widgets_import.Organization{organizationId,
-			position.Attributes.OrganizationUri,
-			position.Attributes.OrganizationLabel}
+		organization := widgets_import.Organization{Id: organizationId,
+			Uri:   position.Attributes.OrganizationUri,
+			Label: position.Attributes.OrganizationLabel}
 		if !resourceExists(organizationId, "Organization") {
 			addResource(organization, organizationId, "Organization")
 		}
@@ -385,16 +413,19 @@ func stashEducations(person WidgetsPerson) {
 
 		institutionId := makeIdFromUri(education.Attributes.OrganizationUri)
 		institutionUri := education.Attributes.OrganizationUri
-		institution := widgets_import.Institution{institutionId,
-			education.Attributes.OrganizationUri,
-			institutionUri}
+		// NOTE: institutions and organizations the same?
+		institution := widgets_import.Organization{Id: institutionId,
+			Uri:   education.Attributes.OrganizationUri,
+			Label: institutionUri}
 
 		educationId := makeIdFromUri(education.Uri)
-		obj := widgets_import.Education{educationId,
-			education.Uri,
-			education.Label,
-			personId,
-			institution}
+		obj := widgets_import.Education{Id: educationId,
+			Uri: education.Uri,
+			// NOTE: these should be different
+			Credential:             education.Label,
+			CredentialAbbreviation: education.Label,
+			PersonId:               personId,
+			Organization:           institution}
 
 		saveResource(obj, educationId, "Education")
 
@@ -435,21 +466,20 @@ func stashGrants(person WidgetsPerson) {
 
 		// NOTE: this is an approximation of real function, uri is fake
 		uri := fundingRole.makeUri()
-		rel := widgets_import.FundingRole{fundingRoleId,
-			uri,
-			grantId,
-			personId,
-			grant.Attributes.RoleName}
+		rel := widgets_import.FundingRole{Id: fundingRoleId,
+			Uri:      uri,
+			GrantId:  grantId,
+			PersonId: personId,
+			Label:    grant.Attributes.RoleName}
 		saveResource(rel, fundingRoleId, "FundingRole")
 
 		//pi := makeIdFromUri(grant.Attributes.PrincipalInvestigatorUri)
 		start, end := makeGrantDates(grant)
-		obj := widgets_import.Grant{grantId,
-			grant.Uri,
-			grant.Label,
-			/*pi ,*/
-			start,
-			end}
+		obj := widgets_import.Grant{Id: grantId,
+			Uri:       grant.Uri,
+			Label:     grant.Label,
+			StartDate: start,
+			EndDate:   end}
 		if !resourceExists(grantId, "Grant") {
 			addResource(obj, grantId, "Grant")
 		}
@@ -479,23 +509,29 @@ func stashPublications(person WidgetsPerson) {
 		authorship := Authorship{publicationId, personId}
 
 		uri := authorship.makeUri()
-		rel := widgets_import.Authorship{authorshipId,
-			uri,
-			publicationId,
-			personId,
-			publication.Attributes.AuthorshipType}
+		rel := widgets_import.Authorship{Id: authorshipId,
+			Uri:           uri,
+			PublicationId: publicationId,
+			PersonId:      personId,
+			// FIXME: should maybe be 'Type'
+			Label: publication.Attributes.AuthorshipType}
 		saveResource(rel, authorshipId, "Authorship")
 
 		venue := widgets_import.PublicationVenue{
-			publication.Attributes.PublicationVenue,
-			publication.Attributes.PublishedIn}
+			Uri:   publication.Attributes.PublicationVenue,
+			Label: publication.Attributes.PublishedIn}
 
-		obj := widgets_import.Publication{publicationId,
-			publication.Uri,
-			publication.Label,
-			publication.Attributes.AuthorList,
-			publication.Attributes.Doi,
-			venue}
+		identifier := widgets_import.PublicationIdentifier{Doi: publication.Attributes.Doi}
+		obj := widgets_import.Publication{Id: publicationId,
+			Uri:         publication.Uri,
+			Title:       publication.Label,
+			Abstract:    publication.Attributes.Abstract,
+			DateDisplay: publication.Attributes.Datetime,
+			Issue:       publication.Attributes.Issue,
+			PageStart:   publication.Attributes.StartPage,
+			AuthorList:  publication.Attributes.AuthorList,
+			Identifier:  identifier,
+			Venue:       venue}
 		if !resourceExists(publicationId, "Publication") {
 			addResource(obj, publicationId, "Publication")
 		}
