@@ -1,6 +1,11 @@
 package graphql_endpoint
 
 // these are elastic json models
+type Type struct {
+	Code  string `json:"code"`
+	Label string `json:"label"`
+}
+
 type PersonKeyword struct {
 	Uri   string `json:"uri"`
 	Label string `json:"label"`
@@ -12,14 +17,16 @@ type PersonImage struct {
 }
 
 type PersonName struct {
-	FirstName  string  `json:"firstName"`
-	LastName   string  `json:"lastName"`
-	MiddleName *string `json:"middleName"`
+	FirstName  string `json:"firstName"`
+	LastName   string `json:"lastName"`
+	MiddleName string `json:"middleName"`
+	Suffix     string `json:"suffix"`
+	Prefix     string `json:"prefix"`
 }
 
-type PersonType struct {
-	Code  string `json:"code"`
-	Label string `json:"label"`
+type PersonIdentifier struct {
+	Orcid string `json:"orchid"`
+	Isni  string `json:"isni"`
 }
 
 type OverviewType struct {
@@ -32,24 +39,84 @@ type PersonOverview struct {
 	Type  OverviewType `json:"type"`
 }
 
+type ServiceRole struct {
+	Id           string         `json:"id"`
+	SourceId     string         `json:"sourceId"`
+	Uri          string         `json:"uri"`
+	Label        string         `json:"label"`
+	Description  string         `json:"description"`
+	StartDate    DateResolution `json:"startDate" elastic:"type:object"`
+	EndDate      DateResolution `json:"endDate" elastic:"type:object"`
+	Organization Organization   `json:"organization" elastic:"type:object"`
+	Type         Type           `json:"type" elastic:"type:object"`
+	PersonId     string         `json:"personId"`
+}
+
+type Email struct {
+	Label string `json:"label"`
+	Type  Type   `json:"type" elastic:"type:object"`
+}
+
+type Phone struct {
+	Label string `json:"label"`
+	Type  Type   `json:"type" elastic:"type:object"`
+}
+
+type Location struct {
+	Label string `json:"label"`
+	Type  Type   `json:"type" elastic:"type:object"`
+}
+
+type Website struct {
+	Label string `json:"label"`
+	Url   string `json:"url"`
+	Type  Type   `json:"type" elastic:"type:object"`
+}
+
+type Contact struct {
+	Id       string   `json:"id"`
+	Uri      string   `json:"uri"`
+	Email    Email    `json:"email" elastic:"type:object"`
+	Phone    Phone    `json:"phone" elastic:"type:object"`
+	Location Location `json:"location" elastic:"type:object"`
+	Website  Website  `json:"website" elastic:"type:object"`
+}
+
+type CourseTaught struct {
+	Id           string         `json:"id"`
+	SourceId     string         `json:"sourceId"`
+	Uri          string         `json:"uri"`
+	Subject      string         `json:"subject"`
+	Role         string         `json:"role"`
+	CourseName   string         `json:"courseName" elastic:"type:object"`
+	CourseNumber string         `json":courseNumber" elastic:"type:object"`
+	StartDate    DateResolution `json:"startDate" elastic:"type:object"`
+	EndDate      DateResolution `json:"endDate" elastic:"type:object"`
+	Organization Organization   `json:"organization" elastic:"type:object"`
+}
+
 type Extension struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
 }
 
 type Person struct {
-	Id             string           `json:"id"`
-	Uri            string           `json:"uri"`
-	SourceId       string           `json:"sourceId"`
-	PrimaryTitle   string           `json:"primaryTitle"`
-	Name           PersonName       `json:"name" elastic:"type:object"`
-	Image          PersonImage      `json:"image" elastic:"type:object"`
-	Type           PersonType       `json:"type" elastic:"type:object"`
-	OverviewList   []PersonOverview `json:"overviewList" elastic:"type:nested"`
-	KeywordList    []PersonKeyword  `json:"keywordList" elastic:"type:nested"`
-	Extensions     []Extension      `json:"extensions" elastic:"type:nested"`
-	EducationList  []Education      `json:"educationList" elastic:"type:nested"`
-	AffliationList []Affiliation    `json:"affiliationList" elastic:"type:nested"`
+	Id               string           `json:"id"`
+	Uri              string           `json:"uri"`
+	SourceId         string           `json:"sourceId"`
+	PrimaryTitle     string           `json:"primaryTitle"`
+	Name             PersonName       `json:"name" elastic:"type:object"`
+	Image            PersonImage      `json:"image" elastic:"type:object"`
+	Type             Type             `json:"type" elastic:"type:object"`
+	Identifier       PersonIdentifier `json:"identifier" elastic:"type:object"`
+	OverviewList     []PersonOverview `json:"overviewList" elastic:"type:nested"`
+	KeywordList      []PersonKeyword  `json:"keywordList" elastic:"type:nested"`
+	ServiceRoleList  []ServiceRole    `json:"serviceRoleList" elastic:"type:nested"`
+	ContactList      []Contact        `json:"contactList" elastic:"type:nested"`
+	CourseTaughtList []CourseTaught   `json:"courseTaughtList" elastic:"type:nested"`
+	Extensions       []Extension      `json:"extensions" elastic:"type:nested"`
+	EducationList    []Education      `json:"educationList" elastic:"type:nested"`
+	AffliationList   []Affiliation    `json:"affiliationList" elastic:"type:nested"`
 }
 
 type DateResolution struct {
@@ -58,12 +125,6 @@ type DateResolution struct {
 }
 
 type Organization struct {
-	Id    string `json:"id"`
-	Uri   string `json:"uri"`
-	Label string `json:"label"`
-}
-
-type Institution struct {
 	Id    string `json:"id"`
 	Uri   string `json:"uri"`
 	Label string `json:"label"`
@@ -79,11 +140,11 @@ type Affiliation struct {
 }
 
 type Education struct {
-	Id          string      `json:"id"`
-	Uri         string      `json:"Uri"`
-	Label       string      `json:"label"`
-	PersonId    string      `json:"personId"`
-	Institution Institution `json:"org" elastic:"type:object"`
+	Id           string       `json:"id"`
+	Uri          string       `json:"Uri"`
+	Label        string       `json:"label"`
+	PersonId     string       `json:"personId"`
+	Organization Organization `json:"organization" elastic:"type:object"`
 }
 
 type FundingRole struct {
@@ -115,14 +176,38 @@ type PublicationVenue struct {
 	Label string `json:"label"`
 }
 
+type PublicationIdentifier struct {
+	Isbn10 string `json:"isbn10"`
+	Isbn13 string `json:"isbn13"`
+	Pmid   string `json:"pmid"`
+	Doi    string `json:"doi"`
+	Pmcid  string `json:"pmcid"`
+}
+
+type PublicationKeyword struct {
+	Label  string `json:"label"`
+	Source string `json:"source"`
+}
+
 type Publication struct {
-	Id    string `json:"id"`
-	Uri   string `json:"uri"`
-	Label string `json:"label"`
+	Id       string `json:"id"`
+	SourceId string `json:"sourceId"`
+	Uri      string `json:"uri"`
+	Label    string `json:"label"`
 	// NOTE: this is supposed to be an array
-	AuthorList string           `json:"authorList"`
-	Doi        string           `json:"doi"`
-	Venue      PublicationVenue `json:"venue"`
+	AuthorList       string                `json:"authorList"`
+	Venue            PublicationVenue      `json:"venue"`
+	Identifier       PublicationIdentifier `json:"identifier"`
+	DateStandardized DateResolution        `json:"dateStandardized"`
+	DateDisplay      string                `json:"dateDisplay"`
+	Type             Type                  `json:"type"`
+	Abstract         string                `json:"abstract"`
+	PageRange        string                `json:"pageRange"`
+	PageStart        string                `json:"pageStart"`
+	PageEnd          string                `json:"pageEnd"`
+	Volume           string                `json:"volume"`
+	Issue            string                `json:"issue"`
+	KeywordList      []PublicationKeyword  `json:"keywordList" elastic:"type:nested"`
 }
 
 // these are graphql only json models
@@ -147,4 +232,3 @@ type GrantList struct {
 	Results  []Grant  `json:"data"`
 	PageInfo PageInfo `json:"pageInfo"`
 }
-

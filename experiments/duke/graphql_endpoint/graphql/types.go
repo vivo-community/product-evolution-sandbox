@@ -91,11 +91,69 @@ var personImageType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-var personTypeType = graphql.NewObject(graphql.ObjectConfig{
-	Name: "PersonType",
+var typeType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Type",
 	Fields: graphql.Fields{
 		"code":  &graphql.Field{Type: graphql.String},
 		"label": &graphql.Field{Type: graphql.String},
+	},
+})
+
+var personIdentifierType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "PersonIdentifier",
+	Fields: graphql.Fields{
+		"orchid": &graphql.Field{Type: graphql.String},
+		"isni":   &graphql.Field{Type: graphql.String},
+	},
+})
+
+var serviceRoleType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "ServiceRole",
+	Fields: graphql.Fields{
+		"uri":          &graphql.Field{Type: graphql.String},
+		"label":        &graphql.Field{Type: graphql.String},
+		"description":  &graphql.Field{Type: graphql.String},
+		"startDate":    &graphql.Field{Type: dateResolutionType},
+		"endDate":      &graphql.Field{Type: dateResolutionType},
+		"organization": &graphql.Field{Type: organizationType},
+		"type":         &graphql.Field{Type: typeType},
+	},
+})
+
+var contactType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Contact",
+	Fields: graphql.Fields{
+		"uri":      &graphql.Field{Type: graphql.String},
+		"email":    &graphql.Field{Type: graphql.String},
+		"phone":    &graphql.Field{Type: graphql.String},
+		"location": &graphql.Field{Type: graphql.String},
+		"website":  &graphql.Field{Type: graphql.String},
+	},
+})
+
+var courseTaughtType = graphql.NewObject(graphql.ObjectConfig{
+	Name:   "CourseTaught",
+	Fields: graphql.Fields{
+		"uri":      &graphql.Field{Type: graphql.String},
+		"subject":      &graphql.Field{Type: graphql.String},
+		"role":      &graphql.Field{Type: graphql.String},
+		"courseName":      &graphql.Field{Type: graphql.String},
+		"courseNumber":      &graphql.Field{Type: graphql.String},
+		"startDate":    &graphql.Field{Type: dateResolutionType},
+		"endDate":      &graphql.Field{Type: dateResolutionType},
+		"organization": &graphql.Field{Type: organizationType},
+		"type":         &graphql.Field{Type: typeType},
+	},
+})
+
+var publicationIdentifierType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "PublicationIdentifier",
+	Fields: graphql.Fields{
+		"isbn10": &graphql.Field{Type: graphql.String},
+		"isbn13": &graphql.Field{Type: graphql.String},
+		"pmid":   &graphql.Field{Type: graphql.String},
+		"doi":    &graphql.Field{Type: graphql.String},
+		"pmcid":  &graphql.Field{Type: graphql.String},
 	},
 })
 
@@ -113,8 +171,9 @@ var publicationType = graphql.NewObject(graphql.ObjectConfig{
 		"id":         &graphql.Field{Type: graphql.String},
 		"uri":        &graphql.Field{Type: graphql.String},
 		"label":      &graphql.Field{Type: graphql.String},
+		"identifier": &graphql.Field{Type: publicationIdentifierType},
+		"type":       &graphql.Field{Type: typeType},
 		"authorList": &graphql.Field{Type: graphql.String},
-		"doi":        &graphql.Field{Type: graphql.String},
 		"venue":      &graphql.Field{Type: publicationVenueType},
 	},
 })
@@ -141,18 +200,22 @@ var authorshipType = graphql.NewObject(graphql.ObjectConfig{
 var personType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Person",
 	Fields: graphql.Fields{
-		"uri":           &graphql.Field{Type: graphql.String},
-		"id":            &graphql.Field{Type: graphql.String},
-		"sourceId":      &graphql.Field{Type: graphql.String},
-		"primaryTitle":  &graphql.Field{Type: graphql.String},
-		"name":          &graphql.Field{Type: personNameType},
-		"image":         &graphql.Field{Type: personImageType},
-		"type":          &graphql.Field{Type: personTypeType},
-		"overviewList":  &graphql.Field{Type: graphql.NewList(overviewType)},
-		"keywordList":   &graphql.Field{Type: graphql.NewList(keywordType)},
-		"extensionList": &graphql.Field{Type: graphql.NewList(extensionType)},
-		"affliationList": &graphql.Field{Type: graphql.NewList(affiliationType)},
-		"educationList": &graphql.Field{Type: graphql.NewList(educationType)},
+		"uri":              &graphql.Field{Type: graphql.String},
+		"id":               &graphql.Field{Type: graphql.String},
+		"sourceId":         &graphql.Field{Type: graphql.String},
+		"primaryTitle":     &graphql.Field{Type: graphql.String},
+		"name":             &graphql.Field{Type: personNameType},
+		"image":            &graphql.Field{Type: personImageType},
+		"identifier":       &graphql.Field{Type: personIdentifierType},
+		"type":             &graphql.Field{Type: typeType},
+		"overviewList":     &graphql.Field{Type: graphql.NewList(overviewType)},
+		"keywordList":      &graphql.Field{Type: graphql.NewList(keywordType)},
+		"extensionList":    &graphql.Field{Type: graphql.NewList(extensionType)},
+		"affliationList":   &graphql.Field{Type: graphql.NewList(affiliationType)},
+		"educationList":    &graphql.Field{Type: graphql.NewList(educationType)},
+		"serviceRoleList":  &graphql.Field{Type: graphql.NewList(serviceRoleType)},
+		//"contactList":      &graphql.Field{Type: graphql.NewList(contactType)},
+		"courseTaughtList": &graphql.Field{Type: graphql.NewList(courseTaughtType)},
 		// these can be paged, since they involve further queries
 		"publicationList": &graphql.Field{
 			Type: publicationListType,
@@ -196,4 +259,3 @@ var publicationListType = graphql.NewObject(graphql.ObjectConfig{
 		"pageInfo": &graphql.Field{Type: pageInfoType},
 	},
 })
-
