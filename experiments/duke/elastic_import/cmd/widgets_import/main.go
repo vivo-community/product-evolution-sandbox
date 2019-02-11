@@ -331,10 +331,12 @@ func stashPerson(person WidgetsPerson) {
 	personId := makeIdFromUri(person.Uri)
 
 	// this is kind of ridiculous as is, just to import phone, email and address(es)
+	/*
 	phoneType := widgets_import.Type{Code: "Phone", Label: "Phone"}
 	emailType := widgets_import.Type{Code: "Email", Label: "Email"}
 	locationType := widgets_import.Type{Code: "Location", Label: "Location"}
 
+	
 	var contacts []widgets_import.Contact
 	phone := widgets_import.Phone{Label: person.Attributes.PhoneNumber, Type: phoneType}
 	email := widgets_import.Email{Label: person.Attributes.PrimaryEmail, Type: emailType}
@@ -347,7 +349,7 @@ func stashPerson(person WidgetsPerson) {
 		location := widgets_import.Location{Label: address.Label, Type: locationType}
 		contacts = append(contacts, widgets_import.Contact{Location: location})  
 	}
-	
+	*/
 	obj := widgets_import.Person{Id: personId,
 		Uri:          person.Uri,
 		SourceId:     person.Attributes.AlternateId,
@@ -357,7 +359,7 @@ func stashPerson(person WidgetsPerson) {
 		Type:         personType,
 		OverviewList: overviews,
 		KeywordList:  keywords,
-		ContactList:  contacts,
+		//ContactList:  contacts,
 		Extensions:   extensions}
 
 	saveResource(obj, personId, "Person")
