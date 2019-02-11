@@ -1,11 +1,13 @@
 package elastic
 
 import (
+	"fmt"
 	wi "github.com/OIT-ads-web/widgets_import"
 )
 
 
 func PersonMapping() string {
+	fmt.Println("trying to show PersonMapping")
 	return wi.RenderTemplate("person.tmpl")
 }
 
@@ -14,18 +16,18 @@ func AffiliationMapping() string {
 }
 
 func FundingRoleMapping() string {
-	return wi.RenderTemplate("funding-role")
+	return wi.RenderTemplate("funding-role.tmpl")
 }
 
 func PublicationMapping() string {
-	return wi.RenderTemplate("publication")
+	return wi.RenderTemplate("publication.tmpl")
 }
 
 func AuthorshipMapping() string {
-	return wi.RenderTemplate("authorship")
+	return wi.RenderTemplate("authorship.tmpl")
 }
 
 func GrantMapping() string {
-	return wi.RenderTemplate("grant")
+	return wi.RenderTemplate("grant.tmpl")
 }
 

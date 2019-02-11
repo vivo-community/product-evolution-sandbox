@@ -2,6 +2,7 @@
 "grant":{
 	"properties":{
 		"id":        { "type": "text" },
+                "sourceId":  { "type": "text" },
 		"uri":       { "type": "text" },
 		"label":     { "type": "text" },
 		"startDate": {
@@ -17,7 +18,8 @@
 				"dateTime":   { "type": "text" },
 				"resolution": { "type": "text" }
 			}
-		}
+		},
+                "externalId": { "type": "text" }
 	}
 }
 {{ end }}

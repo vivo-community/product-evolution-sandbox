@@ -23,8 +23,15 @@ func preview(typeName string) {
 		//psql.ListPeople()
 		wi.Preview(elastic.PersonMapping())
 	case "affiliations":
-		psql.ListAffiliations()
+		//psql.ListAffiliations()
 		wi.Preview(elastic.AffiliationMapping())
+	case "publications":
+		//psql.ListPublications()
+		wi.Preview(elastic.PublicationMapping())
+	case "grants":
+		//psql.ListGrants()
+		wi.Preview(elastic.GrantMapping())
+
 	case "all":
 		psql.ListPeople()
 		psql.ListAffiliations()
@@ -35,10 +42,10 @@ func clearIndexes(typeName string) {
 	switch typeName {
 	case "people":
 		elastic.ClearPeopleIndex()
-	case "affiliations":
-		elastic.ClearAffiliationsIndex()
-	case "educations":
-		elastic.ClearEducationsIndex()
+	//case "affiliations":
+	//	elastic.ClearAffiliationsIndex()
+	//case "educations":
+	//	elastic.ClearEducationsIndex()
 	case "grants":
 		elastic.ClearGrantsIndex()
 		elastic.ClearFundingRolesIndex()
@@ -47,8 +54,8 @@ func clearIndexes(typeName string) {
 		elastic.ClearAuthorshipsIndex()
 	case "all":
 		elastic.ClearPeopleIndex()
-		elastic.ClearAffiliationsIndex()
-		elastic.ClearEducationsIndex()
+		//elastic.ClearAffiliationsIndex()
+		//elastic.ClearEducationsIndex()
 		elastic.ClearGrantsIndex()
 		elastic.ClearFundingRolesIndex()
 		elastic.ClearPublicationsIndex()

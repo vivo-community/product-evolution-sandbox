@@ -1,6 +1,7 @@
 package widgets_import
 
 import (
+	"fmt"
 	"github.com/oxtoacart/bpool"
 	"log"
 	"path/filepath"
@@ -60,6 +61,7 @@ func RenderTemplate(name string) string {
 
 	// TODO: this should be better, catch errors etc...
 	if !ok {
+		fmt.Printf("could not find template %s\n", name)
 		return "" //, errors.New("could not find templates")
 	}
 	buf := bufpool.Get()
@@ -68,6 +70,7 @@ func RenderTemplate(name string) string {
 	// TODO: bogus 'data' = "hello" - should do something else
 	err := tmpl.Execute(buf, "hello")
 	if err != nil {
+		fmt.Printf("error executing template %s\n", err)
 		return ""//, err
 	}
 	return buf.String() //, nil

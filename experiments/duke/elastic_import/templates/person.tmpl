@@ -35,63 +35,8 @@
 		        "label": { "type": "text" }
 	            }
 		},
-		"affiliationList": {
-		    "type": "nested",
-		    "properties":{
-		        "id":        { "type": "text" },
-				"sourceId":  { "type": "text" },
-		        "uri":       { "type": "text" },
-		        "label":     { "type": "text" },
-		        "startDate": {
-			      "type": "object",
-			      "properties": {
-				    "dateTime":   { "type": "text" },
-				    "resolution": { "type": "text" }
-			      }
-		        },
-	                "endDate": {
-		            "type": "object",
-		            "properties": {
-			            "dateTime":   { "type": "text" },
-			            "resolution": { "type": "text" }
-		            }
-	                },
-		        "organization":  { 
-		            "type": "object",
-			     "properties": {
-				      "id": { "type": "text" },
-				      "label": { "type": "text" }
-			      }
-		        },
-		        "personId":  { "type": "text" }
-                     }
-		},
-		"educationList": {
-		    "type": "nested",
-	            "properties":{
-		        "id":        { "type": "text" },
-			"sourceId":  { "type": "text" },
-		        "uri":       { "type": "text" },
-	                "credential": { "type": "text" },
-	                "credentialAbbreviation": { "type": "text" },
-	                "field": { "type": "text" },
-		        "organization": { 
-			    "type": "object",
-			    "properties": {
-				      "id": { "type": "text" },
-				      "label": { "type": "text" }
-			    }
-		         },
-	                 "dateReceived": {
-		            "type": "object",
-		            "properties": {
-			            "dateTime":   { "type": "text" },
-			            "resolution": { "type": "text" }
-		             }
-	                },
-		        "personId":  { "type": "text" }
-	            }
-		},
+                {{ template "person_educations" }},
+                {{ template "person_affiliations" }},
 		"extensions": {
 			"type": "nested",
 			"properties": {
