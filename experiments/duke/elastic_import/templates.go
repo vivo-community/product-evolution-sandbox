@@ -49,10 +49,10 @@ func LoadTemplates(conf Config) {
 		templates[fileName] = template.Must(templates[fileName].ParseFiles(files...))
      }
 
-	log.Println("templates loading successful")
+	log.Println("elastic mapping templates loading successful")
 
 	bufpool = bpool.NewBufferPool(64)
-	log.Println("buffer allocation successful")
+	//log.Println("buffer allocation successful")
 }
 
 func RenderTemplate(name string) string {

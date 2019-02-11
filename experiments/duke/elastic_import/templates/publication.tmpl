@@ -22,13 +22,7 @@
 		"pageEnd":    { "type": "text" },
 		"volume":     { "type": "text" },
 		"issue":      { "type": "text" },
-		"type": {
-		  "type": "object",
-		  "properties": {
-			  "code": { "type": "text"},
-			  "label": { "type": "text" }
-		  }
-	        },
+                {{ template "type.tmpl" }},
 		"dateStandardized": {
 			"type": "object",
 			"properties": {

@@ -523,7 +523,7 @@ publication.keyword.identifier
 */
 type Publication struct {
 	Id         string                `json:"id"`
-	SourceId   string                `json":sourceId"`
+	SourceId   string                `json:"sourceId"`
 	Uri        string                `json:"uri"`
 	Title      string                `json:"title"`
 	Identifier PublicationIdentifier `json:"identifier" elastic:"type:object"`
