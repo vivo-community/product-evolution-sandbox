@@ -392,8 +392,10 @@ func stashPerson(person WidgetsPerson) {
 
 	var courses []widgets_import.CourseTaught
 	for _, course := range person.Courses {
-		// NOTE: not a correct match
-		c := widgets_import.CourseTaught{Uri: course.Uri,
+		// NOTE: not a correct match 
+		id := makeIdFromUri(course.Uri)
+		c := widgets_import.CourseTaught{Id: id,
+		    Uri: course.Uri,
 			Subject: course.Label,
 			Role:    course.Attributes.RoleName}
 		courses = append(courses, c)
