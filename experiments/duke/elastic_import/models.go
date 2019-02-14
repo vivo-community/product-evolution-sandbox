@@ -224,7 +224,7 @@ type CourseTaught struct {
 	Subject      string         `json:"subject"`
 	Role         string         `json:"role"`
 	CourseName   string         `json:"courseName" elastic:"type:object"`
-	CourseNumber string         `json":courseNumber" elastic:"type:object"`
+	CourseNumber string         `json:"courseNumber" elastic:"type:object"`
 	StartDate    DateResolution `json:"startDate" elastic:"type:object"`
 	EndDate      DateResolution `json:"endDate" elastic:"type:object"`
 	Organization Organization   `json:"organization" elastic:"type:object"`

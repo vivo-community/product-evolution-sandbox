@@ -137,6 +137,40 @@ type Position struct {
 	} `json:"attributes"`
 }
 
+type ProfessionalActivity struct {
+	Uri        string `json:"uri"`
+	VivoType   string `json:"vivoType"`
+	Label      string `json:"label"`
+	Attributes struct {
+		ServiceType        string `json:"serviceType"`
+		ServiceOrEventName string `json:"serviceOrEventName"`
+		Role               string `json:"role"`
+		GeoFocus           string `json:"geoFocus"`
+	} `json:"attributes"`
+}
+
+type Award struct {
+	Uri        string `json:"uri"`
+	VivoType   string `json:"vivoType"`
+	Label      string `json:"label"`
+	Attributes struct {
+		ServiceType  string `json:"serviceType"`
+		Name         string `json:"name"`
+		AwardedBy    string `json:"awardedBy"`
+		AwardedByUri string `json:"awardedByUri"`
+	} `json:"attributes"`
+}
+
+type Course struct {
+	Uri        string `json:"uri"`
+	VivoType   string `json:"vivoType"`
+	Label      string `json:"label"`
+	Attributes struct {
+		Role     string `json:"role"`
+		RoleName string `json:"roleName"`
+	} `json:"attributes"`
+}
+
 type WidgetsPerson struct {
 	Uri        string `json:"uri"`
 	VivoType   string `json:"vivoType"`
@@ -157,12 +191,15 @@ type WidgetsPerson struct {
 		AlternateId            string `json:"alternateId"`
 		Overview               string `json:"overview"`
 	} `json:"attributes"`
-	Positions     []Position     `json:"positions"`
-	Educations    []Education    `json:"educations"`
-	Publications  []Publication  `json:"publications"`
-	Addresses     []Address      `json:"addresses"`
-	ResearchAreas []ResearchArea `json:"researchAreas"`
-	Grants        []Grant        `json:"grants"`
+	Positions              []Position             `json:"positions"`
+	Educations             []Education            `json:"educations"`
+	Publications           []Publication          `json:"publications"`
+	Addresses              []Address              `json:"addresses"`
+	ResearchAreas          []ResearchArea         `json:"researchAreas"`
+	Grants                 []Grant                `json:"grants"`
+	ProfessionalActivities []ProfessionalActivity `json:"professionalActivities"`
+	Courses                []Course               `json:"courses"`
+	Awards                 []Award                `json:"awards"`
 }
 
 // ********* end widgets structs
@@ -353,17 +390,26 @@ func stashPerson(person WidgetsPerson) {
 	contact := widgets_import.Contact{LocationList: locations, EmailList: emails,
 		PhoneList: phones, WebsiteList: websites}
 
+	var courses []widgets_import.CourseTaught
+	for _, course := range person.Courses {
+		// NOTE: not a correct match
+		c := widgets_import.CourseTaught{Uri: course.Uri,
+			Subject: course.Label,
+			Role:    course.Attributes.RoleName}
+		courses = append(courses, c)
+	}
 	obj := widgets_import.Person{Id: personId,
-		Uri:          person.Uri,
-		SourceId:     person.Attributes.AlternateId,
-		PrimaryTitle: person.Attributes.PreferredTitle,
-		Name:         personName,
-		Image:        personImage,
-		Contact:      contact,
-		Type:         personType,
-		OverviewList: overviews,
-		KeywordList:  keywords,
-		Extensions:   extensions}
+		Uri:              person.Uri,
+		SourceId:         person.Attributes.AlternateId,
+		PrimaryTitle:     person.Attributes.PreferredTitle,
+		Name:             personName,
+		Image:            personImage,
+		Contact:          contact,
+		Type:             personType,
+		OverviewList:     overviews,
+		KeywordList:      keywords,
+		Extensions:       extensions,
+		CourseTaughtList: courses}
 
 	saveResource(obj, personId, "Person")
 }
