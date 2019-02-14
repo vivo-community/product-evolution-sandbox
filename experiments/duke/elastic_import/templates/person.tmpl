@@ -31,8 +31,13 @@
 	        "keywordList": {
 	            "type": "nested",
 	            "properties": {
-		        "uri":   { "type": "keyword" },
-		        "label": { "type": "keyword" }
+		        "uri":   { "type": "text" },
+		        "label": { 
+                            "type": "keyword",
+                            "fields": {
+                                "keyword": { "type": "keyword" }
+                             }
+                        }
 	            }
 		},
                 {{ template "person_educations" }},
