@@ -94,6 +94,7 @@ type Publication struct {
 
 type Address struct {
 	Uri        string `json:"uri"`
+	VivoType   string `json:"vivoType"`
 	Label      string `json:"label"`
 	Attributes struct {
 		City       string `json:"city"`
@@ -230,7 +231,7 @@ func resourceExists(uri string, typeName string) bool {
 	return exists
 }
 
-// only add
+// only add (presumed existence already checked)
 func addResource(obj interface{}, id string, typeName string) {
 	fmt.Printf(">ADD:%v\n", id)
 	db = GetConnection()
@@ -330,36 +331,38 @@ func stashPerson(person WidgetsPerson) {
 
 	personId := makeIdFromUri(person.Uri)
 
-	// this is kind of ridiculous as is, just to import phone, email and address(es)
-	/*
 	phoneType := widgets_import.Type{Code: "Phone", Label: "Phone"}
 	emailType := widgets_import.Type{Code: "Email", Label: "Email"}
-	locationType := widgets_import.Type{Code: "Location", Label: "Location"}
 
-	
-	var contacts []widgets_import.Contact
+	var phones []widgets_import.Phone
+	var emails []widgets_import.Email
+	var locations []widgets_import.Location
+	var websites []widgets_import.Website
+
 	phone := widgets_import.Phone{Label: person.Attributes.PhoneNumber, Type: phoneType}
 	email := widgets_import.Email{Label: person.Attributes.PrimaryEmail, Type: emailType}
-	contacts = append(contacts, widgets_import.Contact{Phone: phone})
-	contacts = append(contacts, widgets_import.Contact{Email: email})
-	
+
+	phones = append(phones, phone)
+	emails = append(emails, email)
+
 	for _, address := range person.Addresses {
-		// NOTE: this is very incomplete, supposed to have id
-		// also not sure why 'Location' model does not have street, zip etc...
+		locationType := widgets_import.Type{Code: address.VivoType, Label: address.VivoType}
 		location := widgets_import.Location{Label: address.Label, Type: locationType}
-		contacts = append(contacts, widgets_import.Contact{Location: location})  
+		locations = append(locations, location)
 	}
-	*/
+	contact := widgets_import.Contact{LocationList: locations, EmailList: emails,
+		PhoneList: phones, WebsiteList: websites}
+
 	obj := widgets_import.Person{Id: personId,
 		Uri:          person.Uri,
 		SourceId:     person.Attributes.AlternateId,
 		PrimaryTitle: person.Attributes.PreferredTitle,
 		Name:         personName,
 		Image:        personImage,
+		Contact:      contact,
 		Type:         personType,
 		OverviewList: overviews,
 		KeywordList:  keywords,
-		//ContactList:  contacts,
 		Extensions:   extensions}
 
 	saveResource(obj, personId, "Person")
@@ -858,7 +861,7 @@ func main() {
 
 	dryRun := flag.Bool("dry-run", false, "just examine widgets parsing")
 	typeName := flag.String("type", "people", "type of thing to import")
-	source := flag.String("source", "widgets", "source of data")
+	source := flag.String("source", "org", "source of data")
 	remove := flag.Bool("remove", false, "remove existing records")
 	org := flag.String("org", "org50000500", "which org id to import (defaults to CS)")
 
@@ -900,14 +903,12 @@ func main() {
 			uris = produceUrisFromRdfFile(rdfFile)
 		} else {
 			switch *source {
-			case "widgets":
+			// default
+			case "org":
 				uris = produceUrisFromWidgetsOrg(org)
 			case "vivo":
 				uris = produceUrisFromVivo()
-			default:
-				uris = produceUrisFromWidgetsOrg(org)
 			}
-			//uris = produceUrisFromWidgetsOrg(org)
 		}
 
 		widgets := processUris(uris)

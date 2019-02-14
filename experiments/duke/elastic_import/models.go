@@ -187,12 +187,12 @@ contact.website.type.code
 contact.website.type.label
 */
 type Contact struct {
-	Id       string   `json:"id"`
-	Uri      string   `json:"uri"`
-	Email    Email    `json:"email" elastic:"type:object"`
-	Phone    Phone    `json:"phone" elastic:"type:object"`
-	Location Location `json:"location" elastic:"type:object"`
-	Website  Website  `json:"website" elastic:"type:object"`
+	Id           string     `json:"id"`
+	Uri          string     `json:"uri"`
+	EmailList    []Email    `json:"emailList" elastic:"type:nested"`
+	PhoneList    []Phone    `json:"phoneList" elastic:"type:nested"`
+	LocationList []Location `json:"locationList" elastic:"type:nested"`
+	WebsiteList  []Website  `json:"websiteList" elastic:"type:nested"`
 }
 
 /*
@@ -274,10 +274,10 @@ type Person struct {
 	Image            PersonImage      `json:"image" elastic:"type:object"`
 	Type             Type             `json:"type" elastic:"type:object"`
 	Identifier       PersonIdentifier `json:"identifier" elastic:"type:object"`
+	Contact          Contact          `json:"contact" elastic:"type:object"`
 	OverviewList     []PersonOverview `json:"overviewList" elastic:"type:nested"`
 	KeywordList      []PersonKeyword  `json:"keywordList" elastic:"type:nested"`
 	ServiceRoleList  []ServiceRole    `json:"serviceRoleList" elastic:"type:nested"`
-	ContactList      []Contact        `json:"contactList" elastic:"type:nested"`
 	CourseTaughtList []CourseTaught   `json:"courseTaughtList" elastic:"type:nested"`
 	OrganizationList []Organization   `json:"organizationList" elastic:"type:nested"`
 	Extensions       []Extension      `json:"extensions" elastic:"type:nested"`
@@ -301,14 +301,14 @@ organization.type.code
 organization.childOf
 */
 type Organization struct {
-	Id          string       `json:"id"`
-	SourceId    string       `json:"sourceId"`
-	Uri         string       `json:"uri"`
-	ExternalUri string       `json:"externalUri"`
-	Type        Type         `json:"type" elastic:"type:object"`
-	Label       string       `json:"label"`
+	Id          string `json:"id"`
+	SourceId    string `json:"sourceId"`
+	Uri         string `json:"uri"`
+	ExternalUri string `json:"externalUri"`
+	Type        Type   `json:"type" elastic:"type:object"`
+	Label       string `json:"label"`
 	// NOTE: can't be recursive, has to be pointer id
-	ChildOf     string       `json:"childOf"`
+	ChildOf string `json:"childOf"`
 }
 
 /*
@@ -414,8 +414,8 @@ type Grant struct {
 }
 
 type Authorship struct {
-	Id  string `json:"id"`
-	Uri string `json:"uri"`
+	Id    string `json:"id"`
+	Uri   string `json:"uri"`
 	Label string `json:"label"`
 	// Type Type    `json:"type"`
 	// connectors

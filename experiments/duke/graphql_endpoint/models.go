@@ -52,7 +52,6 @@ type ServiceRole struct {
 	PersonId     string         `json:"personId"`
 }
 
-/*
 type Email struct {
 	Label string `json:"label"`
 	Type  Type   `json:"type" elastic:"type:object"`
@@ -75,14 +74,11 @@ type Website struct {
 }
 
 type Contact struct {
-	Id       string   `json:"id"`
-	Uri      string   `json:"uri"`
-	Email    Email    `json:"email" elastic:"type:object"`
-	Phone    Phone    `json:"phone" elastic:"type:object"`
-	Location Location `json:"location" elastic:"type:object"`
-	Website  Website  `json:"website" elastic:"type:object"`
+	EmailList    []Email    `json:"emailList" elastic:"type:nested"`
+	PhoneList    []Phone    `json:"phoneList" elastic:"type:nested"`
+	LocationList []Location `json:"locationList" elastic:"type:nested"`
+	WebsiteList  []Website  `json:"websiteList" elastic:"type:nested"`
 }
-*/
 
 type CourseTaught struct {
 	Id           string         `json:"id"`
@@ -103,22 +99,22 @@ type Extension struct {
 }
 
 type Person struct {
-	Id              string           `json:"id"`
-	Uri             string           `json:"uri"`
-	SourceId        string           `json:"sourceId"`
-	PrimaryTitle    string           `json:"primaryTitle"`
-	Name            PersonName       `json:"name" elastic:"type:object"`
-	Image           PersonImage      `json:"image" elastic:"type:object"`
-	Type            Type             `json:"type" elastic:"type:object"`
-	Identifier      PersonIdentifier `json:"identifier" elastic:"type:object"`
-	OverviewList    []PersonOverview `json:"overviewList" elastic:"type:nested"`
-	KeywordList     []PersonKeyword  `json:"keywordList" elastic:"type:nested"`
-	ServiceRoleList []ServiceRole    `json:"serviceRoleList" elastic:"type:nested"`
-	//ContactList      []Contact        `json:"contactList" elastic:"type:nested"`
-	CourseTaughtList []CourseTaught `json:"courseTaughtList" elastic:"type:nested"`
-	Extensions       []Extension    `json:"extensions" elastic:"type:nested"`
-	EducationList    []Education    `json:"educationList" elastic:"type:nested"`
-	AffliationList   []Affiliation  `json:"affiliationList" elastic:"type:nested"`
+	Id               string           `json:"id"`
+	Uri              string           `json:"uri"`
+	SourceId         string           `json:"sourceId"`
+	PrimaryTitle     string           `json:"primaryTitle"`
+	Name             PersonName       `json:"name" elastic:"type:object"`
+	Image            PersonImage      `json:"image" elastic:"type:object"`
+	Type             Type             `json:"type" elastic:"type:object"`
+	Identifier       PersonIdentifier `json:"identifier" elastic:"type:object"`
+	Contact          Contact          `json:"contact" elastic:"type:object"`
+	OverviewList     []PersonOverview `json:"overviewList" elastic:"type:nested"`
+	KeywordList      []PersonKeyword  `json:"keywordList" elastic:"type:nested"`
+	ServiceRoleList  []ServiceRole    `json:"serviceRoleList" elastic:"type:nested"`
+	CourseTaughtList []CourseTaught   `json:"courseTaughtList" elastic:"type:nested"`
+	Extensions       []Extension      `json:"extensions" elastic:"type:nested"`
+	EducationList    []Education      `json:"educationList" elastic:"type:nested"`
+	AffliationList   []Affiliation    `json:"affiliationList" elastic:"type:nested"`
 }
 
 type DateResolution struct {

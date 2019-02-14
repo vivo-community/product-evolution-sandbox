@@ -162,44 +162,10 @@ func ClearAuthorshipsIndex() {
 	clearIndex("authorships")
 }
 
-/*
-func clearIndexes(typeName string) {
-	switch typeName {
-	case "people":
-		clearPeopleIndex()
-	case "affiliations":
-		clearAffiliationsIndex()
-	case "educations":
-		clearEducationsIndex()
-	case "grants":
-		clearGrantsIndex()
-		clearFundingRolesIndex()
-	case "publications":
-		clearPublicationsIndex()
-		clearAuthorshipsIndex()
-	case "all":
-		clearPeopleIndex()
-		clearAffiliationsIndex()
-		clearEducationsIndex()
-		clearGrantsIndex()
-		clearFundingRolesIndex()
-		clearPublicationsIndex()
-		clearAuthorshipsIndex()
-	}
-}
-*/
-
 // NOTE: 'mappingJson' is just a json string plugged into template
 func makeIndex(name string, mappingJson string) {
 	ctx := context.Background()
 	
-	//t := template.Must(template.New("index").Parse(mappingTemplate))
-	//mapping := Mapping{mappingJson}
-	
-	//var tpl bytes.Buffer
-	//if err := t.Execute(&tpl, mapping); err != nil {
-	//	log.Fatalln(err)
-	//}
 	client := GetClient()
 
 	// Use the IndexExists service to check if a specified index exists.
@@ -221,29 +187,23 @@ func makeIndex(name string, mappingJson string) {
 	}
 }
 
-// need to load templates from template loader
 func MakePeopleIndex(mapping string) {
-	//mapping := templates.personMapping
 	makeIndex("people", mapping)
 }
 
 func MakeGrantsIndex(mapping string) {
-	//mapping := templates.grantMapping
 	makeIndex("grants", mapping)
 }
 
 func MakeFundingRolesIndex(mapping string) {
-	//mapping := templates.fundingRoleMapping
 	makeIndex("funding-roles", mapping)
 }
 
 func MakePublicationsIndex(mapping string) {
-	//mapping := templates.publicationMapping
 	makeIndex("publications", mapping)
 }
 
 func MakeAuthorshipsIndex(mapping string) {
-	//mapping := templates.authorshipMapping
 	makeIndex("authorships", mapping)
 }
 

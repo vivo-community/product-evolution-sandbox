@@ -21,20 +21,30 @@ func preview(typeName string) {
 	switch typeName {
 	case "people":
 		//psql.ListPeople()
-		wi.Preview(elastic.PersonMapping())
-	case "affiliations":
-		//psql.ListAffiliations()
-		wi.Preview(elastic.AffiliationMapping())
+		mapping, err := elastic.PersonMapping()
+		if err != nil {
+		    fmt.Printf("error %s\n", err)
+			break
+		}
+		wi.Preview(mapping)
 	case "publications":
 		//psql.ListPublications()
-		wi.Preview(elastic.PublicationMapping())
+		mapping, err := elastic.PublicationMapping()
+		if err != nil {
+		    fmt.Printf("error %s\n", err)
+			break
+		}
+		wi.Preview(mapping)
 	case "grants":
 		//psql.ListGrants()
-		wi.Preview(elastic.GrantMapping())
-
+		mapping, err := elastic.GrantMapping()
+		if err != nil {
+		    fmt.Printf("error %s\n", err)
+			break
+		}
+		wi.Preview(mapping)
 	case "all":
-		psql.ListPeople()
-		psql.ListAffiliations()
+		fmt.Println("no option to preview 'all'")
 	}
 }
 
@@ -42,10 +52,6 @@ func clearIndexes(typeName string) {
 	switch typeName {
 	case "people":
 		elastic.ClearPeopleIndex()
-	//case "affiliations":
-	//	elastic.ClearAffiliationsIndex()
-	//case "educations":
-	//	elastic.ClearEducationsIndex()
 	case "grants":
 		elastic.ClearGrantsIndex()
 		elastic.ClearFundingRolesIndex()
@@ -54,8 +60,6 @@ func clearIndexes(typeName string) {
 		elastic.ClearAuthorshipsIndex()
 	case "all":
 		elastic.ClearPeopleIndex()
-		//elastic.ClearAffiliationsIndex()
-		//elastic.ClearEducationsIndex()
 		elastic.ClearGrantsIndex()
 		elastic.ClearFundingRolesIndex()
 		elastic.ClearPublicationsIndex()
@@ -66,8 +70,12 @@ func clearIndexes(typeName string) {
 func persistResources(typeName string) {
 	switch typeName {
 	case "people":
-		elastic.MakePeopleIndex(elastic.PersonMapping())
-
+		mapping, err := elastic.PersonMapping()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+		elastic.MakePeopleIndex(mapping)
 		people := psql.RetrieveType("Person")
 		elastic.AddPeople(people)
 	case "affiliations":
@@ -77,38 +85,102 @@ func persistResources(typeName string) {
 		educations := psql.RetrieveType("Education")
 		elastic.AddEducationsToPeople(educations)
 	case "grants":
-		elastic.MakeGrantsIndex(elastic.GrantMapping())
+		mapping, err := elastic.GrantMapping()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+
+		elastic.MakeGrantsIndex(mapping)
 		grants := psql.RetrieveType("Grant")
 		elastic.AddGrants(grants)
 
-		elastic.MakeFundingRolesIndex(elastic.FundingRoleMapping())
+		mapping, err = elastic.FundingRoleMapping()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+
+		elastic.MakeFundingRolesIndex(mapping)
 		roles := psql.RetrieveType("FundingRole")
 		elastic.AddFundingRoles(roles)
 	case "funding-roles":
-		elastic.MakeFundingRolesIndex(elastic.FundingRoleMapping())
+		mapping, err := elastic.FundingRoleMapping()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+
+		elastic.MakeFundingRolesIndex(mapping)
 
 		roles := psql.RetrieveType("FundingRole")
 		elastic.AddFundingRoles(roles)
 	case "publications":
-		elastic.MakePublicationsIndex(elastic.PublicationMapping())
+		mapping, err := elastic.GrantMapping()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+
+		elastic.MakePublicationsIndex(mapping)
 		publications := psql.RetrieveType("Publication")
 		elastic.AddPublications(publications)
 
-		elastic.MakeAuthorshipsIndex(elastic.AuthorshipMapping())
-		authorships := psql.RetrieveType("FundingRole")
+		mapping, err = elastic.AuthorshipMapping()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+
+		elastic.MakeAuthorshipsIndex(mapping)
+		authorships := psql.RetrieveType("Authorship")
 		elastic.AddAuthorships(authorships)
 	case "authorships":
-		elastic.MakeAuthorshipsIndex(elastic.AuthorshipMapping())
+		mapping, err := elastic.GrantMapping()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+
+		elastic.MakeAuthorshipsIndex(mapping)
 
 		authorships := psql.RetrieveType("Authorship")
 		elastic.AddAuthorships(authorships)
 	case "all":
+		mapping, err := elastic.PersonMapping()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+		elastic.MakePeopleIndex(mapping)
 
-		elastic.MakePeopleIndex(elastic.PersonMapping())
-		elastic.MakeGrantsIndex(elastic.GrantMapping())
-		elastic.MakeFundingRolesIndex(elastic.FundingRoleMapping())
-		elastic.MakePublicationsIndex(elastic.PublicationMapping())
-		elastic.MakeAuthorshipsIndex(elastic.AuthorshipMapping())
+		mapping, err = elastic.PublicationMapping()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+		elastic.MakePublicationsIndex(mapping)
+
+		mapping, err = elastic.AuthorshipMapping()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+		elastic.MakeAuthorshipsIndex(mapping)
+
+		mapping, err = elastic.GrantMapping()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+		elastic.MakeGrantsIndex(mapping)
+
+		mapping, err = elastic.FundingRoleMapping()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+		elastic.MakeFundingRolesIndex(mapping)
 
 		wg.Add(7)
 		// 1.people

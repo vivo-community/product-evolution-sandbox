@@ -1,6 +1,7 @@
 package widgets_import
 
 import (
+	"errors"
 	"fmt"
 	"github.com/oxtoacart/bpool"
 	"log"
@@ -22,7 +23,7 @@ func Preview(tmpl string) {
 func LoadTemplates(conf Config) {
 	if templates == nil {
 		templates = make(map[string]*template.Template)
-    }
+	}
 
 	layoutFiles, err := filepath.Glob(conf.Templates.Layout + "*.tmpl")
 	if err != nil {
@@ -39,16 +40,16 @@ func LoadTemplates(conf Config) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	for _, file := range includeFiles {
 		fileName := filepath.Base(file)
 		files := append(layoutFiles, file)
 		templates[fileName], err = mainTemplate.Clone()
 		if err != nil {
 			log.Fatal(err)
-		}	
+		}
 		templates[fileName] = template.Must(templates[fileName].ParseFiles(files...))
-     }
+	}
 
 	log.Println("elastic mapping templates loading successful")
 
@@ -56,13 +57,12 @@ func LoadTemplates(conf Config) {
 	//log.Println("buffer allocation successful")
 }
 
-func RenderTemplate(name string) string {
+func RenderTemplate(name string) (string, error) {
 	tmpl, ok := templates[name]
 
-	// TODO: this should be better, catch errors etc...
 	if !ok {
-		fmt.Printf("could not find template %s\n", name)
-		return "" //, errors.New("could not find templates")
+		msg := fmt.Sprintf("could not find template %s\n", name)
+		return "", errors.New(msg) 
 	}
 	buf := bufpool.Get()
 	defer bufpool.Put(buf)
@@ -70,8 +70,8 @@ func RenderTemplate(name string) string {
 	// TODO: bogus 'data' = "hello" - should do something else
 	err := tmpl.Execute(buf, "hello")
 	if err != nil {
-		fmt.Printf("error executing template %s\n", err)
-		return ""//, err
+		msg := fmt.Sprintf("error executing template %s\n", err)
+		return "", errors.New(msg)
 	}
-	return buf.String() //, nil
+	return buf.String(), nil
 }

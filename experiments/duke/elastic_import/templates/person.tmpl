@@ -31,12 +31,13 @@
 	        "keywordList": {
 	            "type": "nested",
 	            "properties": {
-		        "uri":   { "type": "text" },
-		        "label": { "type": "text" }
+		        "uri":   { "type": "keyword" },
+		        "label": { "type": "keyword" }
 	            }
 		},
                 {{ template "person_educations" }},
                 {{ template "person_affiliations" }},
+                {{ template "person_contact" }},
 		"extensions": {
 			"type": "nested",
 			"properties": {

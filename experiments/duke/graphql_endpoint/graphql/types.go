@@ -109,6 +109,16 @@ var personIdentifierType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+var personContactType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Contact",
+	Fields: graphql.Fields{
+		"emailList":    &graphql.Field{Type: graphql.NewList(emailType)},
+		"locationList": &graphql.Field{Type: graphql.NewList(locationType)},
+		"phoneList":    &graphql.Field{Type: graphql.NewList(phoneType)},
+		"websiteList":  &graphql.Field{Type: graphql.NewList(websiteType)},
+	},
+})
+
 var serviceRoleType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "ServiceRole",
 	Fields: graphql.Fields{
@@ -122,14 +132,40 @@ var serviceRoleType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-var contactType = graphql.NewObject(graphql.ObjectConfig{
-	Name: "Contact",
+var emailType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Email",
 	Fields: graphql.Fields{
-		"uri":      &graphql.Field{Type: graphql.String},
-		"email":    &graphql.Field{Type: graphql.String},
-		"phone":    &graphql.Field{Type: graphql.String},
-		"location": &graphql.Field{Type: graphql.String},
-		"website":  &graphql.Field{Type: graphql.String},
+		"uri":   &graphql.Field{Type: graphql.String},
+		"label": &graphql.Field{Type: graphql.String},
+		"type":  &graphql.Field{Type: typeType},
+	},
+})
+
+var phoneType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Phone",
+	Fields: graphql.Fields{
+		"uri":   &graphql.Field{Type: graphql.String},
+		"label": &graphql.Field{Type: graphql.String},
+		"type":  &graphql.Field{Type: typeType},
+	},
+})
+
+var locationType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Location",
+	Fields: graphql.Fields{
+		"uri":   &graphql.Field{Type: graphql.String},
+		"label": &graphql.Field{Type: graphql.String},
+		"type":  &graphql.Field{Type: typeType},
+	},
+})
+
+var websiteType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Website",
+	Fields: graphql.Fields{
+		"uri":   &graphql.Field{Type: graphql.String},
+		"url":   &graphql.Field{Type: graphql.String},
+		"label": &graphql.Field{Type: graphql.String},
+		"type":  &graphql.Field{Type: typeType},
 	},
 })
 
@@ -209,6 +245,7 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 		"name":            &graphql.Field{Type: personNameType},
 		"image":           &graphql.Field{Type: personImageType},
 		"identifier":      &graphql.Field{Type: personIdentifierType},
+		"contact":         &graphql.Field{Type: personContactType},
 		"type":            &graphql.Field{Type: typeType},
 		"overviewList":    &graphql.Field{Type: graphql.NewList(overviewType)},
 		"keywordList":     &graphql.Field{Type: graphql.NewList(keywordType)},
