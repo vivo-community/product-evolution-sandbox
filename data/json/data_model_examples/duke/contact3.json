@@ -1,0 +1,33 @@
+{
+  "person": {
+    "sourceID": "0116288",
+    "uri": "https://scholars.duke.edu/individual/per9544252",
+    "name": {
+      "firstName": "Jeff",
+      "middleName": "M.",
+      "lastName": "Storer"
+    },
+    "contactList": [
+       { 
+         "id": 1,
+         "uri": "https://scholars.duke.individual/per954452_contact1",
+         "email": {  }
+       },
+       {
+         "id": 2,
+         "uri": "https://scholars.duke.individual/per954452_contact2",
+         "email": {  }
+       }, 
+       {
+         "id": 3,
+         "uri": "https://scholars.duke.individual/per954452_contact3",
+         "website": { "url": "http://google.com" }
+       },
+       {
+         "id": 4,
+         "uri": "https://scholars.duke.individual/per954452_contact4",
+         "location": { "label": "100 Main St., Durham, NC" }
+       }
+    ] 
+  }
+}

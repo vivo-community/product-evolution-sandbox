@@ -1,0 +1,28 @@
+{{ define "person_educations" }}
+"educationList": {
+		    "type": "nested",
+	            "properties":{
+		        "id":        { "type": "text" },
+			"sourceId":  { "type": "text" },
+		        "uri":       { "type": "text" },
+	                "credential": { "type": "text" },
+	                "credentialAbbreviation": { "type": "text" },
+	                "field": { "type": "text" },
+		        "organization": { 
+			    "type": "object",
+			    "properties": {
+				      "id": { "type": "text" },
+				      "label": { "type": "text" }
+			    }
+		         },
+	                 "dateReceived": {
+		            "type": "object",
+		            "properties": {
+			            "dateTime":   { "type": "text" },
+			            "resolution": { "type": "text" }
+		             }
+	                },
+		        "personId":  { "type": "text" }
+	            }
+}
+{{ end }}

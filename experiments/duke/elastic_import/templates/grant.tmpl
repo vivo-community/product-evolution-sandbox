@@ -1,0 +1,26 @@
+{{ define "mapping" }}
+"grant":{
+	"properties":{
+		"id":        { "type": "text" },
+                "sourceId":  { "type": "text" },
+		"uri":       { "type": "text" },
+		"label":     { "type": "text" },
+		"startDate": {
+			"type": "object",
+			"properties": {
+				"dateTime":   { "type": "text" },
+				"resolution": { "type": "text" }
+			}
+		},
+		"endDate": {
+			"type": "object",
+			"properties": {
+				"dateTime":   { "type": "text" },
+				"resolution": { "type": "text" }
+			}
+		},
+                "externalId": { "type": "text" }
+	}
+}
+{{ end }}
+

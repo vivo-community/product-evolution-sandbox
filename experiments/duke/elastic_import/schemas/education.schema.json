@@ -6,7 +6,7 @@
   "properties": {
     "id": { "type": "string" },
     "uri": { "type": "string" },
-    "label": { "type": "string" }
+    "credential": { "type": "string" }
   },
-  "required": ["id", "uri", "label"]
+  "required": ["id", "uri"]
 }

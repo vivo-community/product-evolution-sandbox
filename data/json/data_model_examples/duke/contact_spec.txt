@@ -1,0 +1,146 @@
+contactList
+contact.id
+contact.uri
+contact.email
+contact.email.label
+contact.email.type
+contact.email.type.code
+contact.email.type.label
+contact.phone
+contact.phone.label
+contact.phone.type
+contact.phone.type.code
+contact.phone.type.label
+contact.location
+contact.location.label
+contact.location.type
+contact.location.type.code
+contact.location.type.label
+contact.website
+contact.website.label
+contact.website.url
+contact.website.type
+contact.website.type.code
+contact.website.type.label
+
+
+
+type Email struct {
+	Label string `json:"label"`
+	Type  Type   `json:"type" elastic:"type:object"`
+}
+
+type Phone struct {
+	Label string `json:"label"`
+	Type  Type   `json:"type" elastic:"type:object"`
+}
+
+type Location struct {
+	Label string `json:"label"`
+	Type  Type   `json:"type" elastic:"type:object"`
+}
+
+type Website struct {
+	Label string `json:"label"`
+	Url   string `json:"url"`
+	Type  Type   `json:"type" elastic:"type:object"`
+}
+
+type Contact struct {
+	Id       string   `json:"id"`
+	Uri      string   `json:"uri"`
+	Email    Email    `json:"email" elastic:"type:object"`
+	Phone    Phone    `json:"phone" elastic:"type:object"`
+	Location Location `json:"location" elastic:"type:object"`
+	Website  Website  `json:"website" elastic:"type:object"`
+}
+
+
+
+"person":{
+	"properties":{
+		"id":           { "type": "text" },
+		"uri":          { "type": "text" },
+		"primaryTitle": { "type": "text" },
+		"name":{
+			"type":"object",
+			"properties": {
+				"firstName":  { "type": "text" },
+				"lastName":   { "type": "text" },
+				"middleName": { "type": "text" },
+				"suffix":     { "type": "text" },
+				"prefix":     { "type": "text" }
+		    }
+		},
+...
+
+(example)
+
+type Affiliation struct {
+	Id           string         `json:"id"`
+	SourceId     string         `json:"sourceId"`
+	Uri          string         `json:"uri"`
+	Label        string         `json:"label"`
+	Type         Type           `json:"type" elastic:"type:object"`
+	StartDate    DateResolution `json:"startDate" elastic:"type:object"`
+	EndDate      DateResolution `json:"endDate" elastic:"type:object"`
+	Organization Organization   `json:"organization" elastic:"type:object"`
+	// connector
+	PersonId string `json:"personId"`
+}
+
+
+"affiliationList": {
+		    "type": "nested",
+		    "properties":{
+		        "id":        { "type": "text" },
+			"sourceId":  { "type": "text" },
+		        "uri":       { "type": "text" },
+		        "label":     { "type": "text" },
+		        "startDate": {
+			      "type": "object",
+			      "properties": {
+				    "dateTime":   { "type": "text" },
+				    "resolution": { "type": "text" }
+			      }
+		        },
+	                "endDate": {
+		            "type": "object",
+		            "properties": {
+			            "dateTime":   { "type": "text" },
+			            "resolution": { "type": "text" }
+		            }
+	                },
+		        "organization":  { 
+		            "type": "object",
+			     "properties": {
+				      "id": { "type": "text" },
+				      "label": { "type": "text" }
+			      }
+		        },
+		        "personId":  { "type": "text" }
+                     }
+}
+
+...
+
+"contactList":
+      "type": "nested",
+		    "properties":{
+		        "id":        { "type": "text" },
+		        "uri":       { "type": "text" },
+		        "email": {
+			      "type": "object",
+			      "properties": {
+				    "label":   { "type": "text" },
+			      }
+		        },
+        		"website": {
+			      "type": "object",
+			      "properties": {
+				    "label":   { "type": "text" },
+			      }
+		        },
+               }
+....
+
