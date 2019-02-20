@@ -206,13 +206,21 @@ var publicationVenueType = graphql.NewObject(graphql.ObjectConfig{
 var publicationType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Publication",
 	Fields: graphql.Fields{
-		"id":         &graphql.Field{Type: graphql.String},
-		"uri":        &graphql.Field{Type: graphql.String},
-		"label":      &graphql.Field{Type: graphql.String},
-		"identifier": &graphql.Field{Type: publicationIdentifierType},
-		"type":       &graphql.Field{Type: typeType},
-		"authorList": &graphql.Field{Type: graphql.String},
-		"venue":      &graphql.Field{Type: publicationVenueType},
+		"id":               &graphql.Field{Type: graphql.String},
+		"uri":              &graphql.Field{Type: graphql.String},
+		"title":            &graphql.Field{Type: graphql.String},
+		"identifier":       &graphql.Field{Type: publicationIdentifierType},
+		"type":             &graphql.Field{Type: typeType},
+		"authorList":       &graphql.Field{Type: graphql.String},
+		"venue":            &graphql.Field{Type: publicationVenueType},
+		"abstract":         &graphql.Field{Type: graphql.String},
+		"dateStandardized": &graphql.Field{Type: dateResolutionType},
+		"dateDisplay":      &graphql.Field{Type: graphql.String},
+		"pageRange":        &graphql.Field{Type: graphql.String},
+		"pageStart":        &graphql.Field{Type: graphql.String},
+		"pageEnd":          &graphql.Field{Type: graphql.String},
+		"issue":            &graphql.Field{Type: graphql.String},
+		"volume":           &graphql.Field{Type: graphql.String},
 	},
 })
 

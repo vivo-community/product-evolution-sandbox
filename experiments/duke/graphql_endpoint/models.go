@@ -193,7 +193,7 @@ type Publication struct {
 	Id       string `json:"id"`
 	SourceId string `json:"sourceId"`
 	Uri      string `json:"uri"`
-	Label    string `json:"label"`
+	Title    string `json:"title"`
 	// NOTE: this is supposed to be an array
 	AuthorList       string                `json:"authorList"`
 	Venue            PublicationVenue      `json:"venue"`
