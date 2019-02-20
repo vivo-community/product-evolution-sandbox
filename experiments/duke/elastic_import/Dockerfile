@@ -18,4 +18,10 @@ RUN chmod go+x ./cmd/staging_import/staging_import
 
 RUN chmod go+x ./cmd/elastic_import/elastic_import
 
+RUN chmod go+x ./cmd/graphql_server/graphql_server
+
+EXPOSE 9001
+
+CMD ["./cmd/graphql_server/graphql_server"]
+
 USER gouser
