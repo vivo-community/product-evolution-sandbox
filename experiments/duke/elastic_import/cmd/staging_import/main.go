@@ -80,6 +80,21 @@ func listType(typeName string) {
 	}
 }
 
+func retrieveSingle(id string, typeName string) widgets_import.StagingResource {
+	db = GetConnection()
+	found := widgets_import.StagingResource{}
+
+	findSql := `SELECT id, type, data FROM staging
+	  WHERE (id = $1 AND type = $2)`
+
+	err := db.Get(&found, findSql, id, typeName)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return found
+}
+
 func listPeople() {
 	listType("Person")
 }
@@ -321,6 +336,29 @@ func validate(schema *gojsonschema.Schema, data string) bool {
 	}
 }
 
+func addPerson(id string) {
+	schema := loadSchema("person")
+	fmt.Println("trying to find person " + id)
+
+	person := retrieveSingle(id, "Person")
+	resource := Person{}
+	data := person.Data
+	json.Unmarshal(data, &resource)
+
+	uri := DeriveUri(resource)
+	fmt.Println(uri)
+
+	valid := validate(schema, string(data))
+	if valid {
+		err := saveResource(resource, uri, "Person")
+		if err != nil {
+			fmt.Printf("- %s\n", err)
+		}
+	} else {
+		//markInvalidInStaging(element)
+	}
+}
+
 func addPeople() {
 	schema := loadSchema("person")
 	people := retrieveType("Person")
@@ -385,6 +423,30 @@ func addEducations() {
 	}
 }
 
+func addGrant(id string) {
+	schema := loadSchema("grant")
+	grant := retrieveSingle(id, "Grant")
+
+	fmt.Println("trying to find grant " + id)
+
+	resource := Grant{}
+	data := grant.Data
+	json.Unmarshal(data, &resource)
+
+	uri := DeriveUri(resource)
+	fmt.Println(uri)
+
+	valid := validate(schema, string(data))
+	if valid {
+		err := saveResource(resource, uri, "Grant")
+		if err != nil {
+			fmt.Printf("- %s\n", err)
+		}
+	} else {
+		//markInvalidInStaging(element)
+	}
+}
+
 func addGrants() {
 	schema := loadSchema("grant")
 	grants := retrieveType("Grant")
@@ -423,6 +485,29 @@ func addFundingRoles() {
 				fmt.Printf("- %s\n", err)
 			}
 		}
+	}
+}
+
+func addPublication(id string) {
+	schema := loadSchema("publication")
+	fmt.Println("trying to find publication " + id)
+
+	publication := retrieveSingle(id, "Publication")
+	resource := Publication{}
+	data := publication.Data
+	json.Unmarshal(data, &resource)
+
+	uri := DeriveUri(resource)
+	fmt.Println(uri)
+
+	valid := validate(schema, string(data))
+	if valid {
+		err := saveResource(resource, uri, "Publication")
+		if err != nil {
+			fmt.Printf("- %s\n", err)
+		}
+	} else {
+		//markInvalidInStaging(element)
 	}
 }
 
@@ -465,6 +550,17 @@ func addAuthorships() {
 				fmt.Printf("- %s\n", err)
 			}
 		}
+	}
+}
+
+func persistResource(id string, typeName string) {
+	switch typeName {
+	case "people":
+		addPerson(id)
+	case "grants":
+		addGrant(id)
+	case "publications":
+		addPublication(id)
 	}
 }
 
@@ -560,6 +656,10 @@ func main() {
 	start := time.Now()
 	var err error
 
+	var id string
+
+	flag.StringVar(&id, "id", "", "a specific uri to import")
+
 	if os.Getenv("ENVIRONMENT") == "development" {
 		viper.SetConfigName("config")
 		viper.SetConfigType("toml")
@@ -614,7 +714,12 @@ func main() {
 	if *remove {
 		clearResources(*typeName)
 	} else {
-		persistResources(*dryRun, *typeName)
+		if len(id) > 0 {
+			// ignoring *dryRun
+			persistResource(id, *typeName)
+		} else {
+			persistResources(*dryRun, *typeName)
+		}
 	}
 
 	defer db.Close()
