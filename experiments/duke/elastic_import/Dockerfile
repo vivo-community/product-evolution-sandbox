@@ -18,7 +18,9 @@ RUN chmod go+x ./cmd/staging_import/staging_import
 
 RUN chmod go+x ./cmd/elastic_import/elastic_import
 
-WORKDIR /app/experiments/duke/graphql_endpoint/
+WORKDIR /app/experiments/duke/graphql_endpoint
+
+RUN ./build.sh
 
 RUN chmod go+x ./cmd/graphql_server/graphql_server
 
