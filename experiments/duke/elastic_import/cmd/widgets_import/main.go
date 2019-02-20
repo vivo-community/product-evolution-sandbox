@@ -392,10 +392,10 @@ func stashPerson(person WidgetsPerson) {
 
 	var courses []widgets_import.CourseTaught
 	for _, course := range person.Courses {
-		// NOTE: not a correct match 
+		// NOTE: not a correct match
 		id := makeIdFromUri(course.Uri)
 		c := widgets_import.CourseTaught{Id: id,
-		    Uri: course.Uri,
+			Uri:     course.Uri,
 			Subject: course.Label,
 			Role:    course.Attributes.RoleName}
 		courses = append(courses, c)
@@ -449,6 +449,13 @@ func stashPositions(person WidgetsPerson) {
 			Label: position.Attributes.OrganizationLabel}
 		if !resourceExists(organizationId, "Organization") {
 			addResource(organization, organizationId, "Organization")
+		} else {
+			// NOTE: trying to update, but only once
+			if !orgsVisited[organizationId] {
+				orgsVisited[organizationId] = true
+				saveResource(organization, organizationId, "Organization")
+			}
+
 		}
 	}
 }
@@ -484,6 +491,13 @@ func stashEducations(person WidgetsPerson) {
 
 		if !resourceExists(institutionId, "Institution") {
 			addResource(institution, institutionId, "Institution")
+		} else {
+			// NOTE: trying to update, but only once
+			if !institutionsVisited[institutionId] {
+				institutionsVisited[institutionId] = true
+				saveResource(institution, institutionId, "Institution")
+			}
+
 		}
 	}
 }
@@ -535,6 +549,12 @@ func stashGrants(person WidgetsPerson) {
 			EndDate:   end}
 		if !resourceExists(grantId, "Grant") {
 			addResource(obj, grantId, "Grant")
+		} else {
+			// NOTE: trying to update, but only once
+			if !grantsVisited[grantId] {
+				grantsVisited[grantId] = true
+				saveResource(obj, grantId, "Grant")
+			}
 		}
 	}
 }
@@ -587,6 +607,12 @@ func stashPublications(person WidgetsPerson) {
 			Venue:       venue}
 		if !resourceExists(publicationId, "Publication") {
 			addResource(obj, publicationId, "Publication")
+		} else {
+			// NOTE: trying to update, but only once
+			if !pubsVisited[publicationId] {
+				pubsVisited[publicationId] = true
+				saveResource(obj, publicationId, "Publication")
+			}
 		}
 	}
 }
@@ -878,10 +904,21 @@ func produceUrisFromVivo() <-chan string {
 var wg sync.WaitGroup
 var conf widgets_import.Config
 
+// dumb cache to not run pubs etc... over and over again
+var pubsVisited map[string]bool
+var orgsVisited map[string]bool
+var institutionsVisited map[string]bool
+var grantsVisited map[string]bool
+
 func main() {
 	start := time.Now()
 	var err error
 	var rdfFile string
+
+	pubsVisited = make(map[string]bool)
+    orgsVisited = make(map[string]bool)
+	institutionsVisited = make(map[string]bool)
+	grantsVisited = make(map[string]bool)
 
 	flag.StringVar(&rdfFile, "rdf", "", "an rdf file (of person uris)")
 
