@@ -18,6 +18,8 @@ RUN chmod go+x ./cmd/staging_import/staging_import
 
 RUN chmod go+x ./cmd/elastic_import/elastic_import
 
+WORKDIR /app/
+
 RUN chmod go+x ./cmd/graphql_server/graphql_server
 
 EXPOSE 9001
