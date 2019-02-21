@@ -15,6 +15,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -69,11 +70,12 @@ func listType(typeName string) {
 	db = GetConnection()
 	resources := []widgets_import.StagingResource{}
 
+	schema := loadSchema(typeName)
 	err := db.Select(&resources, "SELECT id, type, data FROM staging WHERE type =  $1",
 		typeName)
 	for _, element := range resources {
-		log.Println(element)
-		// element is the element from someSlice for where we are
+	    valid := validate(schema, string(element.Data))
+        log.Printf("%s is %t\n", element, valid)
 	}
 	if err != nil {
 		log.Fatalln(err)
@@ -295,20 +297,67 @@ func clearResources(typeName string) {
 	}
 }
 
-func loadSchema(typeName string) *gojsonschema.Schema {
-	b, err := ioutil.ReadFile(fmt.Sprintf("schemas/%s.schema.json", typeName)) // just pass the file name
+// preloading at start - then storing by key typeName
+func loadSchemas(conf widgets_import.Config) {
+	log.Printf("looking for schemas in %s\n", conf.Schemas.Dir)
+	schemaFiles, err := filepath.Glob(conf.Schemas.Dir + "*.json")
 	if err != nil {
-		fmt.Print(err)
+		log.Fatal(err)
 	}
-	schemaDef := string(b)
-	loader1 := gojsonschema.NewStringLoader(schemaDef)
-	schema, err := gojsonschema.NewSchema(loader1)
 
-	if err != nil {
-		fmt.Println("could not load schema")
-		panic(err)
+	for _, file := range schemaFiles {
+		log.Printf("trying to parse schema %s\n", file)
+		b, err := ioutil.ReadFile(file) // just pass the file name
+		if err != nil {
+			fmt.Print(err)
+		}
+
+		schemaDef := string(b)
+		loader1 := gojsonschema.NewStringLoader(schemaDef)
+		schema, err := gojsonschema.NewSchema(loader1)
+
+		if err != nil {
+			fmt.Println("could not load schema")
+			panic(err)
+		}
+
+		fileName := filepath.Base(file)
+
+		typeName := strings.Replace(fileName, ".schema.json", "", 1)
+		// store as key typeName
+		log.Printf("putting schema in cache[%s]\n", typeName)
+		schemas[typeName] = schema
 	}
-	return schema
+
+}
+
+func loadSchema(typeName string) *gojsonschema.Schema {
+	switch typeName {
+      case "people":
+		  return schemas["person"]
+	  case "publications":
+		  return schemas["publication"]
+	  case "grants":
+		  return schemas["grant"]
+	  default:
+	      return schemas["person"]
+	}
+	/*
+		// need some kind of config path I guess
+		b, err := ioutil.ReadFile(fmt.Sprintf("schemas/%s.schema.json", typeName)) // just pass the file name
+		if err != nil {
+			fmt.Print(err)
+		}
+		schemaDef := string(b)
+		loader1 := gojsonschema.NewStringLoader(schemaDef)
+		schema, err := gojsonschema.NewSchema(loader1)
+
+		if err != nil {
+			fmt.Println("could not load schema")
+			panic(err)
+		}
+		return schema
+	*/
 }
 
 func validate(schema *gojsonschema.Schema, data string) bool {
@@ -649,14 +698,16 @@ func persistResources(dryRun bool, typeName string) {
 }
 
 var wg sync.WaitGroup
+var schemas map[string]*gojsonschema.Schema
 
 // import from staging table -> resources table
 // go through jsonschema validate
 func main() {
 	start := time.Now()
 	var err error
-
 	var id string
+
+	schemas = make(map[string]*gojsonschema.Schema)
 
 	flag.StringVar(&id, "id", "", "a specific uri to import")
 
@@ -680,6 +731,8 @@ func main() {
 		viper.BindEnv("database.user")
 		viper.BindEnv("database.password")
 		viper.BindEnv("elastic.url")
+
+		viper.BindEnv("schemas.dir")
 	}
 
 	dryRun := flag.Bool("dry-run", false, "just examine resources to be saved")
@@ -710,6 +763,7 @@ func main() {
 		makeResourceSchema()
 	}
 
+	loadSchemas(conf)
 	// NOTE: either remove OR add?
 	if *remove {
 		clearResources(*typeName)

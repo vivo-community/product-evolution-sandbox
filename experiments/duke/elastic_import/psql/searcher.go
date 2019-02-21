@@ -42,7 +42,6 @@ func ListType(typeName string, updates bool) {
 	if updates {
 		// TODO: ideally would need to record time last run somewhere
 		yesterday := time.Now().AddDate(0, 0, -1)
-		//yesterday := time.Now()
 
         rounded := time.Date(yesterday.Year(), yesterday.Month(), 
 		    yesterday.Day(), 0, 0, 0, 0, yesterday.Location())
