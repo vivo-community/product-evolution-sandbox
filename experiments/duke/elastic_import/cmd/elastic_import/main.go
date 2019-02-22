@@ -17,10 +17,10 @@ import (
 var conf wi.Config
 var wg sync.WaitGroup
 
-func preview(typeName string) {
+func preview(typeName string, updated bool) {
 	switch typeName {
 	case "people":
-		//psql.ListPeople()
+		psql.ListPeople(updated)
 		mapping, err := elastic.PersonMapping()
 		if err != nil {
 		    fmt.Printf("error %s\n", err)
@@ -28,7 +28,7 @@ func preview(typeName string) {
 		}
 		wi.Preview(mapping)
 	case "publications":
-		//psql.ListPublications()
+		psql.ListPublications(updated)
 		mapping, err := elastic.PublicationMapping()
 		if err != nil {
 		    fmt.Printf("error %s\n", err)
@@ -36,7 +36,7 @@ func preview(typeName string) {
 		}
 		wi.Preview(mapping)
 	case "grants":
-		//psql.ListGrants()
+		psql.ListGrants(updated)
 		mapping, err := elastic.GrantMapping()
 		if err != nil {
 		    fmt.Printf("error %s\n", err)
@@ -67,7 +67,7 @@ func clearIndexes(typeName string) {
 	}
 }
 
-func persistResources(typeName string) {
+func persistResources(typeName string, updates bool) {
 	switch typeName {
 	case "people":
 		mapping, err := elastic.PersonMapping()
@@ -76,13 +76,13 @@ func persistResources(typeName string) {
 			break
 		}
 		elastic.MakePeopleIndex(mapping)
-		people := psql.RetrieveType("Person")
+		people := psql.RetrieveType("Person", updates)
 		elastic.AddPeople(people)
 	case "affiliations":
-		affiliations := psql.RetrieveType("Affiliation")
+		affiliations := psql.RetrieveType("Affiliation", updates)
 		elastic.AddAffiliationsToPeople(affiliations)
 	case "educations":
-		educations := psql.RetrieveType("Education")
+		educations := psql.RetrieveType("Education", updates)
 		elastic.AddEducationsToPeople(educations)
 	case "grants":
 		mapping, err := elastic.GrantMapping()
@@ -92,7 +92,7 @@ func persistResources(typeName string) {
 		}
 
 		elastic.MakeGrantsIndex(mapping)
-		grants := psql.RetrieveType("Grant")
+		grants := psql.RetrieveType("Grant", updates)
 		elastic.AddGrants(grants)
 
 		mapping, err = elastic.FundingRoleMapping()
@@ -102,7 +102,7 @@ func persistResources(typeName string) {
 		}
 
 		elastic.MakeFundingRolesIndex(mapping)
-		roles := psql.RetrieveType("FundingRole")
+		roles := psql.RetrieveType("FundingRole", updates)
 		elastic.AddFundingRoles(roles)
 	case "funding-roles":
 		mapping, err := elastic.FundingRoleMapping()
@@ -113,7 +113,7 @@ func persistResources(typeName string) {
 
 		elastic.MakeFundingRolesIndex(mapping)
 
-		roles := psql.RetrieveType("FundingRole")
+		roles := psql.RetrieveType("FundingRole", updates)
 		elastic.AddFundingRoles(roles)
 	case "publications":
 		mapping, err := elastic.GrantMapping()
@@ -123,7 +123,7 @@ func persistResources(typeName string) {
 		}
 
 		elastic.MakePublicationsIndex(mapping)
-		publications := psql.RetrieveType("Publication")
+		publications := psql.RetrieveType("Publication", updates)
 		elastic.AddPublications(publications)
 
 		mapping, err = elastic.AuthorshipMapping()
@@ -133,7 +133,7 @@ func persistResources(typeName string) {
 		}
 
 		elastic.MakeAuthorshipsIndex(mapping)
-		authorships := psql.RetrieveType("Authorship")
+		authorships := psql.RetrieveType("Authorship", updates)
 		elastic.AddAuthorships(authorships)
 	case "authorships":
 		mapping, err := elastic.GrantMapping()
@@ -144,7 +144,7 @@ func persistResources(typeName string) {
 
 		elastic.MakeAuthorshipsIndex(mapping)
 
-		authorships := psql.RetrieveType("Authorship")
+		authorships := psql.RetrieveType("Authorship", updates)
 		elastic.AddAuthorships(authorships)
 	case "all":
 		mapping, err := elastic.PersonMapping()
@@ -186,43 +186,43 @@ func persistResources(typeName string) {
 		// 1.people
 		go func() {
 			defer wg.Done()
-			people := psql.RetrieveType("Person")
+			people := psql.RetrieveType("Person", updates)
 			elastic.AddPeople(people)
 		}()
 		// 2. affilations
 		go func() {
 			defer wg.Done()
-			affiliations := psql.RetrieveType("Affiliation")
+			affiliations := psql.RetrieveType("Affiliation", updates)
 			elastic.AddAffiliationsToPeople(affiliations)
 		}()
 		// 3. educations
 		go func() {
 			defer wg.Done()
-			educations := psql.RetrieveType("Education")
+			educations := psql.RetrieveType("Education", updates)
 			elastic.AddEducationsToPeople(educations)
 		}()
 		// 4. grants
 		go func() {
 			defer wg.Done()
-			grants := psql.RetrieveType("Grant")
+			grants := psql.RetrieveType("Grant", updates)
 			elastic.AddGrants(grants)
 		}()
 		// 5. funding-roles
 		go func() {
 			defer wg.Done()
-			roles := psql.RetrieveType("FundingRole")
+			roles := psql.RetrieveType("FundingRole", updates)
 			elastic.AddFundingRoles(roles)
 		}()
 		// 6. publications
 		go func() {
 			defer wg.Done()
-			publications := psql.RetrieveType("Publication")
+			publications := psql.RetrieveType("Publication", updates)
 			elastic.AddPublications(publications)
 		}()
 		// 7. authorships
 		go func() {
 			defer wg.Done()
-			authorships := psql.RetrieveType("Authorship")
+			authorships := psql.RetrieveType("Authorship", updates)
 			elastic.AddAuthorships(authorships)
 		}()
 
@@ -260,6 +260,7 @@ func main() {
 	dryRun := flag.Bool("dry-run", false, "just examine resources to be saved")
 	remove := flag.Bool("remove", false, "remove existing records")
 	typeName := flag.String("type", "people", "type of records to import")
+	updates := flag.Bool("updates", true, "only import updated records")
 
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	pflag.Parse()
@@ -294,9 +295,10 @@ func main() {
 		clearIndexes(*typeName)
 	} else {
 		if *dryRun {
-			preview(*typeName)
+			preview(*typeName, *updates)
 		} else {
-			persistResources(*typeName)
+			// only updates?
+			persistResources(*typeName, *updates)
 		}
 		// if dryRun -> listResources
 		// -> list Mappings ->
