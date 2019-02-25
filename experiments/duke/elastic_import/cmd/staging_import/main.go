@@ -74,8 +74,8 @@ func listType(typeName string) {
 	err := db.Select(&resources, "SELECT id, type, data FROM staging WHERE type =  $1",
 		typeName)
 	for _, element := range resources {
-	    valid := validate(schema, string(element.Data))
-        log.Printf("%s is %t\n", element, valid)
+		valid := validate(schema, string(element.Data))
+		log.Printf("%s is %t\n", element, valid)
 	}
 	if err != nil {
 		log.Fatalln(err)
@@ -331,16 +331,34 @@ func loadSchemas(conf widgets_import.Config) {
 
 }
 
+/*
+ schemas/...
+ affiliation.schema.json
+ authorship.schema.json
+ education.schema.json
+ funding-role.schema.json
+ grant.schema.json
+ person.schema.json
+ publication.schema.json
+*/
 func loadSchema(typeName string) *gojsonschema.Schema {
 	switch typeName {
-      case "people":
-		  return schemas["person"]
-	  case "publications":
-		  return schemas["publication"]
-	  case "grants":
-		  return schemas["grant"]
-	  default:
-	      return schemas["person"]
+	case "person":
+		return schemas["person"]
+	case "publication":
+		return schemas["publication"]
+	case "grant":
+		return schemas["grant"]
+	case "funding-role":
+		return schemas["funding-role"]
+	case "authorship":
+		return schemas["authorship"]
+	case "affiliation":
+		return schemas["affiliation"]
+	case "education":
+		return schemas["education"]
+	default:
+		return schemas["person"]
 	}
 	/*
 		// need some kind of config path I guess
