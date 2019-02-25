@@ -331,14 +331,32 @@ func loadSchemas(conf widgets_import.Config) {
 
 }
 
+/*
+ schemas/...
+ affiliation.schema.json   
+ authorship.schema.json
+ education.schema.json
+ funding-role.schema.json
+ grant.schema.json
+ person.schema.json
+ publication.schema.json
+*/
 func loadSchema(typeName string) *gojsonschema.Schema {
 	switch typeName {
-      case "people":
+      case "person":
 		  return schemas["person"]
-	  case "publications":
+	  case "publication":
 		  return schemas["publication"]
-	  case "grants":
+	  case "grant":
 		  return schemas["grant"]
+	  case "funding-role":
+		  return schemas["funding-role"]
+	  case "authorship":
+		  return schemas["authorship"]
+	  case "affiliation":
+		  return schemas["affiliation"]
+	  case "education":
+		  return schemas["education"]
 	  default:
 	      return schemas["person"]
 	}
