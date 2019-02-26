@@ -218,9 +218,21 @@ type PageInfo struct {
 	Count       int `json:"count"`
 }
 
+type Facet struct {
+	Label string `json:"label"`
+	Count int64  `json:"count"`
+}
+
+type PeopleFacets struct {
+	Keywords    []Facet `json:"keywords"`
+	Types       []Facet `json:"types"`
+	Departments []Facet `json:"departments"`
+}
+
 type PersonList struct {
-	Results  []Person `json:"data"`
-	PageInfo PageInfo `json:"pageInfo"`
+	Results  []Person      `json:"data"`
+	PageInfo PageInfo      `json:"pageInfo"`
+	Facets   *PeopleFacets `json:"facets"`
 }
 
 type PublicationList struct {

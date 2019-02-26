@@ -38,11 +38,16 @@
 				"label": { "type": "text" }
 			}
 		},
-	        "keywordList": {
+ 	        "keywordList": {
 	            "type": "nested",
 	            "properties": {
 		        "uri":   { "type": "text" },
-		        "label": { "type": "text" }
+		        "label": { 
+                            "type": "keyword",
+                            "fields": {
+                                "keyword": { "type": "keyword" }
+                             }
+                        }
 	            }
 		}
 	}
