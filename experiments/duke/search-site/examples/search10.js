@@ -5,27 +5,19 @@ import { inspectAgg, error } from './search'
 
 // facets=aggregation, bucketing etc...
 client.search({
-  index: ["publications"],
+  index: ["grants"],
   body: {
     query: {
       "query_string": { query: "*" }
     },
     aggs: {
       "types" : { "terms": {"field" : "type.label" }},
-      "keywords": {
+      "investigators": {
          "nested": {
-             "path": "keywordList"
+             "path": "investigatorList"
          },
          "aggs": {
-           "keyword" : { "terms" : { "field": "keywordList.label.keyword" } }
-         }
-      },
-      "authors": {
-         "nested": {
-             "path": "authorList"
-         },
-         "aggs": {
-           "author" : { "terms" : { "field": "authorList.label.name" } }
+           "investigator" : { "terms" : { "field": "investigatorList.label.name" } }
          }
       }
     }
