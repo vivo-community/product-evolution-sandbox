@@ -4,6 +4,14 @@ The VIVO Action Planning process grew out of the VIVO Strategy Meeting, March 1,
 
 The idea for this (yet to be officially name) repo emerged from Product Evolution brainstorming on how to share source files, sample/test data, and related artifacts in support of experiments and collaboration by this action planning group. Also see the References section below for related resources.
 
+## Demo of GraphiQL
+
+[Here](https://vimeo.com/318795341 ) is a demo from Feb. 20, 2019 of a GraphiQL interface that Duke University developers published to interact with their ElasticSearch instance.
+
+The purpose of this video is to illustrate basic syntax for querying ElasticSearch. Note that some of the data model and data in this instance will likely change by the time you see this video.
+
+
+
 ## Proposed repository structure
 
 This structure is a strawman. One idea being to create/hold space for sample data in a variety of formats, including existing formats output by VIVO 1.x. Also to capture ideas and experiments with new user interface technologies.

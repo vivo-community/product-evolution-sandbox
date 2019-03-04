@@ -15,6 +15,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -69,15 +70,31 @@ func listType(typeName string) {
 	db = GetConnection()
 	resources := []widgets_import.StagingResource{}
 
+	schema := loadSchema(typeName)
 	err := db.Select(&resources, "SELECT id, type, data FROM staging WHERE type =  $1",
 		typeName)
 	for _, element := range resources {
-		log.Println(element)
-		// element is the element from someSlice for where we are
+		valid := validate(schema, string(element.Data))
+		log.Printf("%s is %t\n", element, valid)
 	}
 	if err != nil {
 		log.Fatalln(err)
 	}
+}
+
+func retrieveSingle(id string, typeName string) widgets_import.StagingResource {
+	db = GetConnection()
+	found := widgets_import.StagingResource{}
+
+	findSql := `SELECT id, type, data FROM staging
+	  WHERE (id = $1 AND type = $2)`
+
+	err := db.Get(&found, findSql, id, typeName)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return found
 }
 
 func listPeople() {
@@ -280,20 +297,70 @@ func clearResources(typeName string) {
 	}
 }
 
-func loadSchema(typeName string) *gojsonschema.Schema {
-	b, err := ioutil.ReadFile(fmt.Sprintf("schemas/%s.schema.json", typeName)) // just pass the file name
+// preloading at start - then storing by key typeName
+func loadSchemas(conf widgets_import.Config) {
+	log.Printf("looking for schemas in %s\n", conf.Schemas.Dir)
+	schemaFiles, err := filepath.Glob(conf.Schemas.Dir + "*.json")
 	if err != nil {
-		fmt.Print(err)
+		log.Fatal(err)
 	}
-	schemaDef := string(b)
-	loader1 := gojsonschema.NewStringLoader(schemaDef)
-	schema, err := gojsonschema.NewSchema(loader1)
 
-	if err != nil {
-		fmt.Println("could not load schema")
+	for _, file := range schemaFiles {
+		log.Printf("trying to parse schema %s\n", file)
+		b, err := ioutil.ReadFile(file) // just pass the file name
+		if err != nil {
+			fmt.Print(err)
+		}
+
+		schemaDef := string(b)
+		loader1 := gojsonschema.NewStringLoader(schemaDef)
+		schema, err := gojsonschema.NewSchema(loader1)
+
+		if err != nil {
+			fmt.Println("could not load schema")
+			panic(err)
+		}
+
+		fileName := filepath.Base(file)
+
+		typeName := strings.Replace(fileName, ".schema.json", "", 1)
+		// store as key typeName
+		log.Printf("putting schema in cache[%s]\n", typeName)
+		schemas[typeName] = schema
+	}
+
+}
+
+/*
+ schemas/...
+ affiliation.schema.json
+ authorship.schema.json
+ education.schema.json
+ funding-role.schema.json
+ grant.schema.json
+ person.schema.json
+ publication.schema.json
+*/
+func loadSchema(typeName string) *gojsonschema.Schema {
+	switch typeName {
+	case "person":
+		return schemas["person"]
+	case "publication":
+		return schemas["publication"]
+	case "grant":
+		return schemas["grant"]
+	case "funding-role":
+		return schemas["funding-role"]
+	case "authorship":
+		return schemas["authorship"]
+	case "affiliation":
+		return schemas["affiliation"]
+	case "education":
+		return schemas["education"]
+	default:
+		err := fmt.Sprintf("could not load schema, cancelling %s\n", typeName)
 		panic(err)
 	}
-	return schema
 }
 
 func validate(schema *gojsonschema.Schema, data string) bool {
@@ -318,6 +385,29 @@ func validate(schema *gojsonschema.Schema, data string) bool {
 			fmt.Printf("- %s\n", err)
 		}
 		return false
+	}
+}
+
+func addPerson(id string) {
+	schema := loadSchema("person")
+	fmt.Println("trying to find person " + id)
+
+	person := retrieveSingle(id, "Person")
+	resource := Person{}
+	data := person.Data
+	json.Unmarshal(data, &resource)
+
+	uri := DeriveUri(resource)
+	fmt.Println(uri)
+
+	valid := validate(schema, string(data))
+	if valid {
+		err := saveResource(resource, uri, "Person")
+		if err != nil {
+			fmt.Printf("- %s\n", err)
+		}
+	} else {
+		//markInvalidInStaging(element)
 	}
 }
 
@@ -385,6 +475,30 @@ func addEducations() {
 	}
 }
 
+func addGrant(id string) {
+	schema := loadSchema("grant")
+	grant := retrieveSingle(id, "Grant")
+
+	fmt.Println("trying to find grant " + id)
+
+	resource := Grant{}
+	data := grant.Data
+	json.Unmarshal(data, &resource)
+
+	uri := DeriveUri(resource)
+	fmt.Println(uri)
+
+	valid := validate(schema, string(data))
+	if valid {
+		err := saveResource(resource, uri, "Grant")
+		if err != nil {
+			fmt.Printf("- %s\n", err)
+		}
+	} else {
+		//markInvalidInStaging(element)
+	}
+}
+
 func addGrants() {
 	schema := loadSchema("grant")
 	grants := retrieveType("Grant")
@@ -423,6 +537,29 @@ func addFundingRoles() {
 				fmt.Printf("- %s\n", err)
 			}
 		}
+	}
+}
+
+func addPublication(id string) {
+	schema := loadSchema("publication")
+	fmt.Println("trying to find publication " + id)
+
+	publication := retrieveSingle(id, "Publication")
+	resource := Publication{}
+	data := publication.Data
+	json.Unmarshal(data, &resource)
+
+	uri := DeriveUri(resource)
+	fmt.Println(uri)
+
+	valid := validate(schema, string(data))
+	if valid {
+		err := saveResource(resource, uri, "Publication")
+		if err != nil {
+			fmt.Printf("- %s\n", err)
+		}
+	} else {
+		//markInvalidInStaging(element)
 	}
 }
 
@@ -465,6 +602,17 @@ func addAuthorships() {
 				fmt.Printf("- %s\n", err)
 			}
 		}
+	}
+}
+
+func persistResource(id string, typeName string) {
+	switch typeName {
+	case "people":
+		addPerson(id)
+	case "grants":
+		addGrant(id)
+	case "publications":
+		addPublication(id)
 	}
 }
 
@@ -553,12 +701,18 @@ func persistResources(dryRun bool, typeName string) {
 }
 
 var wg sync.WaitGroup
+var schemas map[string]*gojsonschema.Schema
 
 // import from staging table -> resources table
 // go through jsonschema validate
 func main() {
 	start := time.Now()
 	var err error
+	var id string
+
+	schemas = make(map[string]*gojsonschema.Schema)
+
+	flag.StringVar(&id, "id", "", "a specific uri to import")
 
 	if os.Getenv("ENVIRONMENT") == "development" {
 		viper.SetConfigName("config")
@@ -580,6 +734,8 @@ func main() {
 		viper.BindEnv("database.user")
 		viper.BindEnv("database.password")
 		viper.BindEnv("elastic.url")
+
+		viper.BindEnv("schemas.dir")
 	}
 
 	dryRun := flag.Bool("dry-run", false, "just examine resources to be saved")
@@ -610,11 +766,17 @@ func main() {
 		makeResourceSchema()
 	}
 
+	loadSchemas(conf)
 	// NOTE: either remove OR add?
 	if *remove {
 		clearResources(*typeName)
 	} else {
-		persistResources(*dryRun, *typeName)
+		if len(id) > 0 {
+			// ignoring *dryRun
+			persistResource(id, *typeName)
+		} else {
+			persistResources(*dryRun, *typeName)
+		}
 	}
 
 	defer db.Close()

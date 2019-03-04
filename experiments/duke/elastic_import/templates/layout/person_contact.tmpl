@@ -1,0 +1,40 @@
+{{ define "person_contact" }}
+"contact": { 
+    "type": "object",
+    "properties":{
+        "emailList": {
+	    "type": "nested",
+	    "properties":{
+	        "id":        { "type": "text" },
+	        "uri":       { "type": "text" },
+	        "label":     { "type": "text" }
+            }
+        },
+        "locationList": {
+	    "type": "nested",
+	    "properties":{
+	        "id":        { "type": "text" },
+	        "uri":       { "type": "text" },
+	        "label":     { "type": "text" }
+            }
+        },
+        "phoneList": {
+	    "type": "nested",
+	    "properties":{
+	        "id":        { "type": "text" },
+	        "uri":       { "type": "text" },
+	        "label":     { "type": "text" }
+            }
+        },
+        "websiteList": {
+	    "type": "nested",
+	    "properties":{
+	        "id":        { "type": "text" },
+	        "uri":       { "type": "text" },
+	        "label":     { "type": "text" },
+                "url":       { "type": "text" }
+            }
+        }
+    }
+}
+{{ end }}

@@ -1,0 +1,56 @@
+{{ define "mapping" }}
+"publication":{
+	"properties":{
+		"id":         { "type": "text" },
+		"sourceId":   { "type": "text" },
+		"uri":        { "type": "text" },
+		"title":      { "type": "text" },
+		"identifier" : {
+			"type": "object",
+			"properties": {
+				"isbn10": { "type": "text" },
+				"isbn13": { "type": "text" },
+				"pmid":   { "type": "text" },
+				"doi":    { "type": "text" },
+				"pmcid":  { "type": "text" }
+			}
+		},
+		"authorList": { "type": "text" },
+		"abstract":   { "type": "text" },
+		"pageRange":  { "type": "text" },
+		"pageStart":  { "type": "text" },
+		"pageEnd":    { "type": "text" },
+		"volume":     { "type": "text" },
+		"issue":      { "type": "text" },
+                {{ template "type" }},
+		"dateStandardized": {
+			"type": "object",
+			"properties": {
+				"dateTime":   { "type": "text" },
+				"resolution": { "type": "text" }
+			}
+		},
+		"dateDisplay": { "type": "text" },
+                "venue":      { 
+			"type": "object",
+			"properties": {
+				"uri":   { "type": "text" },
+				"label": { "type": "text" }
+			}
+		},
+ 	        "keywordList": {
+	            "type": "nested",
+	            "properties": {
+		        "uri":   { "type": "text" },
+		        "label": { 
+                            "type": "keyword",
+                            "fields": {
+                                "keyword": { "type": "keyword" }
+                             }
+                        }
+	            }
+		}
+	}
+}
+{{ end }}
+

@@ -5,29 +5,22 @@ import (
 	"fmt"
 	ge "github.com/OIT-ads-web/graphql_endpoint"
 	"github.com/OIT-ads-web/graphql_endpoint/elastic"
+	"github.com/OIT-ads-web/graphql_endpoint/examples"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"os"
-	"time"
 	"strings"
+	"time"
 )
 
-func listAll(index string) {
-	elastic.ListAll(index)
-}
 
-func idQuery() {
-	elastic.IdQuery("people", []string{"per4774112", "per8608642"})
+func example1() {
+	examples.ExampleAggregations()
 }
-
-func findOne(index string, id string) {
-	elastic.FindOne(index, id)
-}
-
-var conf ge.Config
 
 // just a few simple functions to print out data
 func main() {
+	var conf ge.Config
 	start := time.Now()
 
 	viper.SetDefault("elastic.url", "http://localhost:9200")
@@ -38,7 +31,7 @@ func main() {
 		viper.AddConfigPath(".")
 
 		value, exists := os.LookupEnv("CONFIG_PATH")
-		if (exists) {
+		if exists {
 			viper.AddConfigPath(value)
 		}
 
@@ -46,7 +39,7 @@ func main() {
 	} else {
 		replacer := strings.NewReplacer(".", "_")
 		viper.SetEnvKeyReplacer(replacer)
-	    viper.BindEnv("elastic.url")
+		viper.BindEnv("elastic.url")
 	}
 
 	if err := viper.Unmarshal(&conf); err != nil {
@@ -61,24 +54,16 @@ func main() {
 		os.Exit(1)
 	}
 
-	flag.String("type", "people", "type of records to query")
-	flag.String("id", "per7045252", "id to find")
-
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	pflag.Parse()
 	viper.BindPFlags(pflag.CommandLine)
 
-	fmt.Println(viper.GetString("type"))
-	listAll(viper.GetString("type"))
-
-	fmt.Println("******************")
-	findOne(viper.GetString("type"), viper.GetString("id"))
+	fmt.Println("******* aggregations ****")
+	// cmd switch for example?
+	example1()
 
 	defer elastic.Client.Stop()
 
-	fmt.Println("*****************")
-
-	idQuery()
 	elapsed := time.Since(start)
 	fmt.Printf("%s\n", elapsed)
 }

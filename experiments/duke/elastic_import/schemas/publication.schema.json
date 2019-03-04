@@ -6,7 +6,7 @@
   "properties": {
     "id": { "type": "string" },
     "uri": { "type": "string" },
-    "label": { "type": "string" },
+    "title": { "type": "string" },
     "authorList": { "type": "string" },
     "doi": { "type": "string"},
     "venue": { 
@@ -18,5 +18,5 @@
       "required": ["label"]
     }
   },
-  "required": ["id", "uri", "label"]
+  "required": ["id", "uri", "title"]
 }

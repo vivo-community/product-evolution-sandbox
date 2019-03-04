@@ -8,3 +8,10 @@ password = "vivo_data"
 
 [elastic]
 url = "http://elasticsearch:9200"
+
+[template]
+layout = "templates/layout/"
+include = "templates/"
+
+[schemas]
+dir = "schemas/"
