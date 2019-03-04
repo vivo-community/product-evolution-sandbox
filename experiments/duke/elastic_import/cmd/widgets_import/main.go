@@ -595,9 +595,14 @@ func stashPublications(person WidgetsPerson) {
 			Label: publication.Attributes.PublishedIn}
 
 		identifier := widgets_import.PublicationIdentifier{Doi: publication.Attributes.Doi}
+
+		// NOTE: this is kind of bogus
+		pubType := widgets_import.Type{publication.VivoType, publication.VivoType}
+
 		obj := widgets_import.Publication{Id: publicationId,
 			Uri:         publication.Uri,
 			Title:       publication.Label,
+			Type:        pubType,
 			Abstract:    publication.Attributes.Abstract,
 			DateDisplay: publication.Attributes.Datetime,
 			Issue:       publication.Attributes.Issue,
@@ -916,7 +921,7 @@ func main() {
 	var rdfFile string
 
 	pubsVisited = make(map[string]bool)
-    orgsVisited = make(map[string]bool)
+	orgsVisited = make(map[string]bool)
 	institutionsVisited = make(map[string]bool)
 	grantsVisited = make(map[string]bool)
 

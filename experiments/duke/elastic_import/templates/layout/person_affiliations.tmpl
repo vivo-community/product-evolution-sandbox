@@ -5,7 +5,12 @@
 		        "id":        { "type": "text" },
 			"sourceId":  { "type": "text" },
 		        "uri":       { "type": "text" },
-		        "label":     { "type": "text" },
+		        "label":     { 
+                            "type": "keyword",
+                            "fields": {
+                                "title": { "type": "keyword" }
+                            }
+                        },
 		        "startDate": {
 			      "type": "object",
 			      "properties": {
@@ -24,7 +29,12 @@
 		            "type": "object",
 			     "properties": {
 				      "id": { "type": "text" },
-				      "label": { "type": "text" }
+				      "label": { 
+                                          "type": "keyword",
+                                          "fields": {
+                                              "dept": { "type": "keyword"}
+                                          }
+                                      }
 			      }
 		        },
 		        "personId":  { "type": "text" }

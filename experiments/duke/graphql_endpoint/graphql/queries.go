@@ -15,7 +15,7 @@ var RootQuery = graphql.NewObject(graphql.ObjectConfig{
 })
 
 var GetPerson = &graphql.Field{
-	Type:        personType,
+	Type:        person,
 	Description: "Get Person",
 	Args: graphql.FieldConfigArgument{
 		"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
@@ -24,7 +24,7 @@ var GetPerson = &graphql.Field{
 }
 
 var GetPeople = &graphql.Field{
-	Type:        personListType,
+	Type:        personList,
 	Description: "Get all people",
 	Args: graphql.FieldConfigArgument{
 		"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
@@ -34,7 +34,7 @@ var GetPeople = &graphql.Field{
 }
 
 var GetPublications = &graphql.Field{
-	Type:        publicationListType,
+	Type:        publicationList,
 	Description: "Get all publications",
 	Args: graphql.FieldConfigArgument{
 		"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
@@ -44,7 +44,7 @@ var GetPublications = &graphql.Field{
 }
 
 var GetGrants = &graphql.Field{
-	Type:        grantListType,
+	Type:        grantList,
 	Description: "Get all grants",
 	Args: graphql.FieldConfigArgument{
 		"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},

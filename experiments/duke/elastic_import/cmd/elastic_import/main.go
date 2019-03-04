@@ -68,6 +68,7 @@ func clearIndexes(typeName string) {
 }
 
 func persistResources(typeName string, updates bool) {
+	fmt.Println("only updates = %t\n", updates)
 	switch typeName {
 	case "people":
 		mapping, err := elastic.PersonMapping()
@@ -116,7 +117,7 @@ func persistResources(typeName string, updates bool) {
 		roles := psql.RetrieveType("FundingRole", updates)
 		elastic.AddFundingRoles(roles)
 	case "publications":
-		mapping, err := elastic.GrantMapping()
+		mapping, err := elastic.PublicationMapping()
 		if err != nil {
 			fmt.Println(err)
 			break

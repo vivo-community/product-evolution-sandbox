@@ -358,24 +358,9 @@ func loadSchema(typeName string) *gojsonschema.Schema {
 	case "education":
 		return schemas["education"]
 	default:
-		return schemas["person"]
+		err := fmt.Sprintf("could not load schema, cancelling %s\n", typeName)
+		panic(err)
 	}
-	/*
-		// need some kind of config path I guess
-		b, err := ioutil.ReadFile(fmt.Sprintf("schemas/%s.schema.json", typeName)) // just pass the file name
-		if err != nil {
-			fmt.Print(err)
-		}
-		schemaDef := string(b)
-		loader1 := gojsonschema.NewStringLoader(schemaDef)
-		schema, err := gojsonschema.NewSchema(loader1)
-
-		if err != nil {
-			fmt.Println("could not load schema")
-			panic(err)
-		}
-		return schema
-	*/
 }
 
 func validate(schema *gojsonschema.Schema, data string) bool {
