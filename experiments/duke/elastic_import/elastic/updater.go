@@ -47,6 +47,7 @@ func addToIndex(index string, typeName string, id string, obj interface{}) {
 
 	if get1.Found {
 		update1, err := client.Update().
+		    RetryOnConflict(2).
 			Index(index).
 			Type(typeName).
 			Id(id).
@@ -93,6 +94,7 @@ func partialUpdate(index string, typeName string, id string, prop string, obj in
 
 	if get1.Found {
 		update1, err := client.Update().
+            RetryOnConflict(2).
 			Index(index).
 			Type(typeName).
 			Id(id).
