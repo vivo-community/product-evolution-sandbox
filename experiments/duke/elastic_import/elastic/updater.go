@@ -1,13 +1,13 @@
 package elastic
 
 import (
-	"fmt"
-	"log"
-	"github.com/olivere/elastic"
 	"context"
 	"encoding/json"
-	"github.com/davecgh/go-spew/spew"
+	"fmt"
 	"github.com/OIT-ads-web/widgets_import"
+	"github.com/davecgh/go-spew/spew"
+	"github.com/olivere/elastic"
+	"log"
 	//"github.com/OIT-ads-web/widgets_import/templates"
 )
 
@@ -47,7 +47,7 @@ func addToIndex(index string, typeName string, id string, obj interface{}) {
 
 	if get1.Found {
 		update1, err := client.Update().
-		    RetryOnConflict(2).
+			RetryOnConflict(2).
 			Index(index).
 			Type(typeName).
 			Id(id).
@@ -94,7 +94,7 @@ func partialUpdate(index string, typeName string, id string, prop string, obj in
 
 	if get1.Found {
 		update1, err := client.Update().
-            RetryOnConflict(2).
+			RetryOnConflict(2).
 			Index(index).
 			Type(typeName).
 			Id(id).
@@ -167,7 +167,7 @@ func ClearAuthorshipsIndex() {
 // NOTE: 'mappingJson' is just a json string plugged into template
 func makeIndex(name string, mappingJson string) {
 	ctx := context.Background()
-	
+
 	client := GetClient()
 
 	// Use the IndexExists service to check if a specified index exists.
@@ -291,4 +291,3 @@ func AddAuthorships(authorships []widgets_import.Resource) {
 		addToIndex("authorships", "authorship", resource.Id, resource)
 	}
 }
-
