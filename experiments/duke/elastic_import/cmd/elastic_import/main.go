@@ -3,15 +3,16 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"strings"
+	"sync"
+	"time"
+
 	wi "github.com/OIT-ads-web/widgets_import"
 	"github.com/OIT-ads-web/widgets_import/elastic"
 	"github.com/OIT-ads-web/widgets_import/psql"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"os"
-	"strings"
-	"sync"
-	"time"
 )
 
 var conf wi.Config
@@ -23,7 +24,7 @@ func preview(typeName string, updated bool) {
 		psql.ListPeople(updated)
 		mapping, err := elastic.PersonMapping()
 		if err != nil {
-		    fmt.Printf("error %s\n", err)
+			fmt.Printf("error %s\n", err)
 			break
 		}
 		wi.Preview(mapping)
@@ -31,7 +32,7 @@ func preview(typeName string, updated bool) {
 		psql.ListPublications(updated)
 		mapping, err := elastic.PublicationMapping()
 		if err != nil {
-		    fmt.Printf("error %s\n", err)
+			fmt.Printf("error %s\n", err)
 			break
 		}
 		wi.Preview(mapping)
@@ -39,7 +40,7 @@ func preview(typeName string, updated bool) {
 		psql.ListGrants(updated)
 		mapping, err := elastic.GrantMapping()
 		if err != nil {
-		    fmt.Printf("error %s\n", err)
+			fmt.Printf("error %s\n", err)
 			break
 		}
 		wi.Preview(mapping)
@@ -68,7 +69,7 @@ func clearIndexes(typeName string) {
 }
 
 func persistResources(typeName string, updates bool) {
-	fmt.Println("only updates = %t\n", updates)
+	fmt.Printf("only updates = %t\n", updates)
 	switch typeName {
 	case "people":
 		mapping, err := elastic.PersonMapping()
