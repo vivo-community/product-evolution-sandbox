@@ -6,13 +6,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/OIT-ads-web/widgets_import"
-	"github.com/davecgh/go-spew/spew"
-	"github.com/jmoiron/sqlx"
-	"github.com/knakk/rdf"
-	_ "github.com/lib/pq"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
 	"io"
 	"io/ioutil"
 	"log"
@@ -21,6 +14,14 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/OIT-ads-web/widgets_import"
+	"github.com/davecgh/go-spew/spew"
+	"github.com/jmoiron/sqlx"
+	"github.com/knakk/rdf"
+	_ "github.com/lib/pq"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 )
 
 var client *http.Client
