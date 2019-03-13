@@ -284,45 +284,10 @@ var person = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-// filter
+
 /*
-    "sort" : [
-        { "post_date" : {"order" : "asc"}},
-        "user",
-        { "name" : "desc" },
-        { "age" : "desc" },
-        "_score"
-    ],
-
-this is probably most obvious way:
-{"price" : {"order" : "asc", "mode" : "avg"}}
-
-"sort" : [
-      {"price" : {"order" : "asc", "mode" : "avg"}}
-   ]
-
-   "sort" : [
-      {
-         "parent.child.age" : {
-            "mode" :  "min",
-            "order" : "asc",
-            "nested": {
-               "path": "parent",
-               "filter": {
-                  "range": {"parent.age": {"gte": 21}}
-               },
-               "nested": {
-                  "path": "parent.child",
-                  "filter": {
-                     "match": {"parent.child.name": "matt"}
-                  }
-               }
-            }
-         }
-      }
-   ]
+FIXME: not sure best way to send in sorting paramters right now
 */
-
 var sortField = graphql.NewObject(graphql.ObjectConfig{
 	Name: "SortField",
 	Fields: graphql.Fields{
