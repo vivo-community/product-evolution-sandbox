@@ -6,12 +6,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/OIT-ads-web/widgets_import"
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
-	"github.com/xeipuuv/gojsonschema"
 	"io/ioutil"
 	"log"
 	"os"
@@ -19,6 +13,13 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/OIT-ads-web/widgets_import"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
+	"github.com/xeipuuv/gojsonschema"
 )
 
 var conf widgets_import.Config
@@ -28,8 +29,6 @@ var psqlInfo string
 func GetConnection() *sqlx.DB {
 	return db
 }
-
-//Created  time.Time
 
 //https://stackoverflow.com/questions/28800672/how-to-add-new-methods-to-an-existing-type-in-go
 type Person widgets_import.Person
@@ -59,23 +58,35 @@ func retrieveType(typeName string) []widgets_import.StagingResource {
 	db = GetConnection()
 	resources := []widgets_import.StagingResource{}
 
-	err := db.Select(&resources, "SELECT id, type, data FROM staging WHERE type =  $1", typeName)
+	// NOTE: this does *not* filter by is_valid so we can try
+	// again with previously fails
+	sql := `SELECT id, type, data 
+	FROM staging 
+	WHERE type = $1
+	`
+	err := db.Select(&resources, sql, typeName)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	return resources
 }
 
+// NOTE: this method just lists out the valid records - is not
+// used in processing
 func listType(typeName string) {
 	db = GetConnection()
 	resources := []widgets_import.StagingResource{}
 
 	schema := loadSchema(typeName)
-	err := db.Select(&resources, "SELECT id, type, data FROM staging WHERE type =  $1",
-		typeName)
+	sql := `SELECT id, type, data 
+	FROM staging 
+	WHERE type = $1
+	AND is_valid != FALSE
+	`
+	err := db.Select(&resources, sql, typeName)
 	for _, element := range resources {
 		valid := validate(schema, string(element.Data))
-		log.Printf("%s is %t\n", element, valid)
+		log.Printf("%v is %t\n", element, valid)
 	}
 	if err != nil {
 		log.Fatalln(err)
@@ -86,10 +97,13 @@ func retrieveSingle(id string, typeName string) widgets_import.StagingResource {
 	db = GetConnection()
 	found := widgets_import.StagingResource{}
 
-	findSql := `SELECT id, type, data FROM staging
+	// NOTE: this does *not* filter by is_valid - because it's
+	// one at a time and would be a re-attempt
+	findSQL := `SELECT id, type, data 
+	  FROM staging
 	  WHERE (id = $1 AND type = $2)`
 
-	err := db.Get(&found, findSql, id, typeName)
+	err := db.Get(&found, findSQL, id, typeName)
 
 	if err != nil {
 		log.Fatalln(err)
@@ -128,6 +142,7 @@ func makeHash(text string) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
+/*
 func resourceExists(uri string, typeName string) bool {
 	var exists bool
 	db = GetConnection()
@@ -135,6 +150,7 @@ func resourceExists(uri string, typeName string) bool {
 	db.Get(&exists, sqlExists, uri, typeName)
 	return exists
 }
+*/
 
 func saveResource(obj interface{}, uri string, typeName string) (err error) {
 	str, err := json.Marshal(obj)
@@ -152,10 +168,12 @@ func saveResource(obj interface{}, uri string, typeName string) (err error) {
 		Data:  str,
 		DataB: str}
 
-	findSql := `SELECT uri, type, hash, data, data_b  FROM resources 
-	  WHERE (uri = $1 AND type = $2)`
+	findSQL := `SELECT uri, type, hash, data, data_b  
+	  FROM resources 
+		WHERE (uri = $1 AND type = $2)
+	`
 
-	err = db.Get(&found, findSql, uri, typeName)
+	err = db.Get(&found, findSQL, uri, typeName)
 
 	tx := db.MustBegin()
 	// error means not found - sql.ErrNoRows
@@ -166,7 +184,8 @@ func saveResource(obj interface{}, uri string, typeName string) (err error) {
 	      VALUES (:uri, :type, :hash, :data, :data_b)`
 		_, err := tx.NamedExec(sql, res)
 		if err != nil {
-			log.Fatalln(">ERROR(INSERT):%v", err)
+			log.Printf(">ERROR(INSERT):%v", err)
+			os.Exit(1)
 		}
 	} else {
 
@@ -175,7 +194,7 @@ func saveResource(obj interface{}, uri string, typeName string) (err error) {
 		} else {
 			fmt.Printf(">UPDATE:%v\n", found.Uri)
 			sql := `UPDATE resources 
-	          set uri = :uri, 
+	        set uri = :uri, 
 		      type = :type, 
 		      hash = :hash, 
 		      data = :data, 
@@ -185,7 +204,8 @@ func saveResource(obj interface{}, uri string, typeName string) (err error) {
 			_, err := tx.NamedExec(sql, res)
 
 			if err != nil {
-				log.Fatalln(">ERROR(UPDATE):%v", err)
+				log.Printf(">ERROR(UPDATE):%v", err)
+				os.Exit(1)
 			}
 		}
 	}
@@ -194,19 +214,39 @@ func saveResource(obj interface{}, uri string, typeName string) (err error) {
 	return err
 }
 
+// TODO: should probably batch these when validating and
+// mark valid, invalid in groups of 500 or something
 func markInvalidInStaging(res widgets_import.StagingResource) {
 	db = GetConnection()
 
-	//key := PrimaryKey{Id: id, Type: typeName}
 	tx := db.MustBegin()
 	fmt.Printf(">UPDATE:%v\n", res.Id)
 	sql := `UPDATE staging
-	    set is_valid = FALSE, 
+	  set is_valid = FALSE
 		WHERE id = :id and type = :type`
 	_, err := tx.NamedExec(sql, res)
 
 	if err != nil {
-		log.Fatalln(">ERROR(UPDATE):%v", err)
+		log.Printf(">ERROR(UPDATE):%v", err)
+		os.Exit(1)
+	}
+	tx.Commit()
+}
+
+// TODO: see above (batching)
+func markValidInStaging(res widgets_import.StagingResource) {
+	db = GetConnection()
+
+	tx := db.MustBegin()
+	fmt.Printf(">UPDATE:%v\n", res.Id)
+	sql := `UPDATE staging
+	  set is_valid = TRUE 
+		WHERE id = :id and type = :type`
+	_, err := tx.NamedExec(sql, res)
+
+	if err != nil {
+		log.Printf(">ERROR(UPDATE):%v", err)
+		os.Exit(1)
 	}
 	tx.Commit()
 }
@@ -221,7 +261,8 @@ func deleteFromStaging(res widgets_import.StagingResource) {
 	log.Println(sql)
 	err := tx.Commit()
 	if err != nil {
-		log.Fatalln(">ERROR(DELETE):%v", err)
+		log.Printf(">ERROR(DELETE):%v", err)
+		os.Exit(1)
 	}
 }
 
@@ -237,7 +278,8 @@ func resourceTableExists() bool {
     )`
 	err := db.QueryRow(sqlExists).Scan(&exists)
 	if err != nil {
-		log.Fatalln("error checking if row exists %v", err)
+		log.Printf("error checking if row exists %v", err)
+		os.Exit(1)
 	}
 	return exists
 }
@@ -264,7 +306,8 @@ func makeResourceSchema() {
 
 	err := tx.Commit()
 	if err != nil {
-		log.Fatalln("ERROR(CREATE):%v", err)
+		log.Printf("ERROR(CREATE):%v", err)
+		os.Exit(1)
 	}
 }
 
@@ -293,7 +336,8 @@ func clearResources(typeName string) {
 	log.Println(sql)
 	err := tx.Commit()
 	if err != nil {
-		log.Fatalln(">ERROR(DELETE):%v", err)
+		log.Printf(">ERROR(DELETE):%v", err)
+		os.Exit(1)
 	}
 }
 
@@ -368,7 +412,7 @@ func validate(schema *gojsonschema.Schema, data string) bool {
 	result, err := schema.Validate(docLoader)
 
 	if err != nil {
-		fmt.Sprintf("error validating\n")
+		fmt.Println("error validating")
 		return false
 	}
 
@@ -401,13 +445,15 @@ func addPerson(id string) {
 	fmt.Println(uri)
 
 	valid := validate(schema, string(data))
+
 	if valid {
 		err := saveResource(resource, uri, "Person")
 		if err != nil {
 			fmt.Printf("- %s\n", err)
 		}
+		markValidInStaging(person)
 	} else {
-		//markInvalidInStaging(element)
+		markInvalidInStaging(person)
 	}
 }
 
@@ -415,7 +461,6 @@ func addPeople() {
 	schema := loadSchema("person")
 	people := retrieveType("Person")
 	for _, element := range people {
-		//resource := widgets_import.Person{}
 		resource := Person{}
 		data := element.Data
 		json.Unmarshal(data, &resource)
@@ -429,8 +474,9 @@ func addPeople() {
 			if err != nil {
 				fmt.Printf("- %s\n", err)
 			}
+			markValidInStaging(element)
 		} else {
-			//markInvalidInStaging(element)
+			markInvalidInStaging(element)
 		}
 	}
 }
@@ -451,6 +497,9 @@ func addAffiliations() {
 			if err != nil {
 				fmt.Printf("- %s\n", err)
 			}
+			markValidInStaging(element)
+		} else {
+			markInvalidInStaging(element)
 		}
 	}
 }
@@ -471,6 +520,9 @@ func addEducations() {
 			if err != nil {
 				fmt.Printf("- %s\n", err)
 			}
+			markValidInStaging(element)
+		} else {
+			markInvalidInStaging(element)
 		}
 	}
 }
@@ -494,8 +546,9 @@ func addGrant(id string) {
 		if err != nil {
 			fmt.Printf("- %s\n", err)
 		}
+		markValidInStaging(grant)
 	} else {
-		//markInvalidInStaging(element)
+		markInvalidInStaging(grant)
 	}
 }
 
@@ -515,7 +568,9 @@ func addGrants() {
 			if err != nil {
 				fmt.Printf("- %s\n", err)
 			}
-
+			markValidInStaging(element)
+		} else {
+			markInvalidInStaging(element)
 		}
 	}
 }
@@ -536,6 +591,9 @@ func addFundingRoles() {
 			if err != nil {
 				fmt.Printf("- %s\n", err)
 			}
+			markValidInStaging(element)
+		} else {
+			markInvalidInStaging(element)
 		}
 	}
 }
@@ -558,8 +616,9 @@ func addPublication(id string) {
 		if err != nil {
 			fmt.Printf("- %s\n", err)
 		}
+		markValidInStaging(publication)
 	} else {
-		//markInvalidInStaging(element)
+		markInvalidInStaging(publication)
 	}
 }
 
@@ -581,6 +640,9 @@ func addPublications() {
 			if err != nil {
 				fmt.Printf("- %s\n", err)
 			}
+			markValidInStaging(element)
+		} else {
+			markInvalidInStaging(element)
 		}
 	}
 }
@@ -601,6 +663,9 @@ func addAuthorships() {
 			if err != nil {
 				fmt.Printf("- %s\n", err)
 			}
+			markValidInStaging(element)
+		} else {
+			markInvalidInStaging(element)
 		}
 	}
 }
@@ -627,6 +692,7 @@ func persistResources(dryRun bool, typeName string) {
 			listEducations()
 		case "grants":
 			listGrants()
+			listFundingRoles()
 		case "publications":
 			listPublications()
 		case "all":
@@ -634,6 +700,7 @@ func persistResources(dryRun bool, typeName string) {
 			listPositions()
 			listEducations()
 			listGrants()
+			listFundingRoles()
 			listPublications()
 		}
 	} else {

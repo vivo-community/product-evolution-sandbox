@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+
 	"github.com/OIT-ads-web/widgets_import"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/olivere/elastic"
-	"log"
-	//"github.com/OIT-ads-web/widgets_import/templates"
 )
 
 func addToIndex(index string, typeName string, id string, obj interface{}) {

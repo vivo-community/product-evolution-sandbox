@@ -1,8 +1,9 @@
 package widgets_import
 
 import (
-	"github.com/jmoiron/sqlx/types"
 	"time"
+
+	"github.com/jmoiron/sqlx/types"
 )
 
 /*
@@ -31,16 +32,7 @@ type PersonKeyword struct {
 type PublicationKeyword struct {
 	Label  string `json:"label"`
 	Source string `json:"source"`
-	//Identifier string `json:"identifer"`
 }
-
-/*
-???
-type KeywordIdentifier struct {
-    Source string `json:"source"`
-	SourceId string `json:"sourceId"`
-}
-*/
 
 type PersonImage struct {
 	Main      string `json:"main"`
@@ -61,6 +53,7 @@ type PersonIdentifier struct {
 }
 
 /*
+spec:
 publication.identifier
 publication.identifier.isbn10
 publication.identifier.isbn13
@@ -83,6 +76,7 @@ type Type struct {
 }
 
 /*
+spec:
 overviewList
 overview.id
 overview.sourceId
@@ -92,12 +86,6 @@ overview.type
 overview.type.code
 overview.type.label
 */
-/*
-type OverviewType struct {
-	Code  string `json:"code"`
-	Label string `json:"label"`
-}
-*/
 
 type PersonOverview struct {
 	Label string `json:"label"`
@@ -105,6 +93,7 @@ type PersonOverview struct {
 }
 
 /*
+spec:
 serviceRoleList
 serviceRole.id
 serviceRole.sourceId
@@ -161,6 +150,7 @@ type Website struct {
 }
 
 /*
+spec:
 contactList
 contact.id
 contact.uri
@@ -196,6 +186,7 @@ type Contact struct {
 }
 
 /*
+spec:
 courseTaughtList
 courseTaught.id
 courseTaught.sourceId
@@ -236,6 +227,7 @@ type Extension struct {
 }
 
 /*
+spec:
 person
 person.id
 person.sourceId
@@ -289,6 +281,7 @@ type DateResolution struct {
 }
 
 /*
+spec:
 organizationList
 organization.id
 organization.sourceId
@@ -312,14 +305,7 @@ type Organization struct {
 }
 
 /*
-type Institution struct {
-	Id    string `json:"id"`
-	Uri   string `json:"uri"`
-	Label string `json:"label"`
-}
-*/
-
-/*
+spec:
 affiliationRoleList
 affiliationRoleList.id
 affiliationRoleList.sourceId
@@ -351,6 +337,7 @@ type Affiliation struct {
 }
 
 /*
+spec:
 educationList
 education.id
 education.sourceId
@@ -380,6 +367,7 @@ type Education struct {
 }
 
 /*
+spec:
 fundingRoleList
 fundingRole.id
 fundingRole.sourceId
@@ -424,6 +412,7 @@ type Authorship struct {
 }
 
 /*
+spec:
 publication.venue.id
 publication.venue.sourceId
 publication.venue.uri
@@ -438,6 +427,7 @@ type PublicationVenue struct {
 }
 
 /*
+spec:
 publication.venue.identifier.eissn
 publication.venue.identifier.issn
 publication.venue.identifier.isbn10
@@ -451,6 +441,8 @@ type PublicationVenueIdentifier struct {
 }
 
 /*
+spec:
+
 publicationList
 publication.id
 publication.sourceId

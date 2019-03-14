@@ -2,10 +2,11 @@ package psql
 
 import (
 	"github.com/OIT-ads-web/widgets_import"
-	//"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
+
 	"log"
 	"time"
+
+	_ "github.com/lib/pq"
 )
 
 func RetrieveType(typeName string, updates bool) []widgets_import.Resource {
@@ -16,8 +17,8 @@ func RetrieveType(typeName string, updates bool) []widgets_import.Resource {
 	if updates {
 		// TODO: ideally would need to record time last run somewhere
 		yesterday := time.Now().AddDate(0, 0, -1)
-        rounded := time.Date(yesterday.Year(), yesterday.Month(), 
-		    yesterday.Day(), 0, 0, 0, 0, yesterday.Location())
+		rounded := time.Date(yesterday.Year(), yesterday.Month(),
+			yesterday.Day(), 0, 0, 0, 0, yesterday.Location())
 
 		sql := `SELECT uri, type, hash, data 
 		FROM resources 
@@ -25,7 +26,11 @@ func RetrieveType(typeName string, updates bool) []widgets_import.Resource {
       `
 		err = db.Select(&resources, sql, typeName, rounded)
 	} else {
-		err = db.Select(&resources, "SELECT uri, type, hash, data FROM resources WHERE type =  $1", typeName)
+		sql := `SELECT uri, type, hash, data 
+		FROM resources 
+		WHERE type =  $1
+		`
+		err = db.Select(&resources, sql, typeName)
 	}
 
 	if err != nil {
@@ -43,20 +48,23 @@ func ListType(typeName string, updates bool) {
 		// TODO: ideally would need to record time last run somewhere
 		yesterday := time.Now().AddDate(0, 0, -1)
 
-        rounded := time.Date(yesterday.Year(), yesterday.Month(), 
-		    yesterday.Day(), 0, 0, 0, 0, yesterday.Location())
+		rounded := time.Date(yesterday.Year(), yesterday.Month(),
+			yesterday.Day(), 0, 0, 0, 0, yesterday.Location())
 
 		sql := `SELECT uri, type, hash, data 
 		FROM resources 
-		WHERE type =  $1 and updated_at >= $2
+		WHERE type = $1 
+		and updated_at >= $2
       `
 		err = db.Select(&resources, sql, typeName, rounded)
 	} else {
-		err = db.Select(&resources, "SELECT uri, type, hash, data FROM resources WHERE type =  $1", typeName)
+		sql := `SELECT uri, type, hash, data 
+		FROM resources 
+		WHERE type = $1
+      `
+		err = db.Select(&resources, sql, typeName)
 	}
 
-	//err := db.Select(&resources, "SELECT uri, type, hash, data FROM resources WHERE type =  $1",
-	//	typeName)
 	for _, element := range resources {
 		log.Println(element)
 		// element is the element from someSlice for where we are

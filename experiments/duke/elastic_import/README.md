@@ -49,26 +49,26 @@ Example: run them in order
 
 Import data from a specified duke widget organization URI into a `staging` table
 
-> cmd/widgets_import/widgets_import -config <config_file> -org org50000500 -type all
+> cmd/widgets_import/widgets_import --config <config_file> --org org50000500 --type all
 
 #### 2
 
 Import data from staging table into `resources` table
 
-> cmd/staging_import/staging_import -config <config_file> -type all
+> cmd/staging_import/staging_import --config <config_file> --type all
 
 
 #### 3
 
 Import data from `resources` table into elastic index
 
-> cmd/elastic_import/elastic_import -config <config_file> -type all
+> cmd/elastic_import/elastic_import --config <config_file> --type all
 
 
 **NOTE**: to reset data, run the same commands with the `-remove` flag set e.g.:
 
-> cmd/elastic_import/elastic_import -remove=true -type all
-> cmd/elastic_import/elastic_import -type=people -remove=true
+> cmd/elastic_import/elastic_import --remove=true --type all
+> cmd/elastic_import/elastic_import --type=people --remove=true
 
 
 ### Config
@@ -108,32 +108,32 @@ So try docker:9200 instead (for instance).
 ### Getting started
 
 You can run each `type` separately.  Typically, for demo purposes you would just
-run `-type all`, but the option is there to run (and remove) by type:
+run `--type all`, but the option is there to run (and remove) by type:
 
 #### People
-> cmd/widgets_import/widgets_import -type=people
-> cmd/staging_import/staging_import -type=people
-> cmd/elastic_import/elastic_import -type=people
+> cmd/widgets_import/widgets_import --type=people
+> cmd/staging_import/staging_import --type=people
+> cmd/elastic_import/elastic_import --type=people
 
 #### Affiliations (**NOTE:*** 'positions' vs 'affiliations')
-> cmd/widgets_import/widgets_import -type=positions
-> cmd/staging_import/staging_import -type=affiliations
-> cmd/elastic_import/elastic_import -type=affiliations
+> cmd/widgets_import/widgets_import --type=positions
+> cmd/staging_import/staging_import --type=affiliations
+> cmd/elastic_import/elastic_import --type=affiliations
 
 #### Educations
-> cmd/widgets_import/widgets_import -type=educations
-> cmd/staging_import/staging_import -type=educations
-> cmd/elastic_import/elastic_import -type=educations
+> cmd/widgets_import/widgets_import --type=educations
+> cmd/staging_import/staging_import --type=educations
+> cmd/elastic_import/elastic_import --type=educations
 
 #### Grants
-> cmd/widgets_import/widgets_import -type=grants
-> cmd/staging_import/staging_import -type=grants
-> cmd/elastic_import/elastic_import -type=grants
+> cmd/widgets_import/widgets_import --type=grants
+> cmd/staging_import/staging_import --type=grants
+> cmd/elastic_import/elastic_import --type=grants
 
 #### Publications
-> cmd/widgets_import/widgets_import -type=publications
-> cmd/staging_import/staging_import -type=publications
-> cmd/elastic_import/elastic_import -type=publications
+> cmd/widgets_import/widgets_import --type=publications
+> cmd/staging_import/staging_import --type=publications
+> cmd/elastic_import/elastic_import --type=publications
 
 
 ## Exporting data from Elasticsearch
@@ -161,155 +161,10 @@ If you want to use the graphql_endpoint and react-static parts of this duke/expe
 folder without using this particular, duke-specific data ingest method, you only need
 to bring in data however it is easiest for you in the following elastic mappings:
 
+The current mappings can be seen here:
+[Duke elastic instance](https://elasticsearch-ads-graphql-elastic.cloud.duke.edu/_mappings)
 
-### personMapping
-
-```json
-"person":{
-	"properties":{
-		"id":           { "type": "text" },
-		"uri":          { "type": "text" },
-		"primaryTitle": { "type": "text" },
-		"name":{
-			"type":"object",
-			"properties": {
-				"firstName":  { "type": "text" },
-				"lastName":   { "type": "text" },
-				"middleName": { "type": "text" }
-		    }
-		},
-		"image": {
-			"type": "object",
-			"properties": {
-				"main":      { "type": "text" },
-				"thumbnail": { "type": "text" }
-			}
-		},
-	        "keywordList": {
-	          "type": "nested",
-	          "properties": {
-		      "uri":   { "type": "text" },
-		      "label": { "type": "text" }
-	          }
-		},
-		"affiliationList": {
-			"type": "nested",
-		        "properties":{
-		          "id":        { "type": "text" },
-		          "uri":       { "type": "text" },
-		          "label":     { "type": "text" },
-		          "startDate": {
-			      "type": "object",
-			      "properties": {
-				    "dateTime":   { "type": "text" },
-				    "resolution": { "type": "text" }
-			      }
-		          },
-		          "organizationId":    { "type": "text" },
-		          "organizationLabel": { "type": "text" } 
-                     }
-		},
-		"educationList": {
-			"type": "nested",
-	                "properties":{
-		          "id":        { "type": "text" },
-		          "uri":       { "type": "text" },
-		          "label":     { "type": "text" },
-		          "personId":  { "type": "text" },
-		          "org":     { 
-			        "type": "object",
-			        "properties": {
-				      "id": { "type": "text" },
-				      "label": { "type": "text" }
-			        }
-		        }
-	            }
-		},
-		"extensions": {
-			"type": "nested",
-			"properties": {
-				"key":   { "type": "text" },
-				"value": { "type": "text" }
-			}			
-		}
-    }
-}
-```
-
-### grants
-
-```json
-"grant":{
-	"properties":{
-		"id":        { "type": "text" },
-		"uri":       { "type": "text" },
-		"label":     { "type": "text" },
-		"startDate": {
-			"type": "object",
-			"properties": {
-				"dateTime":   { "type": "text" },
-				"resolution": { "type": "text" }
-			}
-		},
-		"endDate": {
-			"type": "object",
-			"properties": {
-				"dateTime":   { "type": "text" },
-				"resolution": { "type": "text" }
-			}
-		}
-	}
-}
-```
-
-### funding-roles
-
-```json
-"funding-role":{
-	"properties":{
-		"id":        { "type": "text" },
-		"uri":       { "type": "text" },
-		"grantId":   { "type": "text" },
-		"personId":  { "type": "text" },
-		"label":     { "type": "text" }
-	}
-}
-```
-
-### publications
-
-```json
-"publication":{
-	"properties":{
-		"id":         { "type": "text" },
-		"uri":        { "type": "text" },
-		"label":      { "type": "text" },
-		"authorList": { "type": "text" },
-		"doi":        { "type": "text" },
-        "venue":      {
-			"type": "object",
-			"properties": {
-				"uri":   { "type": "text" },
-				"label": { "type": "text" }
-			}
-		}
-	}
-}
-```
-
-### authorships
-
-```json
-"authorship":{
-	"properties":{
-		"id":             { "type": "text" },
-		"uri":            { "type": "text" },
-		"publicationId":  { "type": "text" },
-		"personId":       { "type": "text" },
-		"label":          { "type": "text" }
-	}
-}
-```
+or using localhost if running locally
 
 You can also *only* bring in data to the staging table (see cmd/staging_import/main.go).
 
