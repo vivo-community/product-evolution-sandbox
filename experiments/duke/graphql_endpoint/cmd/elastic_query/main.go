@@ -3,16 +3,17 @@ package main
 import (
 	"flag"
 	"fmt"
-	ge "github.com/OIT-ads-web/graphql_endpoint"
-	"github.com/OIT-ads-web/graphql_endpoint/elastic"
-	"github.com/OIT-ads-web/graphql_endpoint/examples"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
 	"os"
 	"strings"
 	"time"
-)
 
+	ge "github.com/OIT-ads-web/graphql_endpoint"
+	"github.com/OIT-ads-web/graphql_endpoint/elastic"
+	"github.com/OIT-ads-web/graphql_endpoint/examples"
+	"github.com/OIT-ads-web/graphql_endpoint/http"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
+)
 
 func example1() {
 	examples.ExampleAggregations()
@@ -49,7 +50,9 @@ func main() {
 
 	fmt.Printf("trying to connect to elastic at %s\n", conf.Elastic.Url)
 
-	if err := elastic.MakeClient(conf.Elastic.Url); err != nil {
+	httpClient := http.LoggingClient
+
+	if err := elastic.MakeClientDebug(conf.Elastic.Url, httpClient); err != nil {
 		fmt.Printf("could not establish elastic client %s\n", err)
 		os.Exit(1)
 	}

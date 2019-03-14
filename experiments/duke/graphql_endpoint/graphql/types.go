@@ -284,7 +284,6 @@ var person = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-
 /*
 FIXME: not sure best way to send in sorting paramters right now
 */
