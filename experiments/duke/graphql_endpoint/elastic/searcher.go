@@ -74,8 +74,9 @@ func FindPeople(size int, from int) (ge.PersonList, error) {
 	ctx := context.Background()
 	client := GetClient()
 
+	queryText := "*:*"
 	// TODO: was MatchAll - this is different
-	q := elastic.NewQueryStringQuery("*:*")
+	q := elastic.NewQueryStringQuery(queryText)
 
 	log.Println("looking for people")
 
@@ -85,6 +86,9 @@ func FindPeople(size int, from int) (ge.PersonList, error) {
 		From(from).
 		Size(size)
 
+	keywordsSize := 100
+	departmentsSize := 100
+
 	// TODO: kind of kludged together here - probably much better way to do
 	agg := elastic.NewTermsAggregation().Field("type.label")
 	service = service.Aggregation("types", agg)
@@ -93,13 +97,13 @@ func FindPeople(size int, from int) (ge.PersonList, error) {
 	subAgg := nested.SubAggregation("keyword",
 		elastic.NewTermsAggregation().
 			Field("keywordList.label.keyword").
-			Size(100))
+			Size(keywordsSize))
 
 	nested2 := elastic.NewNestedAggregation().Path("affiliationList")
 	subAgg2 := nested2.SubAggregation("department",
 		elastic.NewTermsAggregation().
 			Field("affiliationList.organization.label.dept").
-			Size(100))
+			Size(departmentsSize))
 
 	service = service.Aggregation("keywords", subAgg)
 	service = service.Aggregation("affiliations", subAgg2)
