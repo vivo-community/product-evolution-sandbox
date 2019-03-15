@@ -2,10 +2,11 @@ package graphql
 
 //https://medium.com/@benbjohnson/standard-package-layout-7cdbc8391fc1
 import (
+	"log"
+
 	ge "github.com/OIT-ads-web/graphql_endpoint"
 	"github.com/OIT-ads-web/graphql_endpoint/elastic"
 	"github.com/graphql-go/graphql"
-	"log"
 )
 
 func personResolver(params graphql.ResolveParams) (interface{}, error) {
@@ -17,10 +18,16 @@ func personResolver(params graphql.ResolveParams) (interface{}, error) {
 }
 
 func peopleResolver(params graphql.ResolveParams) (interface{}, error) {
-	size := params.Args["size"].(int)
-	from := params.Args["from"].(int)
+	// TODO: how else to get default?
+	limit := 100
+	offset := 0
+	if filter, ok := params.Args["filter"]; ok {
+		obj := filter.(map[string]interface{})
+		limit = obj["limit"].(int)
+		offset = obj["offset"].(int)
+	}
 
-	personList, err := elastic.FindPeople(size, from)
+	personList, err := elastic.FindPeople(limit, offset)
 	return personList, err
 }
 
@@ -64,4 +71,3 @@ func personGrantResolver(params graphql.ResolveParams) (interface{}, error) {
 		return &grants, err
 	}, nil
 }
-

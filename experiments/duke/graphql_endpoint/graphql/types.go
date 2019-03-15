@@ -285,7 +285,9 @@ var person = graphql.NewObject(graphql.ObjectConfig{
 })
 
 /*
-FIXME: not sure best way to send in sorting paramters right now
+FIXME: not sure best way to send in sorting parameters right now
+
+also how to add enum of choices (e.g. asc, desc)
 */
 var sortField = graphql.NewObject(graphql.ObjectConfig{
 	Name: "SortField",
@@ -296,6 +298,7 @@ var sortField = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+// would be different per type (e.g. People, Publications)
 var sorter = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Sort",
 	Fields: graphql.Fields{
@@ -308,7 +311,7 @@ var filter = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"limit":  &graphql.Field{Type: graphql.Int},
 		"offset": &graphql.Field{Type: graphql.Int},
-		"sort":   &graphql.Field{Type: sorter},
+		//"sort":   &graphql.Field{Type: sorter},
 	},
 })
 

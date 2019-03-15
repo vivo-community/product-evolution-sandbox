@@ -5,10 +5,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+
 	ge "github.com/OIT-ads-web/graphql_endpoint"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/olivere/elastic"
-	"log"
 )
 
 // NOTE: these should all take a 'context' parameter
@@ -38,21 +39,21 @@ func parsePeopleAggregations(facets elastic.Aggregations) *ge.PeopleFacets {
 	if agg, found := facets.Nested("keywords"); found {
 		var facets []ge.Facet
 		if sub, subFound := agg.Terms("keyword"); subFound {
-		   for _, bucket := range sub.Buckets {
-			   facet := ge.Facet{Label: bucket.Key.(string), Count: bucket.DocCount}
-			   facets = append(facets, facet)
-		   }
+			for _, bucket := range sub.Buckets {
+				facet := ge.Facet{Label: bucket.Key.(string), Count: bucket.DocCount}
+				facets = append(facets, facet)
+			}
 		}
 		peopleFacets.Keywords = facets
 	}
-	
+
 	if agg, found := facets.Nested("affiliations"); found {
 		var facets []ge.Facet
 		if sub, subFound := agg.Terms("department"); subFound {
-		   for _, bucket := range sub.Buckets {
-			   facet := ge.Facet{Label: bucket.Key.(string), Count: bucket.DocCount}
-			   facets = append(facets, facet)
-		   }
+			for _, bucket := range sub.Buckets {
+				facet := ge.Facet{Label: bucket.Key.(string), Count: bucket.DocCount}
+				facets = append(facets, facet)
+			}
 		}
 		peopleFacets.Departments = facets
 	}
@@ -73,7 +74,8 @@ func FindPeople(size int, from int) (ge.PersonList, error) {
 	ctx := context.Background()
 	client := GetClient()
 
-	q := elastic.NewMatchAllQuery()
+	// TODO: was MatchAll - this is different
+	q := elastic.NewQueryStringQuery("*:*")
 
 	log.Println("looking for people")
 
@@ -81,18 +83,23 @@ func FindPeople(size int, from int) (ge.PersonList, error) {
 		Index("people").
 		Query(q).
 		From(from).
-		Size(size) 
+		Size(size)
 
 	// TODO: kind of kludged together here - probably much better way to do
 	agg := elastic.NewTermsAggregation().Field("type.label")
 	service = service.Aggregation("types", agg)
 
 	nested := elastic.NewNestedAggregation().Path("keywordList")
-	subAgg := nested.SubAggregation("keyword", elastic.NewTermsAggregation().Field("keywordList.label.keyword"))
+	subAgg := nested.SubAggregation("keyword",
+		elastic.NewTermsAggregation().
+			Field("keywordList.label.keyword").
+			Size(100))
 
 	nested2 := elastic.NewNestedAggregation().Path("affiliationList")
 	subAgg2 := nested2.SubAggregation("department",
-		elastic.NewTermsAggregation().Field("affiliationList.organization.label.dept"))
+		elastic.NewTermsAggregation().
+			Field("affiliationList.organization.label.dept").
+			Size(100))
 
 	service = service.Aggregation("keywords", subAgg)
 	service = service.Aggregation("affiliations", subAgg2)
@@ -137,22 +144,22 @@ func FindPublications(size int, from int) (ge.PublicationList, error) {
 		Size(size)
 
 	/*
-	// TODO: kind of kludged together here - probably much better way to do
-	agg := elastic.NewTermsAggregation().Field("type.label")
-	service = service.Aggregation("types", agg)
+		// TODO: kind of kludged together here - probably much better way to do
+		agg := elastic.NewTermsAggregation().Field("type.label")
+		service = service.Aggregation("types", agg)
 
-	nested := elastic.NewNestedAggregation().Path("keywordList")
-	subAgg := nested.SubAggregation("keyword", elastic.NewTermsAggregation().Field("keywordList.label.keyword"))
+		nested := elastic.NewNestedAggregation().Path("keywordList")
+		subAgg := nested.SubAggregation("keyword", elastic.NewTermsAggregation().Field("keywordList.label.keyword"))
 
-	nested2 := elastic.NewNestedAggregation().Path("affiliationList")
-	subAgg2 := nested2.SubAggregation("department",
-		elastic.NewTermsAggregation().Field("affiliationList.organization.label.dept"))
+		nested2 := elastic.NewNestedAggregation().Path("affiliationList")
+		subAgg2 := nested2.SubAggregation("department",
+			elastic.NewTermsAggregation().Field("affiliationList.organization.label.dept"))
 
-	service = service.Aggregation("keywords", subAgg)
-	service = service.Aggregation("affiliations", subAgg2)
-    */
+		service = service.Aggregation("keywords", subAgg)
+		service = service.Aggregation("affiliations", subAgg2)
+	*/
 
-	searchResult, err := service.Do(ctx)	
+	searchResult, err := service.Do(ctx)
 	if err != nil {
 		// Handle error
 		panic(err)
@@ -260,7 +267,7 @@ func FindGrants(size int, from int) (ge.GrantList, error) {
 
 	q := elastic.NewMatchAllQuery()
 
-    service := client.Search().
+	service := client.Search().
 		Index("grants").
 		Query(q).
 		From(from).
