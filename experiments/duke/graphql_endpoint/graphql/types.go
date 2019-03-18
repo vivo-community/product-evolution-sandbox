@@ -306,15 +306,6 @@ var sorter = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-var filter = graphql.NewObject(graphql.ObjectConfig{
-	Name: "Filter",
-	Fields: graphql.Fields{
-		"limit":  &graphql.Field{Type: graphql.Int},
-		"offset": &graphql.Field{Type: graphql.Int},
-		//"sort":   &graphql.Field{Type: sorter},
-	},
-})
-
 var personFacets = graphql.NewObject(graphql.ObjectConfig{
 	Name: "PersonFacets",
 	Fields: graphql.Fields{

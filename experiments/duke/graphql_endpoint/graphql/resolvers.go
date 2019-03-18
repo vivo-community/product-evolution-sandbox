@@ -6,7 +6,10 @@ import (
 
 	ge "github.com/OIT-ads-web/graphql_endpoint"
 	"github.com/OIT-ads-web/graphql_endpoint/elastic"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/graphql-go/graphql"
+
+	ms "github.com/mitchellh/mapstructure"
 )
 
 func personResolver(params graphql.ResolveParams) (interface{}, error) {
@@ -17,16 +20,39 @@ func personResolver(params graphql.ResolveParams) (interface{}, error) {
 	return person, err
 }
 
+// NOTE: this duplicates structure here:
+// var PersonFilter *graphql.InputObject
+// not sure best way to go about this
+type PagingFilter struct {
+	Limit  int
+	Offset int
+}
+
+type PersonFilterParam struct {
+	Filter PagingFilter
+}
+
+func asPeopleFilter(params graphql.ResolveParams) (PersonFilterParam, error) {
+	// default values?
+	result := PersonFilterParam{PagingFilter{0, 100}}
+	err := ms.Decode(params.Args, &result)
+	return result, err
+}
+
 func peopleResolver(params graphql.ResolveParams) (interface{}, error) {
-	// TODO: how else to get default?
+	// TODO: not finding a good way to default these
+	// values - default is defined in graphql.InputObject
+	// but then once again dealt with here
 	limit := 100
 	offset := 0
-	if filter, ok := params.Args["filter"]; ok {
-		obj := filter.(map[string]interface{})
-		limit = obj["limit"].(int)
-		offset = obj["offset"].(int)
+	// q := "*:*"
+	filter, err := asPeopleFilter(params)
+	if err != nil {
+		limit = filter.Filter.Limit
+		offset = filter.Filter.Offset
 	}
 
+	spew.Printf("limit=%d, offset=%d\n")
 	personList, err := elastic.FindPeople(limit, offset)
 	return personList, err
 }

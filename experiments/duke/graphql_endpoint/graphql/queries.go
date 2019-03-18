@@ -23,7 +23,7 @@ var GetPerson = &graphql.Field{
 	Resolve: personResolver,
 }
 
-var filterObject *graphql.InputObject = graphql.NewInputObject(graphql.InputObjectConfig{
+var PersonFilter *graphql.InputObject = graphql.NewInputObject(graphql.InputObjectConfig{
 	Name: "Filter",
 	Fields: graphql.InputObjectConfigFieldMap{
 		"limit": &graphql.InputObjectFieldConfig{
@@ -41,7 +41,7 @@ var GetPeople = &graphql.Field{
 	Type:        personList,
 	Description: "Get all people",
 	Args: graphql.FieldConfigArgument{
-		"filter": &graphql.ArgumentConfig{Type: filterObject},
+		"filter": &graphql.ArgumentConfig{Type: PersonFilter},
 	},
 	Resolve: peopleResolver,
 }
