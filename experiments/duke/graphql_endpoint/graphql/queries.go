@@ -24,7 +24,7 @@ var GetPerson = &graphql.Field{
 }
 
 var PersonFilter *graphql.InputObject = graphql.NewInputObject(graphql.InputObjectConfig{
-	Name: "Filter",
+	Name: "PersonFilter",
 	Fields: graphql.InputObjectConfigFieldMap{
 		"limit": &graphql.InputObjectFieldConfig{
 			Type:         graphql.Int,
@@ -33,6 +33,10 @@ var PersonFilter *graphql.InputObject = graphql.NewInputObject(graphql.InputObje
 		"offset": &graphql.InputObjectFieldConfig{
 			Type:         graphql.Int,
 			DefaultValue: 0,
+		},
+		"query": &graphql.InputObjectFieldConfig{
+			Type:         graphql.String,
+			DefaultValue: "*:*",
 		},
 	},
 })
@@ -46,22 +50,57 @@ var GetPeople = &graphql.Field{
 	Resolve: peopleResolver,
 }
 
+// TODO: very likely a way to avoid the code duplication
+var PublicationFilter *graphql.InputObject = graphql.NewInputObject(graphql.InputObjectConfig{
+	Name: "PublicationFilter",
+	Fields: graphql.InputObjectConfigFieldMap{
+		"limit": &graphql.InputObjectFieldConfig{
+			Type:         graphql.Int,
+			DefaultValue: 100,
+		},
+		"offset": &graphql.InputObjectFieldConfig{
+			Type:         graphql.Int,
+			DefaultValue: 0,
+		},
+		"query": &graphql.InputObjectFieldConfig{
+			Type:         graphql.String,
+			DefaultValue: "*:*",
+		},
+	},
+})
+
 var GetPublications = &graphql.Field{
 	Type:        publicationList,
 	Description: "Get all publications",
 	Args: graphql.FieldConfigArgument{
-		"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
-		"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
+		"filter": &graphql.ArgumentConfig{Type: PublicationFilter},
 	},
 	Resolve: publicationResolver,
 }
+
+var GrantFilter *graphql.InputObject = graphql.NewInputObject(graphql.InputObjectConfig{
+	Name: "GrantFilter",
+	Fields: graphql.InputObjectConfigFieldMap{
+		"limit": &graphql.InputObjectFieldConfig{
+			Type:         graphql.Int,
+			DefaultValue: 100,
+		},
+		"offset": &graphql.InputObjectFieldConfig{
+			Type:         graphql.Int,
+			DefaultValue: 0,
+		},
+		"query": &graphql.InputObjectFieldConfig{
+			Type:         graphql.String,
+			DefaultValue: "*:*",
+		},
+	},
+})
 
 var GetGrants = &graphql.Field{
 	Type:        grantList,
 	Description: "Get all grants",
 	Args: graphql.FieldConfigArgument{
-		"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
-		"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
+		"filter": &graphql.ArgumentConfig{Type: GrantFilter},
 	},
 	Resolve: grantResolver,
 }

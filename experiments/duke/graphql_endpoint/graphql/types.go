@@ -267,17 +267,19 @@ var person = graphql.NewObject(graphql.ObjectConfig{
 		// these can be paged, since they involve further queries
 		"publicationList": &graphql.Field{
 			Type: publicationList,
+			// TODO: would probably want these to be like
+			// PublicationList (e.g. a Filter object)
 			Args: graphql.FieldConfigArgument{
-				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
-				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
+				"limit":  &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
+				"offset": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
 			},
 			Resolve: personPublicationResolver,
 		},
 		"grantList": &graphql.Field{
 			Type: grantList,
 			Args: graphql.FieldConfigArgument{
-				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
-				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
+				"limit":  &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
+				"offset": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
 			},
 			Resolve: personGrantResolver,
 		},

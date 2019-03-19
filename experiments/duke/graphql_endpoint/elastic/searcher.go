@@ -69,22 +69,19 @@ func parsePeopleAggregations(facets elastic.Aggregations) *ge.PeopleFacets {
 	return peopleFacets
 }
 
-func FindPeople(size int, from int) (ge.PersonList, error) {
+func FindPeople(limit int, offset int, query string) (ge.PersonList, error) {
 	var people []ge.Person
 	ctx := context.Background()
 	client := GetClient()
 
-	queryText := "*:*"
-	// TODO: was MatchAll - this is different
-	q := elastic.NewQueryStringQuery(queryText)
-
+	q := elastic.NewQueryStringQuery(query)
 	log.Println("looking for people")
 
 	service := client.Search().
 		Index("people").
 		Query(q).
-		From(from).
-		Size(size)
+		From(offset).
+		Size(limit)
 
 	keywordsSize := 100
 	departmentsSize := 100
@@ -127,25 +124,25 @@ func FindPeople(size int, from int) (ge.PersonList, error) {
 	totalHits := int(searchResult.TotalHits())
 	log.Printf("total hits: %d\n", totalHits)
 
-	pageInfo := ge.FigurePaging(size, from, totalHits)
+	pageInfo := ge.FigurePaging(limit, offset, totalHits)
 	facets := parsePeopleAggregations(searchResult.Aggregations)
 	personList := ge.PersonList{Results: people, PageInfo: pageInfo, Facets: facets}
 	return personList, err
 }
 
-func FindPublications(size int, from int) (ge.PublicationList, error) {
+func FindPublications(limit int, offset int, query string) (ge.PublicationList, error) {
 	var publications []ge.Publication
 	ctx := context.Background()
 	// should query elastic here
 	client := GetClient()
 
-	q := elastic.NewMatchAllQuery()
-
+	//q := elastic.NewMatchAllQuery()
+	q := elastic.NewQueryStringQuery(query)
 	service := client.Search().
 		Index("publications").
 		Query(q).
-		From(from).
-		Size(size)
+		From(offset).
+		Size(limit)
 
 	/*
 		// TODO: kind of kludged together here - probably much better way to do
@@ -182,7 +179,7 @@ func FindPublications(size int, from int) (ge.PublicationList, error) {
 	totalHits := int(searchResult.TotalHits())
 	log.Printf("total hits: %d\n", totalHits)
 
-	pageInfo := ge.FigurePaging(size, from, totalHits)
+	pageInfo := ge.FigurePaging(limit, offset, totalHits)
 	// eventually
 	//facets := parsePublicationsAggregations(searchResult.Aggregations)
 	//publicationList := ge.PublicationList{Results: publications, PageInfo: pageInfo, Facets: facets}
@@ -191,7 +188,7 @@ func FindPublications(size int, from int) (ge.PublicationList, error) {
 	//return publications, err
 }
 
-func FindPersonPublications(personId string, size int, from int) (ge.PublicationList, error) {
+func FindPersonPublications(personId string, limit int, offset int) (ge.PublicationList, error) {
 	var publications []ge.Publication
 	var publicationIds []string
 
@@ -203,8 +200,8 @@ func FindPersonPublications(personId string, size int, from int) (ge.Publication
 	searchResult, err := client.Search().
 		Index("authorships").
 		Query(q).
-		From(from).
-		Size(size).
+		From(offset).
+		Size(limit).
 		Do(ctx)
 	if err != nil {
 		// Handle error
@@ -256,26 +253,26 @@ func FindPersonPublications(personId string, size int, from int) (ge.Publication
 		publications = append(publications, publication)
 	}
 
-	log.Printf("size: %d, from:%d\n", size, from)
+	log.Printf("size: %d, from:%d\n", limit, offset)
 
-	pageInfo := ge.FigurePaging(size, from, totalHits)
+	pageInfo := ge.FigurePaging(limit, offset, totalHits)
 	publicationList := ge.PublicationList{Results: publications, PageInfo: pageInfo}
 
 	return publicationList, err
 }
 
-func FindGrants(size int, from int) (ge.GrantList, error) {
+func FindGrants(limit int, offset int, query string) (ge.GrantList, error) {
 	var grants []ge.Grant
 	ctx := context.Background()
 	client := GetClient()
 
-	q := elastic.NewMatchAllQuery()
-
+	//q := elastic.NewMatchAllQuery()
+	q := elastic.NewQueryStringQuery(query)
 	service := client.Search().
 		Index("grants").
 		Query(q).
-		From(from).
-		Size(size)
+		From(limit).
+		Size(offset)
 
 	searchResult, err := service.Do(ctx)
 
@@ -297,7 +294,7 @@ func FindGrants(size int, from int) (ge.GrantList, error) {
 	totalHits := int(searchResult.TotalHits())
 	log.Printf("total hits: %d\n", totalHits)
 
-	pageInfo := ge.FigurePaging(size, from, totalHits)
+	pageInfo := ge.FigurePaging(limit, offset, totalHits)
 	// eventually
 	//facets := parseGrantsAggregations(searchResult.Aggregations)
 	//grantList := ge.GrantList{Results: grants, PageInfo: pageInfo, Facets: facets}
@@ -397,7 +394,7 @@ func ListAll(index string) {
 		if err != nil {
 			panic(err)
 		}
-		spew.Println(obj)
+		spew.Printf("%v\n", obj)
 	}
 	fmt.Printf("********* END (%d) **********\n", searchResult.TotalHits())
 }
@@ -430,7 +427,7 @@ func IdQuery(index string, ids []string) {
 		if err != nil {
 			panic(err)
 		}
-		spew.Println(obj)
+		spew.Printf("%v\n", obj)
 	}
 	fmt.Println("************** END **********")
 }
@@ -460,5 +457,5 @@ func FindOne(index string, personId string) {
 	if err != nil {
 		panic(err)
 	}
-	spew.Println(obj)
+	spew.Printf("%v\n", obj)
 }
