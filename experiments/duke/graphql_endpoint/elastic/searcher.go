@@ -235,7 +235,7 @@ func FindPersonPublications(personId string, limit int, offset int) (ge.Publicat
 	pubResults, err := client.Search().
 		Index("publications").
 		Query(pubQuery).
-		From(1).
+		From(0).
 		Size(totalHits).
 		RequestCache(true).
 		Do(ctx)
@@ -302,7 +302,7 @@ func FindGrants(limit int, offset int, query string) (ge.GrantList, error) {
 	return grantList, err
 }
 
-func FindPersonGrants(personId string, size int, from int) (ge.GrantList, error) {
+func FindPersonGrants(personId string, limit int, offset int) (ge.GrantList, error) {
 	var grants []ge.Grant
 	var grantIds []string
 
@@ -314,8 +314,8 @@ func FindPersonGrants(personId string, size int, from int) (ge.GrantList, error)
 	searchResult, err := client.Search().
 		Index("funding-roles").
 		Query(q).
-		From(from).
-		Size(size).
+		From(offset).
+		Size(limit).
 		Do(ctx)
 	if err != nil {
 		// handle error
@@ -344,7 +344,7 @@ func FindPersonGrants(personId string, size int, from int) (ge.GrantList, error)
 	grantResults, err := client.Search().
 		Index("grants").
 		Query(grantQuery).
-		From(1).
+		From(0).
 		Size(totalHits).
 		RequestCache(true).
 		Do(ctx)
@@ -361,7 +361,7 @@ func FindPersonGrants(personId string, size int, from int) (ge.GrantList, error)
 		grants = append(grants, grant)
 	}
 
-	pageInfo := ge.FigurePaging(size, from, totalHits)
+	pageInfo := ge.FigurePaging(limit, offset, totalHits)
 	grantList := ge.GrantList{Results: grants, PageInfo: pageInfo}
 	return grantList, err
 }

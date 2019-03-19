@@ -102,10 +102,10 @@ func publicationResolver(params graphql.ResolveParams) (interface{}, error) {
 func personPublicationResolver(params graphql.ResolveParams) (interface{}, error) {
 	person, _ := params.Source.(ge.Person)
 
-	size := params.Args["size"].(int)
-	from := params.Args["from"].(int)
+	limit := params.Args["limit"].(int)
+	offset := params.Args["offset"].(int)
 
-	publicationList, err := elastic.FindPersonPublications(person.Id, size, from)
+	publicationList, err := elastic.FindPersonPublications(person.Id, limit, offset)
 	return func() (interface{}, error) {
 		return &publicationList, err
 	}, nil
@@ -128,10 +128,10 @@ func grantResolver(params graphql.ResolveParams) (interface{}, error) {
 func personGrantResolver(params graphql.ResolveParams) (interface{}, error) {
 	person, _ := params.Source.(ge.Person)
 
-	size := params.Args["size"].(int)
-	from := params.Args["from"].(int)
+	limit := params.Args["limit"].(int)
+	offset := params.Args["offset"].(int)
 
-	grants, err := elastic.FindPersonGrants(person.Id, size, from)
+	grants, err := elastic.FindPersonGrants(person.Id, limit, offset)
 
 	return func() (interface{}, error) {
 		return &grants, err
