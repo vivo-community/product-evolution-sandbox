@@ -31,7 +31,6 @@ type CommonFilter struct {
 
 // NOTE: these aren't different now, but dealing with
 // facets would probably make them different
-//  `mapstructure:",squash"`
 type PersonFilterParam struct {
 	Filter CommonFilter
 }
