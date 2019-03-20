@@ -162,7 +162,7 @@ func FindPeople(limit int, offset int, query string) (ge.PersonList, error) {
 
 	// TODO: might be one off
 	totalHits := int(searchResult.TotalHits())
-	log.Printf("total hits: %d\n", totalHits)
+	log.Printf("total people hits: %d\n", totalHits)
 
 	pageInfo := ge.FigurePaging(limit, offset, totalHits)
 	facets := parsePeopleAggregations(searchResult.Aggregations)
@@ -217,7 +217,7 @@ func FindPublications(limit int, offset int, query string) (ge.PublicationList, 
 
 	// might be one off
 	totalHits := int(searchResult.TotalHits())
-	log.Printf("total hits: %d\n", totalHits)
+	log.Printf("total publication hits: %d\n", totalHits)
 
 	pageInfo := ge.FigurePaging(limit, offset, totalHits)
 	// eventually
@@ -311,8 +311,8 @@ func FindGrants(limit int, offset int, query string) (ge.GrantList, error) {
 	service := client.Search().
 		Index("grants").
 		Query(q).
-		From(limit).
-		Size(offset)
+		From(offset).
+		Size(limit)
 
 	searchResult, err := service.Do(ctx)
 
@@ -332,7 +332,7 @@ func FindGrants(limit int, offset int, query string) (ge.GrantList, error) {
 
 	// is this the correct number?
 	totalHits := int(searchResult.TotalHits())
-	log.Printf("total hits: %d\n", totalHits)
+	log.Printf("total grant hits: %d\n", totalHits)
 
 	pageInfo := ge.FigurePaging(limit, offset, totalHits)
 	// eventually
