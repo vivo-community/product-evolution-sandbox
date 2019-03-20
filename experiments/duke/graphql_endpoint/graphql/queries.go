@@ -9,6 +9,8 @@ var RootQuery = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"personList":      GetPeople,
 		"person":          GetPerson,
+		"grant":           GetGrant,
+		"publication":     GetPublication,
 		"publicationList": GetPublications,
 		"grantList":       GetGrants,
 	},
@@ -21,6 +23,24 @@ var GetPerson = &graphql.Field{
 		"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 	},
 	Resolve: personResolver,
+}
+
+var GetPublication = &graphql.Field{
+	Type:        publication,
+	Description: "Get Publication",
+	Args: graphql.FieldConfigArgument{
+		"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+	},
+	Resolve: publicationResolver,
+}
+
+var GetGrant = &graphql.Field{
+	Type:        grant,
+	Description: "Get Grant",
+	Args: graphql.FieldConfigArgument{
+		"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+	},
+	Resolve: grantResolver,
 }
 
 var PersonFilter *graphql.InputObject = graphql.NewInputObject(graphql.InputObjectConfig{
@@ -77,7 +97,7 @@ var GetPublications = &graphql.Field{
 	Args: graphql.FieldConfigArgument{
 		"filter": &graphql.ArgumentConfig{Type: PublicationFilter},
 	},
-	Resolve: publicationResolver,
+	Resolve: publicationsResolver,
 }
 
 var GrantFilter *graphql.InputObject = graphql.NewInputObject(graphql.InputObjectConfig{
@@ -105,5 +125,5 @@ var GetGrants = &graphql.Field{
 	Args: graphql.FieldConfigArgument{
 		"filter": &graphql.ArgumentConfig{Type: GrantFilter},
 	},
-	Resolve: grantResolver,
+	Resolve: grantsResolver,
 }

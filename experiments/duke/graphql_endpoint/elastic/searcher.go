@@ -33,6 +33,46 @@ func FindPerson(personId string) (ge.Person, error) {
 	return person, err
 }
 
+func FindPublication(publicationId string) (ge.Publication, error) {
+	var publication = ge.Publication{}
+
+	ctx := context.Background()
+	client := GetClient()
+
+	log.Printf("looking for publication %s\n", publicationId)
+
+	get1, err := client.Get().
+		Index("publications").
+		Id(publicationId).
+		Do(ctx)
+	if err != nil {
+		return publication, err
+	}
+
+	err = json.Unmarshal(*get1.Source, &publication)
+	return publication, err
+}
+
+func FindGrant(grantId string) (ge.Grant, error) {
+	var grant = ge.Grant{}
+
+	ctx := context.Background()
+	client := GetClient()
+
+	log.Printf("looking for grant %s\n", grantId)
+
+	get1, err := client.Get().
+		Index("grants").
+		Id(grantId).
+		Do(ctx)
+	if err != nil {
+		return grant, err
+	}
+
+	err = json.Unmarshal(*get1.Source, &grant)
+	return grant, err
+}
+
 func parsePeopleAggregations(facets elastic.Aggregations) *ge.PeopleFacets {
 	peopleFacets := &ge.PeopleFacets{}
 

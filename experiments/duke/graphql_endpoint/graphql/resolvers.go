@@ -20,6 +20,22 @@ func personResolver(params graphql.ResolveParams) (interface{}, error) {
 	return person, err
 }
 
+func publicationResolver(params graphql.ResolveParams) (interface{}, error) {
+	id := params.Args["id"].(string)
+	log.Printf("looking for publication %s\n", id)
+
+	person, err := elastic.FindPublication(id)
+	return person, err
+}
+
+func grantResolver(params graphql.ResolveParams) (interface{}, error) {
+	id := params.Args["id"].(string)
+	log.Printf("looking for grant %s\n", id)
+
+	person, err := elastic.FindGrant(id)
+	return person, err
+}
+
 // NOTE: this duplicates structure here:
 // var PersonFilter *graphql.InputObject
 // not sure best way to go about this
@@ -89,7 +105,7 @@ func peopleResolver(params graphql.ResolveParams) (interface{}, error) {
 	return personList, err
 }
 
-func publicationResolver(params graphql.ResolveParams) (interface{}, error) {
+func publicationsResolver(params graphql.ResolveParams) (interface{}, error) {
 	// TODO: not finding a good way to default these
 	limit := 100
 	offset := 0
@@ -117,7 +133,7 @@ func personPublicationResolver(params graphql.ResolveParams) (interface{}, error
 	}, nil
 }
 
-func grantResolver(params graphql.ResolveParams) (interface{}, error) {
+func grantsResolver(params graphql.ResolveParams) (interface{}, error) {
 	limit := 100
 	offset := 0
 	query := ""
