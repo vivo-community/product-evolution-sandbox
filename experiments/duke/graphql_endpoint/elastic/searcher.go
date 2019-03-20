@@ -33,6 +33,46 @@ func FindPerson(personId string) (ge.Person, error) {
 	return person, err
 }
 
+func FindPublication(publicationId string) (ge.Publication, error) {
+	var publication = ge.Publication{}
+
+	ctx := context.Background()
+	client := GetClient()
+
+	log.Printf("looking for publication %s\n", publicationId)
+
+	get1, err := client.Get().
+		Index("publications").
+		Id(publicationId).
+		Do(ctx)
+	if err != nil {
+		return publication, err
+	}
+
+	err = json.Unmarshal(*get1.Source, &publication)
+	return publication, err
+}
+
+func FindGrant(grantId string) (ge.Grant, error) {
+	var grant = ge.Grant{}
+
+	ctx := context.Background()
+	client := GetClient()
+
+	log.Printf("looking for grant %s\n", grantId)
+
+	get1, err := client.Get().
+		Index("grants").
+		Id(grantId).
+		Do(ctx)
+	if err != nil {
+		return grant, err
+	}
+
+	err = json.Unmarshal(*get1.Source, &grant)
+	return grant, err
+}
+
 func parsePeopleAggregations(facets elastic.Aggregations) *ge.PeopleFacets {
 	peopleFacets := &ge.PeopleFacets{}
 
@@ -122,7 +162,7 @@ func FindPeople(limit int, offset int, query string) (ge.PersonList, error) {
 
 	// TODO: might be one off
 	totalHits := int(searchResult.TotalHits())
-	log.Printf("total hits: %d\n", totalHits)
+	log.Printf("total people hits: %d\n", totalHits)
 
 	pageInfo := ge.FigurePaging(limit, offset, totalHits)
 	facets := parsePeopleAggregations(searchResult.Aggregations)
@@ -177,7 +217,7 @@ func FindPublications(limit int, offset int, query string) (ge.PublicationList, 
 
 	// might be one off
 	totalHits := int(searchResult.TotalHits())
-	log.Printf("total hits: %d\n", totalHits)
+	log.Printf("total publication hits: %d\n", totalHits)
 
 	pageInfo := ge.FigurePaging(limit, offset, totalHits)
 	// eventually
@@ -271,8 +311,8 @@ func FindGrants(limit int, offset int, query string) (ge.GrantList, error) {
 	service := client.Search().
 		Index("grants").
 		Query(q).
-		From(limit).
-		Size(offset)
+		From(offset).
+		Size(limit)
 
 	searchResult, err := service.Do(ctx)
 
@@ -292,7 +332,7 @@ func FindGrants(limit int, offset int, query string) (ge.GrantList, error) {
 
 	// is this the correct number?
 	totalHits := int(searchResult.TotalHits())
-	log.Printf("total hits: %d\n", totalHits)
+	log.Printf("total grant hits: %d\n", totalHits)
 
 	pageInfo := ge.FigurePaging(limit, offset, totalHits)
 	// eventually
