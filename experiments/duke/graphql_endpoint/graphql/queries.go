@@ -24,7 +24,8 @@ var GetPerson = &graphql.Field{
 }
 
 var PersonFilter *graphql.InputObject = graphql.NewInputObject(graphql.InputObjectConfig{
-	Name: "PersonFilter",
+	Name:        "PersonFilter",
+	Description: "Filter on People List",
 	Fields: graphql.InputObjectConfigFieldMap{
 		"limit": &graphql.InputObjectFieldConfig{
 			Type:         graphql.Int,
@@ -36,7 +37,7 @@ var PersonFilter *graphql.InputObject = graphql.NewInputObject(graphql.InputObje
 		},
 		"query": &graphql.InputObjectFieldConfig{
 			Type:         graphql.String,
-			DefaultValue: "*:*",
+			DefaultValue: "",
 		},
 	},
 })
@@ -52,7 +53,8 @@ var GetPeople = &graphql.Field{
 
 // TODO: very likely a way to avoid the code duplication
 var PublicationFilter *graphql.InputObject = graphql.NewInputObject(graphql.InputObjectConfig{
-	Name: "PublicationFilter",
+	Name:        "PublicationFilter",
+	Description: "Filter on Publication List",
 	Fields: graphql.InputObjectConfigFieldMap{
 		"limit": &graphql.InputObjectFieldConfig{
 			Type:         graphql.Int,
@@ -64,7 +66,7 @@ var PublicationFilter *graphql.InputObject = graphql.NewInputObject(graphql.Inpu
 		},
 		"query": &graphql.InputObjectFieldConfig{
 			Type:         graphql.String,
-			DefaultValue: "*:*",
+			DefaultValue: "",
 		},
 	},
 })
@@ -79,7 +81,8 @@ var GetPublications = &graphql.Field{
 }
 
 var GrantFilter *graphql.InputObject = graphql.NewInputObject(graphql.InputObjectConfig{
-	Name: "GrantFilter",
+	Name:        "GrantFilter",
+	Description: "Filter on Grant List",
 	Fields: graphql.InputObjectConfigFieldMap{
 		"limit": &graphql.InputObjectFieldConfig{
 			Type:         graphql.Int,
@@ -91,7 +94,7 @@ var GrantFilter *graphql.InputObject = graphql.NewInputObject(graphql.InputObjec
 		},
 		"query": &graphql.InputObjectFieldConfig{
 			Type:         graphql.String,
-			DefaultValue: "*:*",
+			DefaultValue: "",
 		},
 	},
 })

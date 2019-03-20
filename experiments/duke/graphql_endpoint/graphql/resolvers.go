@@ -44,21 +44,27 @@ type GrantFilterParam struct {
 }
 
 func convertPeopleFilter(params graphql.ResolveParams) (PersonFilterParam, error) {
-	result := PersonFilterParam{}
+	result := PersonFilterParam{
+		Filter: CommonFilter{Limit: 100, Offset: 0, Query: ""},
+	}
 	err := ms.Decode(params.Args, &result)
 	return result, err
 }
 
 func convertPublicationFilter(params graphql.ResolveParams) (PublicationFilterParam, error) {
 	// default values?
-	result := PublicationFilterParam{}
+	result := PublicationFilterParam{
+		Filter: CommonFilter{Limit: 100, Offset: 0, Query: ""},
+	}
 	err := ms.Decode(params.Args, &result)
 	return result, err
 }
 
 func convertGrantFilter(params graphql.ResolveParams) (GrantFilterParam, error) {
 	// default values?
-	result := GrantFilterParam{}
+	result := GrantFilterParam{
+		Filter: CommonFilter{Limit: 100, Offset: 0, Query: ""},
+	}
 	err := ms.Decode(params.Args, &result)
 	return result, err
 }
@@ -68,7 +74,7 @@ func peopleResolver(params graphql.ResolveParams) (interface{}, error) {
 	// e.g. if filter is not sent at all
 	limit := 100
 	offset := 0
-	query := "*:*"
+	query := ""
 	filter, err := convertPeopleFilter(params)
 
 	if err == nil {
@@ -78,6 +84,7 @@ func peopleResolver(params graphql.ResolveParams) (interface{}, error) {
 		query = fmt.Sprintf("*:%v*", filter.Filter.Query)
 	}
 
+	fmt.Printf("limit=%v,offset=%v,query=%v\n", limit, offset, query)
 	personList, err := elastic.FindPeople(limit, offset, query)
 	return personList, err
 }
@@ -86,7 +93,7 @@ func publicationResolver(params graphql.ResolveParams) (interface{}, error) {
 	// TODO: not finding a good way to default these
 	limit := 100
 	offset := 0
-	query := "*:*"
+	query := ""
 	filter, err := convertPublicationFilter(params)
 	if err == nil {
 		limit = filter.Filter.Limit
@@ -113,7 +120,7 @@ func personPublicationResolver(params graphql.ResolveParams) (interface{}, error
 func grantResolver(params graphql.ResolveParams) (interface{}, error) {
 	limit := 100
 	offset := 0
-	query := "*:*"
+	query := ""
 	filter, err := convertGrantFilter(params)
 	if err == nil {
 		limit = filter.Filter.Limit
