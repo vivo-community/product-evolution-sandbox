@@ -12,6 +12,10 @@ func FigurePaging(size int, from int, totalHits int) PageInfo {
 			currentPage = (offset / size) - 1
 		}
 	}
+	if offset == size {
+		currentPage = 1
+	}
+
 	var totalPages = totalHits / size
 	var remainder = totalHits % size
 	if remainder > 0 {
@@ -23,5 +27,3 @@ func FigurePaging(size int, from int, totalHits int) PageInfo {
 		Count:       totalHits}
 	return pageInfo
 }
-
-

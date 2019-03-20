@@ -267,62 +267,30 @@ var person = graphql.NewObject(graphql.ObjectConfig{
 		// these can be paged, since they involve further queries
 		"publicationList": &graphql.Field{
 			Type: publicationList,
+			// TODO: would probably want these to be like
+			// PublicationList (e.g. a Filter object)
 			Args: graphql.FieldConfigArgument{
-				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
-				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
+				"limit":  &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
+				"offset": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
 			},
 			Resolve: personPublicationResolver,
 		},
 		"grantList": &graphql.Field{
 			Type: grantList,
 			Args: graphql.FieldConfigArgument{
-				"size": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
-				"from": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
+				"limit":  &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 100},
+				"offset": &graphql.ArgumentConfig{Type: graphql.Int, DefaultValue: 1},
 			},
 			Resolve: personGrantResolver,
 		},
 	},
 })
 
-// filter
 /*
-    "sort" : [
-        { "post_date" : {"order" : "asc"}},
-        "user",
-        { "name" : "desc" },
-        { "age" : "desc" },
-        "_score"
-    ],
+FIXME: not sure best way to send in sorting parameters right now
 
-this is probably most obvious way:
-{"price" : {"order" : "asc", "mode" : "avg"}}
-
-"sort" : [
-      {"price" : {"order" : "asc", "mode" : "avg"}}
-   ]
-
-   "sort" : [
-      {
-         "parent.child.age" : {
-            "mode" :  "min",
-            "order" : "asc",
-            "nested": {
-               "path": "parent",
-               "filter": {
-                  "range": {"parent.age": {"gte": 21}}
-               },
-               "nested": {
-                  "path": "parent.child",
-                  "filter": {
-                     "match": {"parent.child.name": "matt"}
-                  }
-               }
-            }
-         }
-      }
-   ]
+also how to add enum of choices (e.g. asc, desc)
 */
-
 var sortField = graphql.NewObject(graphql.ObjectConfig{
 	Name: "SortField",
 	Fields: graphql.Fields{
@@ -332,19 +300,11 @@ var sortField = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+// would be different per type (e.g. People, Publications)
 var sorter = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Sort",
 	Fields: graphql.Fields{
 		"fields": &graphql.Field{Type: graphql.NewList(sortField)},
-	},
-})
-
-var filter = graphql.NewObject(graphql.ObjectConfig{
-	Name: "Filter",
-	Fields: graphql.Fields{
-		"limit":  &graphql.Field{Type: graphql.Int},
-		"offset": &graphql.Field{Type: graphql.Int},
-		"sort":   &graphql.Field{Type: sorter},
 	},
 })
 

@@ -2,8 +2,9 @@ package graphql_endpoint_test
 
 import (
 	"fmt"
-	"github.com/OIT-ads-web/graphql_endpoint"
 	"testing"
+
+	"github.com/OIT-ads-web/graphql_endpoint"
 )
 
 func TestPagingPerPage(t *testing.T) {
@@ -35,7 +36,7 @@ func TestPagingStart(t *testing.T) {
 
 	pageInfo1 := graphql_endpoint.FigurePaging(size, from, total)
 	if pageInfo1.CurrentPage != 1 {
-		t.Error(fmt.Printf("should be page 1 if start = %d and perPage = %d",from, size))
+		t.Error(fmt.Printf("should be page 1 if start = %d and perPage = %d", from, size))
 	}
 }
 
@@ -72,5 +73,18 @@ func TestPagingSmall(t *testing.T) {
 	}
 	if pageInfo1.TotalPages != 1 {
 		t.Error(fmt.Printf("should be 1 pages(s) if from = %d and size = %d", from, size))
+	}
+}
+
+func TestPagingOffset(t *testing.T) {
+	var size = 10
+	var from = 10
+	var total = 100
+	pageInfo1 := graphql_endpoint.FigurePaging(size, from, total)
+	if pageInfo1.CurrentPage != 1 {
+		t.Error(fmt.Printf("should be page 1 if from = %d and size = %d", from, size))
+	}
+	if pageInfo1.TotalPages != 10 {
+		t.Error(fmt.Printf("should be 10 pages(s) if from = %d and size = %d", from, size))
 	}
 }
